@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: my-deployment
+    namespace: my-namespace # too add the file to a ns
+spec:
+    selector:
+        matchLabels:
+            app: my-app
+            type: front-end
+    replicas: 3
+    template:
+        metadata:
+            name: httpd-frontend
+            labels:
+                app: my-app
+                type: front-end
+        spec:
+            containers:
+                - name: httpd-frontend
+                  image: httpd:2.4-alpine
