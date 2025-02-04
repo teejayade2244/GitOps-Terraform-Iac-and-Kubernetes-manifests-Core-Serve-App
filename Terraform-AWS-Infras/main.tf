@@ -4,7 +4,7 @@ module "vpc" {
 }
 
 module "eks" {
-  source     = "./modules/Eks"
+  source     = "./modules/EKS"
   public_subnets= module.vpc.public_subnets
 }
 
