@@ -9,8 +9,8 @@ resource "aws_vpc" "main" {
 #subnet creation
 #public subnets
 #Each subnet is assigned to a different Availability Zone (AZ) to ensure high availability.
-resource "aws_subnet" "public-subnets" {
-  for_each = var.Public-subnets
+resource "aws_subnet" "public_subnets" {
+  for_each = var.Public_subnets
   vpc_id            = aws_vpc.main.id
   cidr_block        = each.value.cidr
   availability_zone = each.value.az
@@ -21,8 +21,8 @@ resource "aws_subnet" "public-subnets" {
 }
 
 #private subnets
-resource "aws_subnet" "private-subnets" {
-  for_each = var.Private-subnets
+resource "aws_subnet" "private_subnets" {
+  for_each = var.Private_subnets
   vpc_id            = aws_vpc.main.id
   cidr_block        = each.value.cidr
   availability_zone = each.value.az
