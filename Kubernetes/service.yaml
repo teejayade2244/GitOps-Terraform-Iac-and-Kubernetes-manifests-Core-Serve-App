@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+    name: blackrose-service
+    namespace: blackrose
+spec:
+    type: NodePort
+    # links the service to the pods
+    # the pods was created with a label
+    selector:
+        app: blackrose-app
+        type: front-end
+    ports:
+        - protocol: TCP
+          # port on service
+          port: 5173
+          # port on the pod
+          targetPort: 5173
+          # port on the node
+          nodePort: 30004

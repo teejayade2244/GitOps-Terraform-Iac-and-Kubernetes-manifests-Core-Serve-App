@@ -1,21 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-    name: my-deployment
-    namespace: my-namespace # too add the file to a ns
+    name: blackrose-app
+    namespace: blackrose # too add the file to a ns
 spec:
     selector:
         matchLabels:
-            app: my-app
+            app: blackrose-app
             type: front-end
-    replicas: 3
+    replicas: 1
     template:
         metadata:
-            name: httpd-frontend
+            name: blackrose-app
             labels:
-                app: my-app
+                app: blackrose-app
                 type: front-end
         spec:
             containers:
-                - name: httpd-frontend
-                  image: httpd:2.4-alpine
+                - name: blackrose-app-frontend
+                  image: teejay4125/blackrose-update:v6
+                  ports:
+                      - containerPort: 5173
+                      
