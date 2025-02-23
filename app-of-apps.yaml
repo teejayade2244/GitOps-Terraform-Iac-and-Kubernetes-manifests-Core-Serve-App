@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/teejayade2244/Blackrose-GitOps-manifest.git  # Replace with your repo
-    targetRevision: main
+    targetRevision: master
     path: Helm-app-of-apps  # Path to Helm chart
     helm:
       valueFiles:
