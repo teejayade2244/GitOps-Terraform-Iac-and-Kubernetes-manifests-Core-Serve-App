@@ -1,6 +1,0 @@
-applications:
-  - name: frontend-app
-    namespace: blackrose
-    repoURL: https://github.com/teejayade2244/Blackrose-GitOps-manifest.git
-    path: Helm-Charts-Manifest
-    targetRevision: master

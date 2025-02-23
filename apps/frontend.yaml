@@ -1,17 +1,17 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: app-of-apps
+  name: frontend-app
   namespace: argocd
 spec:
   project: default
   source:
-    repoURL: https://github.com/teejayade2244/Blackrose-GitOps-manifest.git # Replace with your repo
+    repoURL: https://github.com/teejayade2244/Blackrose-GitOps-manifest.git   # Replace with your repo
     targetRevision: master
-    path: apps  # Directory containing child app manifests
+    path: Helm-Charts-Manifest  # Directory containing Kubernetes manifests for frontend
   destination:
     server: https://kubernetes.default.svc
-    namespace: argocd
+    namespace: dev
   syncPolicy:
     automated:
       prune: true
