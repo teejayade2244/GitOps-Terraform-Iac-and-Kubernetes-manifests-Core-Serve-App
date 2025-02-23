@@ -4,7 +4,7 @@ metadata:
   name: app-of-apps
   namespace: argocd
 spec:
-  project: default
+  project: blackrose-app
   source:
     repoURL: https://github.com/teejayade2244/Blackrose-GitOps-manifest.git # Replace with your repo
     targetRevision: master
