@@ -1,0 +1,22 @@
+apiVersion: v2
+name: blackrose-app
+description: A Helm chart for deploying the Blackrose application on Kubernetes.
+
+type: application
+
+# Chart version (increment on every change)
+version: 0.1.0
+
+# Application version (sync with `values.yaml`)
+appVersion: "v6"
+
+# Maintainers (add your details)
+maintainers:
+  - name: Temitope
+    email: adebunmi33@gmail.com
+    url: https://github.com/teejayade2244
+
+# Home and Source Links
+home: https://github.com/teejayade2244/Blackrose-GitOps-manifest
+sources:
+  - https://github.com/teejayade2244/Blackrose-GitOps-manifest
