@@ -1,34 +1,6 @@
-global:
-  environment: dev  # This can be overridden by Helm values
-
-environments:
-  dev:
-    namespace: dev
-    applications:
-      - name: frontend-app
-        chart: Helm-app-of-apps
-        repoURL: https://github.com/teejayade2244/Blackrose-GitOps-manifest.git
-        targetRevision: master
-       
-      - name: backend-app
-        chart: Helm-app-of-apps
-        repoURL: https://github.com/teejayade2244/Blackrose-GitOps-manifest.git
-        targetRevision: master
-
-  staging:
-    namespace: staging
-    applications:
-      - name: frontend-app
-        chart: Helm-app-of-apps
-        repoURL: https://github.com/teejayade2244/Blackrose-GitOps-manifest.git
-        targetRevision: master
-       
-
-  prod:
-    namespace: prod
-    applications:
-      - name: frontend-app
-        chart: Helm-app-of-apps
-        repoURL: https://github.com/teejayade2244/Blackrose-GitOps-manifest.git
-        targetRevision: master
-       
+applications:
+  - name: frontend-app
+    namespace: blackrose
+    repoURL: https://github.com/teejayade2244/Blackrose-GitOps-manifest.git
+    path: Helm-Charts-Manifest
+    targetRevision: master
