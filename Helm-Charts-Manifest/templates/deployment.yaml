@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Release.Name }}-frontend
-  namespace: blackrose 
+  namespace: dev 
 spec:
   replicas: {{ .Values.replicaCount }}  
   selector:
