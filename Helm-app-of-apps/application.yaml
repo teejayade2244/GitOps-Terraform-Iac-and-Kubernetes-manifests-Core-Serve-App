@@ -1,0 +1,25 @@
+{{- $env := index .Values.environments .Values.global.environment }}
+{{- range $env.applications }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .name }}-{{ $.Values.global.environment }}
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: {{ .repoURL }}
+    targetRevision: {{ .targetRevision }}
+    path: {{ .chart }}
+    helm:
+      values: |
+        replicas: {{ .replicas }}
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: {{ $env.namespace }}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+---
+{{- end }}
