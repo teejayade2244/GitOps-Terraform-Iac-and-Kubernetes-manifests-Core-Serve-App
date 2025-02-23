@@ -6,25 +6,25 @@ environments:
     namespace: dev
     applications:
       - name: frontend-app
-        chart: Helm-Charts-Manifest
+        chart: Helm-app-of-apps
         repoURL: https://github.com/teejayade2244/Blackrose-GitOps-manifest.git
         targetRevision: master
-        replicas: 1
+       
 
   staging:
     namespace: staging
     applications:
       - name: frontend-app
-        chart: Helm-Charts-Manifest
+        chart: Helm-app-of-apps
         repoURL: https://github.com/teejayade2244/Blackrose-GitOps-manifest.git
         targetRevision: master
-        replicas: 2
+       
 
   prod:
     namespace: prod
     applications:
       - name: frontend-app
-        chart: Helm-Charts-Manifest
+        chart: Helm-app-of-apps
         repoURL: https://github.com/teejayade2244/Blackrose-GitOps-manifest.git
         targetRevision: master
-        replicas: 5
+       
