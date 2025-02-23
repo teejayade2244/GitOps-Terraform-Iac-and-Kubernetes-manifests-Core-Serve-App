@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/teejayade2244/Blackrose-GitOps-manifest.git
     targetRevision: master
-    path: Helm-app-of-apps
+    path: Helm-Charts-Manifest
     helm:
       parameters:
         - name: global.environment
