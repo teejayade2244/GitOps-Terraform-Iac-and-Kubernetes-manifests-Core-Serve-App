@@ -10,6 +10,10 @@ environments:
         repoURL: https://github.com/teejayade2244/Blackrose-GitOps-manifest.git
         targetRevision: master
        
+      - name: backend-app
+        chart: Helm-app-of-apps
+        repoURL: https://github.com/teejayade2244/Blackrose-GitOps-manifest.git
+        targetRevision: master
 
   staging:
     namespace: staging
