@@ -3,7 +3,7 @@ terraform {
     bucket         = "terraform-state-remote-backend-bucket"
     key            = "terraform.tfstate"
     region         = "eu-west-2"
-    dynamodb_table = "terraform_state_remote-backend"
+    use_lockfile   = true
     encrypt        = true
   }
 }

@@ -13,7 +13,6 @@ module "VPC" {
 # This module will create a SG for general purpose
 module "main_security_group" {
   source = "./Modules/Security-group"
-
   sg_name        = var.main_sg1_name
   sg_description = var.main_sg1_description
   vpc_id         = module.VPC.vpc_id
@@ -83,13 +82,14 @@ module "Blackrose_security_group_app" {
 
 ##########################################################################################################
 # EC2
+
 module "main_server" {
   source = "./Modules/EC2"
   ami           = var.ami
   instance_type = var.instance_type
   security_group_id = module.EC2_security_group_app.security_group_id
   subnet_id     = module.VPC.public_subnet_ids[0]  # Using first public subnet
-  server_name   = var.server_name
+  server_name   = "${var.server_name}-public"
 }
 
 module "frontend_server" {
@@ -98,5 +98,5 @@ module "frontend_server" {
   instance_type = "t2.micro"
   security_group_id = module.Blackrose_security_group_app.security_group_id
   subnet_id     = module.VPC.private_subnet_ids[1]  # Using second private subnet
-  server_name   = var.server_name
+  server_name   = "${var.server_name}-private"
 }
