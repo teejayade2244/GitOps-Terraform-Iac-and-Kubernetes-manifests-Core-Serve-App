@@ -59,10 +59,10 @@ variable "main_sg1_name" {
   type        = string
 }
 
-variable "security_group_id" {
-  description = "The security group ID(s) for the EC2 instance"
-  type        = list(string)
-}
+# variable "security_group_id" {
+#   description = "The security group ID(s) for the EC2 instance"
+#   type        = list(string)
+# }
 
 variable "main_sg1_description" {
   description = "The description of the security group"
