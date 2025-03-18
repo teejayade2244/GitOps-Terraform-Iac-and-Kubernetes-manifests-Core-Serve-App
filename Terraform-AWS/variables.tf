@@ -20,15 +20,15 @@ variable "Private_subnets" {
   }))
 }
 
-variable "public_subnet_ids" {
-  description = "List of Public Subnet IDs"
-  type        = list(string)
-}
+# variable "public_subnet_ids" {
+#   description = "List of Public Subnet IDs"
+#   type        = list(string)
+# }
 
-variable "private_subnet_ids" {
-  description = "List of Private Subnet IDs"
-  type        = list(string)
-}
+# variable "private_subnet_ids" {
+#   description = "List of Private Subnet IDs"
+#   type        = list(string)
+# }
 
 variable "project_name" {
   type = string
