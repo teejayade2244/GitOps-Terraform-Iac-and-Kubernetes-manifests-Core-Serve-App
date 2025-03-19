@@ -20,16 +20,6 @@ variable "Private_subnets" {
   }))
 }
 
-# variable "public_subnet_ids" {
-#   description = "List of Public Subnet IDs"
-#   type        = list(string)
-# }
-
-# variable "private_subnet_ids" {
-#   description = "List of Private Subnet IDs"
-#   type        = list(string)
-# }
-
 variable "project_name" {
   type = string
   description = "The project name"
@@ -59,10 +49,6 @@ variable "main_sg1_name" {
   type        = string
 }
 
-# variable "security_group_id" {
-#   description = "The security group ID(s) for the EC2 instance"
-#   type        = list(string)
-# }
 
 variable "main_sg1_description" {
   description = "The description of the security group"
@@ -121,10 +107,6 @@ variable "instance_type" {
   description = "EC2 instance type for Main server"
 }
 
-# variable "security_group_id" {
-#   type = list
-#   description = "Security Group ID for main EC2"
-# }
 
 variable "key_name" {
   default = "private-key"

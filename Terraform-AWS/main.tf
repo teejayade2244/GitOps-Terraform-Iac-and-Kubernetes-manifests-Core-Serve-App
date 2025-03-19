@@ -52,7 +52,7 @@ module "EC2_security_group_app" {
   }
 }
 
-# Security Group for Blackrose frontend App
+# Security Group for frontend App
 module "Frontend_security_group_app" {
   source = "./Modules/Security-group"
   sg_name       = "Frontend"
