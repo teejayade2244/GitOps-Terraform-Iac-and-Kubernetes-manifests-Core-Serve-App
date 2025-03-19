@@ -121,10 +121,10 @@ variable "instance_type" {
   description = "EC2 instance type for Main server"
 }
 
-variable "security_group_id" {
-  type = list
-  description = "Security Group ID for main EC2"
-}
+# variable "security_group_id" {
+#   type = list
+#   description = "Security Group ID for main EC2"
+# }
 
 variable "key_name" {
   default = "private-key"

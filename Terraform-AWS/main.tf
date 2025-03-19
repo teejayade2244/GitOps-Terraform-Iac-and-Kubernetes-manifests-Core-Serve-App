@@ -96,7 +96,7 @@ module "frontend_server" {
   source = "./Modules/EC2"
   ami           = var.ami
   instance_type = "t2.micro"
-  security_group_id = module.Blackrose_security_group_app.security_group_id
+  security_group_id = module.Blackrose_security_group_app.security_group_id  
   subnet_id     = module.VPC.private_subnet_ids[1]  # Using second private subnet
   server_name   = "${var.server_name}-private"
 }
