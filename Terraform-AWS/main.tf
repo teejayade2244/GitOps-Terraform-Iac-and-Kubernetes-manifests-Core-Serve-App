@@ -88,7 +88,7 @@ module "main_server" {
   ami           = var.ami
   instance_type = var.instance_type
   security_group_id = module.EC2_security_group_app.security_group_id
-  subnet_id     = module.VPC.public_subnet_ids[0]  # Using first public subnet
+  subnet_id     = element(module.VPC.private_subnet_ids, 0) # Using first public subnet
   server_name   = "${var.server_name}-public"
 }
 
