@@ -53,10 +53,10 @@ module "EC2_security_group_app" {
 }
 
 # Security Group for Blackrose frontend App
-module "Blackrose_security_group_app" {
+module "Frontend_security_group_app" {
   source = "./Modules/Security-group"
-  sg_name       = "Blackrose"
-  sg_description = "SG for Blackrose Frontend APP"
+  sg_name       = "Frontend"
+  sg_description = "SG for Frontend APP"
   vpc_id        = module.VPC.vpc_id
   ingress_rules = concat(var.common_ingress_rules, [
     {
@@ -76,7 +76,7 @@ module "Blackrose_security_group_app" {
     }
   ]
   tags = {
-    Name = "Blackrose"
+    Name = "Frontend"
   }
 }
 
@@ -88,7 +88,7 @@ module "main_server" {
   ami           = var.ami
   instance_type = var.instance_type
   security_group_id = module.EC2_security_group_app.security_group_id
-  subnet_id     = element(module.VPC.private_subnet_ids, 0) # Using first public subnet
+  subnet_id     = element(module.VPC.public_subnet_ids, 0) # Using first public subnet
   server_name   = "${var.server_name}-public"
 }
 
@@ -96,7 +96,7 @@ module "frontend_server" {
   source = "./Modules/EC2"
   ami           = var.ami
   instance_type = "t2.micro"
-  security_group_id = module.Blackrose_security_group_app.security_group_id  
+  security_group_id = module.Frontend_security_group_app.security_group_id  
   subnet_id     = module.VPC.private_subnet_ids[1]  # Using second private subnet
   server_name   = "${var.server_name}-private"
 }

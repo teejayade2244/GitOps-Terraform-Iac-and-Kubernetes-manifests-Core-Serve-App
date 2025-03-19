@@ -13,9 +13,9 @@ output "EC2_security_group_id" {
   description = "The ID of the EC2 security group"
 }
 
-output "Blackrose_security_group_id" {
-  value       = module.Blackrose_security_group_app.security_group_id
-  description = "The ID of the Blackrose security group"
+output "Frontend_security_group_id" {
+  value       = module.Frontend_security_group_app.security_group_id
+  description = "The ID of the Frontend security group"
 }
 
 
@@ -31,5 +31,5 @@ output "PUBLIC-IP" {
 
 # STEP5: GET EC2 PRIVATE IP 
 output "PRIVATE-IP" {
-  value = "${module.main_server.public_ip.private_ip}"
+  value = "${module.main_server.private_ip}"
 }
