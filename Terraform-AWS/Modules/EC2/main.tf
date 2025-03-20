@@ -12,16 +12,16 @@ resource "aws_instance" "ec2_instance" {
   tags = {
     Name = var.server_name
   }
- # Conditionally include the provisioner block
-  dynamic "provisioner" {
-    for_each = var.enable_provisioner ? [1] : []
-    content {
-      connection {
-        type        = "ssh"
-        private_key = data.aws_ssm_parameter.private_key.value
-        user        = "ubuntu"
-        host        = self.public_ip
-      }
+  # Retrieve the SSH key from SSM Parameter Store
+  provisioner "remote-exec" {
+    # This provisioner will only run when enable_provisioner is true
+    when = var.enable_provisioner ? "create" : "never"
+    connection {
+      type        = "ssh"
+      private_key = data.aws_ssm_parameter.private_key.value
+      user        = "ubuntu"
+      host        = self.public_ip
+    }
 
       inline = [
         # Install AWS CLI
@@ -111,4 +111,4 @@ resource "aws_instance" "ec2_instance" {
       ]
     }
   }
-}
+
