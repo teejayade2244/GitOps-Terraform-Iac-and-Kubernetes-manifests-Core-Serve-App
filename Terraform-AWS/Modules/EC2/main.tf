@@ -12,17 +12,20 @@ resource "aws_instance" "ec2_instance" {
   tags = {
     Name = var.server_name
   }
-  # Retrieve the SSH key from SSM Parameter Store
-  provisioner "remote-exec" {
-    # This provisioner will only run when enable_provisioner is true
-    when = var.enable_provisioner ? "create" : "never"
-    connection {
-      type        = "ssh"
-      private_key = data.aws_ssm_parameter.private_key.value
-      user        = "ubuntu"
-      host        = self.public_ip
-    }
+}
 
+ resource "null_resource" "provisioner" {
+  count = var.enable_provisioner ? 1 : 0
+  # Establish SSH connection to the EC2 instance
+  connection {
+    type        = "ssh"
+    private_key = data.aws_ssm_parameter.private_key.value
+    user        = "ubuntu"
+    host        = aws_instance.ec2_instance.public_ip
+  }
+
+  # Run the provisioner commands
+  provisioner "remote-exec" {
       inline = [
         # Install AWS CLI
         # Ref: https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
@@ -109,6 +112,6 @@ resource "aws_instance" "ec2_instance" {
         # "echo 'Access SonarQube Server here --> http://'$ip':9000'",
         # "echo 'SonarQube Username & Password: admin'",
       ]
-    }
-  }
+   }
+}
 
