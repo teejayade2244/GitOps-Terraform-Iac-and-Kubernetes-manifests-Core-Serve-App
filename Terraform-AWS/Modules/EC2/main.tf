@@ -1,6 +1,6 @@
 # reads the private key from AWS SSM Parameter Store and uses it to establish an SSH connection with the EC2 instance.
 data "aws_ssm_parameter" "private_key" {
-  name = "private-key" # Replace with your parameter name
+  name = "tope.pem" # Replace with your parameter name
 }
 
 
