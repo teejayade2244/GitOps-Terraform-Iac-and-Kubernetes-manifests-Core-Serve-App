@@ -101,6 +101,5 @@ module "frontend_server" {
   security_group_id = module.Frontend_security_group_app.security_group_id  
   subnet_id     = module.VPC.private_subnet_ids[1]  # Using second private subnet
   server_name   = "${var.server_name}-private"
-
 }
 
