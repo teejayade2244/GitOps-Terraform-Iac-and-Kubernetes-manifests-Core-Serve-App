@@ -90,7 +90,7 @@ module "main_server" {
   security_group_id = module.EC2_security_group_app.security_group_id
   subnet_id     = element(module.VPC.public_subnet_ids, 0) # Using first public subnet
   server_name   = "${var.server_name}-public"
-  enable_provisioner = true
+  enable_provisioner = true 
 }
 
 ## Frontend server
@@ -101,5 +101,6 @@ module "frontend_server" {
   security_group_id = module.Frontend_security_group_app.security_group_id  
   subnet_id     = module.VPC.private_subnet_ids[1]  # Using second private subnet
   server_name   = "${var.server_name}-private"
+  enable_provisioner = false
 }
 

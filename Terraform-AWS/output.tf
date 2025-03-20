@@ -26,10 +26,10 @@ output "SERVER-SSH-ACCESS" {
 
 # STEP4: GET EC2 PUBLIC IP 
 output "PUBLIC-IP" {
-  value = "${module.main_server.public_ip}"
+  value = module.main_server.public_ip
 }
 
 # STEP5: GET EC2 PRIVATE IP 
 output "PRIVATE-IP" {
-  value = "${module.main_server.private_ip}"
+  value = module.main_server.private_ip
 }
