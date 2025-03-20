@@ -1,7 +1,8 @@
 # reads the private key from AWS SSM Parameter Store and uses it to establish an SSH connection with the EC2 instance.
-# data "aws_ssm_parameter" "private_key" {
-#   name = "tope.pem" # Replace with your parameter name
-# }
+data "aws_ssm_parameter" "private_key" {
+  name = "tope.pem" # Replace with your parameter name
+  with_decryption = true
+}
 
 
 resource "aws_instance" "ec2_instance" {
@@ -9,6 +10,7 @@ resource "aws_instance" "ec2_instance" {
   instance_type          = var.instance_type
   subnet_id              = var.subnet_id
   vpc_security_group_ids = [var.security_group_id]  # Note: This expects a single ID, not a list
+  key_name               = "tope" 
   tags = {
     Name = var.server_name
   }
@@ -19,7 +21,7 @@ resource "aws_instance" "ec2_instance" {
   # Establish SSH connection to the EC2 instance
   connection {
     type        = "ssh"
-    private_key = file("../../../Terraform-AWS/tope.pem")
+    private_key = data.aws_ssm_parameter.private_key.value
     user        = "ubuntu"
     host        = aws_instance.ec2_instance.public_ip
   }
