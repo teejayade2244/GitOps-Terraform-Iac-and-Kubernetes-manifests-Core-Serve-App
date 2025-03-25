@@ -77,5 +77,5 @@ server_name = "Main-EC2-Server"
 
 # ECR
 ###############################################################################################
-repository_name = "Frontend-app"
+repository_name = "frontend-app"
 environment = "Development"
