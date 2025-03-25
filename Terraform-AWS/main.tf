@@ -104,3 +104,9 @@ module "frontend_server" {
   enable_provisioner = false
 }
 
+##############################################################################################################
+module "ecr" {
+  source          = "./Modules/ECR"
+  repository_name = var.repository_name
+  environment     = var.environment
+}

@@ -117,3 +117,16 @@ variable "server_name" {
   type = string
   description = "EC2 server name"
 }
+
+
+################################################################################################
+# ECR
+variable "repository_name" {
+  description = "The name of the ECR repository"
+  type        = string
+}
+
+variable "environment" {
+  description = "The environment of the ECR repository"
+  type        = string
+}

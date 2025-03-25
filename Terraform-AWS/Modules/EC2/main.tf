@@ -51,7 +51,7 @@ resource "aws_instance" "ec2_instance" {
         "docker --version",
 
         # Install SonarQube (as container)
-        # "docker run -d --name sonarqube -p 9000:9000 -v sonarqube_data:/opt/sonarqube/data -v sonarqube_logs:/opt/sonarqube/logs -v sonarqube_extensions:/opt/sonarqube/extensions sonarqube:lts",
+        "docker run -d --name sonarqube -p 9000:9000 -v sonarqube_data:/opt/sonarqube/data -v sonarqube_logs:/opt/sonarqube/logs -v sonarqube_extensions:/opt/sonarqube/extensions sonarqube:lts",
 
         # Install Trivy
         # Ref: https://aquasecurity.github.io/trivy/v0.18.3/installation/
@@ -111,8 +111,8 @@ resource "aws_instance" "ec2_instance" {
         # Output
         "echo 'Access Jenkins Server here --> http://'$ip':8080'",
         "echo 'Jenkins Initial Password: '$pass''",
-        # "echo 'Access SonarQube Server here --> http://'$ip':9000'",
-        # "echo 'SonarQube Username & Password: admin'",
+        "echo 'Access SonarQube Server here --> http://'$ip':9000'",
+        "echo 'SonarQube Username & Password: admin'",
       ]
    }
 }
