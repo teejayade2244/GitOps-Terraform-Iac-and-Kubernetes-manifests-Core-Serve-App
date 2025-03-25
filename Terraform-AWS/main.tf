@@ -94,15 +94,15 @@ module "main_server" {
 }
 
 ## Frontend server
-module "frontend_server" {
-  source = "./Modules/EC2"
-  ami           = var.ami
-  instance_type = "t2.micro"
-  security_group_id = module.Frontend_security_group_app.security_group_id  
-  subnet_id     = module.VPC.private_subnet_ids[1]  # Using second private subnet
-  server_name   = "${var.server_name}-private"
-  enable_provisioner = false
-}
+# module "frontend_server" {
+#   source = "./Modules/EC2"
+#   ami           = var.ami
+#   instance_type = "t2.micro"
+#   security_group_id = module.Frontend_security_group_app.security_group_id  
+#   subnet_id     = module.VPC.private_subnet_ids[1]  # Using second private subnet
+#   server_name   = "${var.server_name}-private"
+#   enable_provisioner = false
+# }
 
 ##############################################################################################################
 module "ecr" {

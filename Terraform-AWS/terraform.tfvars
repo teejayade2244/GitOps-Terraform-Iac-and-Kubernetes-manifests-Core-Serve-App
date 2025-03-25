@@ -73,9 +73,9 @@ EC2_sg_extra_ports = [
 # main server
 ami = "ami-091f18e98bc129c4e"
 instance_type = "t2.large"
-server_name = "Main-EC2-Server"
+server_name = "Master-Server"
 
 # ECR
 ###############################################################################################
-repository_name = "frontend-app"
+repository_name = "core-serve-frontend-app"
 environment = "Development"
