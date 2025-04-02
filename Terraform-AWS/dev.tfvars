@@ -56,6 +56,18 @@ security_groups = {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   },
+  {
+    from_port   = 31862
+    to_port     = 31862
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  },
+   {
+    from_port   = 30004
+    to_port     = 30004
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  },
     ]
      tags = {}
   },
