@@ -30,7 +30,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "s3_server_side_en
 }
 
 resource "aws_s3_bucket_acl" "s3_bucket_acl" {
-  bucket = aws_s3_bucket.s3_buckete.id
+  bucket = aws_s3_bucket.s3_bucket.id
   acl    = "private"
 }
 
