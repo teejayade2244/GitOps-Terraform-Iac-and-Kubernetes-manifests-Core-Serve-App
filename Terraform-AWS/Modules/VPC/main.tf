@@ -3,6 +3,7 @@ resource "aws_vpc" "main" {
   cidr_block = var.cidr_block 
   tags = {
     Name = "main"
+    Environment = var.environment
   }
 }
 
@@ -12,6 +13,7 @@ resource "aws_internet_gateway" "internet_gateway" {
 
   tags      = {
     Name    = "${var.project_name}-igw"
+    Environment = var.environment
   }
 }
 
@@ -26,6 +28,7 @@ resource "aws_subnet" "public_subnets" {
   map_public_ip_on_launch = true  #Allows EC2 instances in these subnets to be publicly accessible.
   tags = {
     Name = each.key
+    Environment = var.environment
   }
 }
 
@@ -41,6 +44,7 @@ resource "aws_route_table" "public_route_table" {
 
   tags       = {
     Name     = "Public-rt"
+    Environment = var.environment
   }
 }
 
@@ -60,5 +64,6 @@ resource "aws_subnet" "private_subnets" {
   availability_zone = each.value.az
   tags = {
     Name = each.key
+    Environment = var.environment
   }
 }

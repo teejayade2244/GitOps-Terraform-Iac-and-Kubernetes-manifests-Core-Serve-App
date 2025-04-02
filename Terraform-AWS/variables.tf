@@ -43,56 +43,19 @@ variable "common_ingress_rules" {
   }))
 }
 
-# Main Security Group
-variable "main_sg1_name" {
-  description = "The name of the main security group"
-  type        = string
-}
-
-
-variable "main_sg1_description" {
-  description = "The description of the security group"
-  type        = string
-}
-
 # extra port addition for main sg incase
-variable "main_sg1_extra_ports" {
-  description = "Additional ports for Security Group 1"
-  type = list(object({
-    from_port   = number
-    to_port     = number
-    protocol    = string
-    cidr_blocks = list(string)
+variable "security_groups" {
+  type = map(object({
+    name        = string
+    description = string
+    extra_ports = list(object({
+      from_port   = number
+      to_port     = number
+      protocol    = string
+      cidr_blocks = list(string)
+    }))
+    tags = map(string)
   }))
-  default = []
-}
-
-# EC2 Security Group 
-variable "EC2_sg_name" {
-  description = "The name of the second security group"
-  type        = string
-}
-
-variable "EC2_sg_description" {
-  description = "The description of the second security group"
-  type        = string
-}
-
-variable "tags" {
-  description = "A map of tags to assign to the security group"
-  type        = map(string)
-  default     = {}
-}
-
-variable "EC2_sg_extra_ports" {
-  description = "Additional ports for Security Group 2"
-  type = list(object({
-    from_port   = number
-    to_port     = number
-    protocol    = string
-    cidr_blocks = list(string)
-  }))
-  default = []
 }
 
 #################################################################################################
@@ -103,10 +66,9 @@ variable "ami" {
 }
 
 variable "instance_type" {
-  type = string
-  description = "EC2 instance type for Main server"
+  type        = list(string)
+  description = "List of possible EC2 instance types"
 }
-
 
 variable "key_name" {
   default = "private-key"
@@ -118,6 +80,10 @@ variable "server_name" {
   description = "EC2 server name"
 }
 
+variable "environment" {
+  description = "The environment"
+  type        = string
+}
 
 ################################################################################################
 # ECR
@@ -126,10 +92,6 @@ variable "repository_name" {
   type        = string
 }
 
-variable "environment" {
-  description = "The environment of the ECR repository"
-  type        = string
-}
 
 ################################################################################################
 # S3
