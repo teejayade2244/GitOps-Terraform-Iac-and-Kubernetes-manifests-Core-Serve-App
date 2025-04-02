@@ -130,3 +130,17 @@ variable "environment" {
   description = "The environment of the ECR repository"
   type        = string
 }
+
+################################################################################################
+# S3
+
+variable "bucket_name" {
+  description = "The name of the s3 bucket"
+  type        = string
+}
+
+
+variable "bucket_description" {
+  description = "s3 bucket description"
+  type        = string
+}

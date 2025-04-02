@@ -62,7 +62,8 @@ EC2_sg_extra_ports = [
 
 #######################################################################################
 # S3 Buckets
-# Remote Backend
+bucket_name = "core-serve-frontend-jenkins-build-reports"
+bucket_description = "S3 bucket for core-serve-frontend-app Jenkins reports uploads"
 
 ########################################################################################
 # Dynamo DB

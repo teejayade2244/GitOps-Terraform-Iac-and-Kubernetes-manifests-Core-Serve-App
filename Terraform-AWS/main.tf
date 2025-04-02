@@ -110,3 +110,11 @@ module "ecr" {
   repository_name = var.repository_name
   environment     = var.environment
 }
+
+
+####################################################################################################################
+module "s3" {
+  source = "./Modules/S3"
+  bucket_name        = var.bucket_name
+  bucket_description = var.bucket_description
+}
