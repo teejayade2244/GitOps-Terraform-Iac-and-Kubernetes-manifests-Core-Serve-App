@@ -23,3 +23,8 @@ variable "Private_subnets" {
     az   = string
   }))
 }
+
+variable "environment" {
+  description = "The environment"
+  type        = string
+}

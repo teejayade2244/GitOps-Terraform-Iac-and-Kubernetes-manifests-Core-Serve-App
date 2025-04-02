@@ -23,6 +23,11 @@ variable "security_group_id" {
   description = "security group id"
 }
 
+variable "environment" {
+  type = string
+  description = "Environment"
+}
+
 variable "enable_provisioner" {
   type    = bool
   default = false   

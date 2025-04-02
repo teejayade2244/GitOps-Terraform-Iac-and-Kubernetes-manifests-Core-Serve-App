@@ -13,6 +13,7 @@ resource "aws_instance" "ec2_instance" {
   key_name               = "tope" 
   tags = {
     Name = var.server_name
+    Environment = var.environment
   }
 }
 

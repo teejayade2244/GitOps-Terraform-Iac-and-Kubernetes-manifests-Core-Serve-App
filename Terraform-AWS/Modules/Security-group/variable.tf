@@ -24,6 +24,11 @@ variable "ingress_rules" {
   default = []
 }
 
+variable "environment" {
+  description = "The environment"
+  type        = string
+}
+
 variable "egress_rules" {
   description = "List of egress rules to create"
   type = list(object({

@@ -9,11 +9,11 @@ Private_subnets = {
   privateSubnet1a = { cidr = "10.0.3.0/24", az = "eu-west-2a" }
   privateSubnet1b = { cidr = "10.0.4.0/24", az = "eu-west-2b" }
 }
-project_name = "Blackrose"
+project_name = "core-serve-app"
 region = "eu-west-2"
+environment = "Development"
 
 #############################################################################
-
 # Common Ingress Rules (Used in Both Security Groups)
 common_ingress_rules = [
   {
@@ -37,16 +37,14 @@ common_ingress_rules = [
 ]
 
 ###############################################################################################
-# Security Group 1 (Main SG)
-main_sg1_name        = "Main-SG"
-main_sg1_description = "General Purpose Security Group"
-main_sg1_extra_ports = []
-
-# EC2 Security Group  (Extra SG with Port 8080)
-EC2_sg_name        = "Main EC2-SG"
-EC2_sg_description = "Security Group for EC2"
-EC2_sg_extra_ports = [
-  {
+# Security Groups
+security_groups = {
+  # main security group
+  main = {
+    name        = "Main-SG"
+    description = "General Purpose Security Group"
+    extra_ports  = [
+       {
     from_port   = 8080
     to_port     = 8080
     protocol    = "tcp"
@@ -58,8 +56,18 @@ EC2_sg_extra_ports = [
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   },
-]
+    ]
+     tags = {}
+  },
 
+  # EC2 security group
+  ec2 = {
+    name        = "ec2-sg"
+    description = "Security Group for EC2"
+    extra_ports  = []
+    tags = {}
+  }
+}
 #######################################################################################
 # S3 Buckets
 bucket_name = "core-serve-frontend-jenkins-build-reports"
@@ -73,10 +81,10 @@ bucket_description = "S3 bucket for core-serve-frontend-app Jenkins reports uplo
 # EC2
 # main server
 ami = "ami-091f18e98bc129c4e"
-instance_type = "t2.large"
-server_name = "Master-Server"
+instance_type = ["t2.micro", "t2.medium", "t2.large", "t2.xlarge", "t2.2xlarge"]
+server_name = "Dev-Master-Server"
+
 
 # ECR
 ###############################################################################################
 repository_name = "core-serve-frontend-app"
-environment = "Development"
