@@ -97,3 +97,15 @@ module "s3" {
   bucket_name        = var.bucket_name
   bucket_description = var.bucket_description
 }
+
+####################################################################################################################
+module "SSM" {
+  source = "./Modules/SSM"
+  name        = var.name
+  description = var.description
+  type        = var.type
+  value       = var.value
+  tags        = {
+    Environment = var.environment
+  }
+}
