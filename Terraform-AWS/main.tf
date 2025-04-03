@@ -99,12 +99,16 @@ module "s3" {
 }
 
 ####################################################################################################################
+locals {
+  tfvars_content = file("../Terraform-AWS/dev.tfvars")
+}
+
 module "SSM" {
-  source = "./Modules/SSM"
+  source      = "./Modules/SSM"
   name        = var.name
   description = var.description
   type        = var.type
-  value       = var.value
+  value       = local.tfvars_content  # Use local.tfvars_content instead of var.tfvars_content
   tags        = {
     Environment = var.environment
   }

@@ -124,10 +124,10 @@ variable "type" {
   type        = string
 }
 
-variable "value" {
-  description = "Value of the SSM parameter"
-  type        = string
-}
+# variable "value" {
+#   description = "Value of the SSM parameter"
+#   type        = string
+# }
 
 variable "tags" {
   description = "Tags to apply to the SSM parameter"
