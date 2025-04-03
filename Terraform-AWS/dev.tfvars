@@ -44,13 +44,13 @@ security_groups = {
     name        = "Main-SG"
     description = "General Purpose Security Group"
     extra_ports  = [
-       {
+  {
     from_port   = 8080
     to_port     = 8080
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   },
-   {
+  {
     from_port   = 9000
     to_port     = 9000
     protocol    = "tcp"
@@ -62,7 +62,7 @@ security_groups = {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   },
-   {
+  {
     from_port   = 30004
     to_port     = 30004
     protocol    = "tcp"
