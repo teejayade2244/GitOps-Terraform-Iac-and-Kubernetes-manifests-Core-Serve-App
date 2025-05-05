@@ -108,7 +108,7 @@ module "SSM" {
   name        = var.name
   description = var.description
   type        = var.type
-  value       = local.tfvars_content  # Use local.tfvars_content instead of var.tfvars_content
+  value       = local.tfvars_content  
   tags        = {
     Environment = var.environment
   }

@@ -26,3 +26,4 @@ else
     echo "Failed to fetch dev.tfvars. Check permissions/parameter name."
     exit 1
 fi
+
