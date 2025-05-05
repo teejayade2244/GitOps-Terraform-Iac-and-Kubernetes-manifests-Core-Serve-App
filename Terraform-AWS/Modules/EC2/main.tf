@@ -15,6 +15,13 @@ resource "aws_instance" "ec2_instance" {
     Name = var.server_name
     Environment = var.environment
   }
+
+  root_block_device {
+    volume_size = var.root_volume_size
+    volume_type = var.root_volume_type
+    delete_on_termination = var.delete_on_termination # Delete volume when instance is terminated
+  }
+
 }
 
  resource "null_resource" "provisioner" {
