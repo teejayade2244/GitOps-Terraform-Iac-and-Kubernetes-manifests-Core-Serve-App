@@ -1,7 +1,7 @@
 variable "bucket_name" {
   type = string
   description = "Specifies the bucket name to be created"
-  default = "terraform-state-remote-backend-bucket"
+  default = "terraform-state-core-serve-app"
 }
 
 variable "bucket_description" {

@@ -16,15 +16,15 @@ output "EC2_security_group_id" {
 
 # STEP3: GET EC2 USER NAME AND PUBLIC IP 
 output "SERVER-SSH-ACCESS" {
-  value = "ubuntu@${module.main_server.public_ip}"
+  value = "ubuntu@${module.jenkins_master_server.public_ip}"
 }
 
 # STEP4: GET EC2 PUBLIC IP 
 output "PUBLIC-IP" {
-  value = module.main_server.public_ip
+  value = module.jenkins_master_server.public_ip
 }
 
 # STEP5: GET EC2 PRIVATE IP 
 output "PRIVATE-IP" {
-  value = module.main_server.private_ip
+  value = module.jenkins_master_server.private_ip
 }

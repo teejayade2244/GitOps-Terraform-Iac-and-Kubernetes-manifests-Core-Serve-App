@@ -43,6 +43,17 @@ variable "common_ingress_rules" {
   }))
 }
 
+# variable "Jenkins_ingress_rules" {
+#   description = "ssh ingress rules for jenkins server in private subnet"
+#   type = list(object({
+#     from_port   = number
+#     to_port     = number
+#     protocol    = string
+#     cidr_blocks = list(string)
+#   }))
+# }
+
+
 # extra port addition for main sg incase
 variable "security_groups" {
   type = map(object({
@@ -98,6 +109,11 @@ variable "root_volume_type" {
 variable "delete_on_termination" {
   description = "Type of the root EBS volume"
   type        = bool
+}
+
+variable "bastion_host" {
+  description = "Public IP of the bastion host"
+  type        = string
 }
 
 ################################################################################################

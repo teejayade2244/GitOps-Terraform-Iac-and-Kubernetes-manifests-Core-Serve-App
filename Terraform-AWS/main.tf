@@ -10,7 +10,31 @@ module "VPC" {
 }
 
 ####################################################################################################################
-#  Main security Group
+# security Groups
+# Bastion Host security group
+module "Bastion_host_security_group" {
+  source = "./Modules/Security-group"
+  sg_name        = var.security_groups["bastion"].name
+  sg_description = var.security_groups["bastion"].description
+  vpc_id         = module.VPC.vpc_id
+  environment    = var.environment
+  ingress_rules  = [{
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["151.230.33.76/32"]
+  }]
+  egress_rules = [{
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }]
+  tags = {
+    Environment = var.environment
+  }
+}
+
 # This module will create a SG for general purpose
 module "Jenkins_master_security_group" {
   source = "./Modules/Security-group"
@@ -19,7 +43,12 @@ module "Jenkins_master_security_group" {
   vpc_id         = module.VPC.vpc_id
   environment    = var.environment
   ingress_rules  = concat(
-    var.common_ingress_rules,
+  [{
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    security_groups = [module.Bastion_host_security_group.security_group_id]
+  }],
     var.security_groups["master"].extra_ports
   )
   egress_rules = [{
@@ -42,8 +71,13 @@ module "Jenkins_slave_security_group" {
   vpc_id         = module.VPC.vpc_id
   environment    = var.environment
   ingress_rules  = concat(
-    var.common_ingress_rules,
-    var.security_groups["slave"].extra_ports
+  [{
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    security_groups = [module.Bastion_host_security_group.security_group_id]
+  }],
+    var.security_groups["master"].extra_ports
   )
   egress_rules = [{
     from_port   = 0
@@ -59,12 +93,26 @@ module "Jenkins_slave_security_group" {
 
 ##########################################################################################################
 # EC2
+# Bastion Host
+module "Bastion_server" {
+  source = "./Modules/EC2"
+  ami           = var.ami
+  instance_type = var.instance_type[0]
+  security_group_id = module.Bastion_host_security_group.security_group_id
+  subnet_id     = element(module.VPC.public_subnet_ids, 0) # Using first public subnet
+  server_name   = "Bastion-Host"
+  enable_provisioner = false
+  environment = var.environment
+  root_volume_size = var.root_volume_size
+  root_volume_type = var.root_volume_type
+  delete_on_termination = var.delete_on_termination
+}
 ## Jenkins server
 module "jenkins_master_server" {
   source = "./Modules/EC2"
   ami           = var.ami
   instance_type = var.instance_type[1]
-  security_group_id = module.main_security_group.security_group_id
+  security_group_id = module.Jenkins_master_security_group.security_group_id
   subnet_id     = element(module.VPC.private_subnet_ids, 0) # Using first public subnet
   server_name   = "Jenkins-Master-Controller"
   enable_provisioner = true 
@@ -72,6 +120,7 @@ module "jenkins_master_server" {
   root_volume_size = var.root_volume_size
   root_volume_type = var.root_volume_type
   delete_on_termination = var.delete_on_termination
+  bastion_host  = module.Bastion_server.instance_public_ip
 }
 
 ## Jenkins slaves
@@ -79,28 +128,30 @@ module "Jenkins_slave_server_1" {
   source = "./Modules/EC2"
   ami           = var.ami
   instance_type = var.instance_type[1]
-  security_group_id = module.EC2_security_group_app.security_group_id  
+  security_group_id = module.Jenkins_slave_security_group.security_group_id  
   subnet_id     = module.VPC.private_subnet_ids[1]  # Using second private subnet
-  server_name   = "Jenkins-slave(1)"
+  server_name   = "Jenkins-worker-node(1)"
   enable_provisioner = false
   environment = var.environment
   root_volume_size = 20
   root_volume_type = var.root_volume_type
   delete_on_termination = var.delete_on_termination
+  bastion_host  = module.Bastion_server.instance_public_ip
 }
 
 module "Jenkins_slave_server_2" {
   source = "./Modules/EC2"
   ami           = var.ami
   instance_type = var.instance_type[1]
-  security_group_id = module.EC2_security_group_app.security_group_id  
+  security_group_id = module.Jenkins_slave_security_group.security_group_id  
   subnet_id     = module.VPC.private_subnet_ids[1]  # Using second private subnet
-  server_name   = "Jenkins-slave(2)"
+  server_name   = "Jenkins-worker-node(2)"
   enable_provisioner = false
   environment = var.environment
   root_volume_size = 20
   root_volume_type = var.root_volume_type
   delete_on_termination = var.delete_on_termination
+  bastion_host  = module.Bastion_server.instance_public_ip
 }
 
 ##############################################################################################################

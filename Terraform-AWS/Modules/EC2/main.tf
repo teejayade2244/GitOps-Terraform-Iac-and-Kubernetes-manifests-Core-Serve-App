@@ -1,16 +1,18 @@
-# reads the private key from AWS SSM Parameter Store and uses it to establish an SSH connection with the EC2 instance.
-data "aws_ssm_parameter" "private_key" {
-  name = "tope.pem" # Replace with your parameter name
-  with_decryption = true
+# reads the private key from AWS Secret Manager and uses it to establish an SSH connection with the EC2 instance.
+data "aws_secretsmanager_secret" "private_key_secret" {
+  name = "my-key.pem"  # Replace with your secret name
 }
 
+data "aws_secretsmanager_secret_version" "private_key" {
+  secret_id = data.aws_secretsmanager_secret.private_key_secret.id
+}
 
 resource "aws_instance" "ec2_instance" {
   ami                    = var.ami
   instance_type          = var.instance_type
   subnet_id              = var.subnet_id
   vpc_security_group_ids = [var.security_group_id]  # Note: This expects a single ID, not a list
-  key_name               = "tope" 
+  key_name               = "my-key" 
   tags = {
     Name = var.server_name
     Environment = var.environment
@@ -26,16 +28,16 @@ resource "aws_instance" "ec2_instance" {
 
  resource "null_resource" "provisioner" {
   count = var.enable_provisioner ? 1 : 0
-  # Establish SSH connection to the EC2 instance
-  connection {
-    type        = "ssh"
-    private_key = data.aws_ssm_parameter.private_key.value
-    user        = "ubuntu"
-    host        = aws_instance.ec2_instance.public_ip
-  }
-
   # Run the provisioner commands
   provisioner "remote-exec" {
+    # Establish SSH connection to the EC2 instance
+    connection {
+      type        = "ssh"
+      private_key = data.aws_secretsmanager_secret_version.private_key.secret_string
+      user        = "ubuntu"
+      host        = aws_instance.ec2_instance.private_ip
+    }
+
       inline = [
         # Install AWS CLI
         # Ref: https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
