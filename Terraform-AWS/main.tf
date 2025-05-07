@@ -76,6 +76,7 @@ module "Jenkins_slave_security_group" {
     to_port     = 22
     protocol    = "tcp"
     security_groups = [module.Bastion_host_security_group.security_group_id]
+    cidr_blocks =[]
   }],
     var.security_groups["master"].extra_ports
   )
