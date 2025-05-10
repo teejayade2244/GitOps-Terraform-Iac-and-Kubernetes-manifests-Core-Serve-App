@@ -121,7 +121,11 @@ module "jenkins_master_server" {
   root_volume_size = var.root_volume_size
   root_volume_type = var.root_volume_type
   delete_on_termination = var.delete_on_termination
-  bastion_host  = module.Bastion_server.instance_public_ip
+  bastion_host  = module.Bastion_server.public_ip
+  depends_on = [
+    module.Jenkins_master_security_group,
+    module.Bastion_host_security_group
+  ]
 }
 
 ## Jenkins slaves
@@ -137,7 +141,11 @@ module "Jenkins_slave_server_1" {
   root_volume_size = 20
   root_volume_type = var.root_volume_type
   delete_on_termination = var.delete_on_termination
-  bastion_host  = module.Bastion_server.instance_public_ip
+  bastion_host  = module.Bastion_server.public_ip
+  depends_on = [
+    module.Jenkins_slave_security_group,
+    module.Bastion_host_security_group
+  ]
 }
 
 module "Jenkins_slave_server_2" {
@@ -152,7 +160,11 @@ module "Jenkins_slave_server_2" {
   root_volume_size = 20
   root_volume_type = var.root_volume_type
   delete_on_termination = var.delete_on_termination
-  bastion_host  = module.Bastion_server.instance_public_ip
+  bastion_host  = module.Bastion_server.public_ip
+  depends_on = [
+    module.Jenkins_slave_security_group,
+    module.Bastion_host_security_group
+  ]
 }
 
 ##############################################################################################################
