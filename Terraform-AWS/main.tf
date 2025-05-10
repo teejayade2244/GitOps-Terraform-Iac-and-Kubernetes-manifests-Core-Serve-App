@@ -47,7 +47,7 @@ module "Jenkins_master_security_group" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    security_groups = [module.Bastion_host_security_group.security_group_id]
+    cidr_blocks = ["10.0.0.0/16"]
   }],
     var.security_groups["master"].extra_ports
   )
@@ -114,18 +114,13 @@ module "jenkins_master_server" {
   ami           = var.ami
   instance_type = var.instance_type[1]
   security_group_id = module.Jenkins_master_security_group.security_group_id
-  subnet_id     = element(module.VPC.private_subnet_ids, 0) # Using first public subnet
+  subnet_id     = element(module.VPC.public_subnet_ids, 0) # Using first public subnet
   server_name   = "Jenkins-Master-Controller"
   enable_provisioner = true 
   environment = var.environment
   root_volume_size = var.root_volume_size
   root_volume_type = var.root_volume_type
   delete_on_termination = var.delete_on_termination
-  bastion_host  = module.Bastion_server.public_ip
-  depends_on = [
-    module.Jenkins_master_security_group,
-    module.Bastion_host_security_group
-  ]
 }
 
 ## Jenkins slaves
@@ -142,10 +137,6 @@ module "Jenkins_slave_server_1" {
   root_volume_type = var.root_volume_type
   delete_on_termination = var.delete_on_termination
   bastion_host  = module.Bastion_server.public_ip
-  depends_on = [
-    module.Jenkins_slave_security_group,
-    module.Bastion_host_security_group
-  ]
 }
 
 module "Jenkins_slave_server_2" {
@@ -161,10 +152,6 @@ module "Jenkins_slave_server_2" {
   root_volume_type = var.root_volume_type
   delete_on_termination = var.delete_on_termination
   bastion_host  = module.Bastion_server.public_ip
-  depends_on = [
-    module.Jenkins_slave_security_group,
-    module.Bastion_host_security_group
-  ]
 }
 
 ##############################################################################################################

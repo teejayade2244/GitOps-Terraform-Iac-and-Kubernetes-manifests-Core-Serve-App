@@ -29,6 +29,7 @@ resource "aws_instance" "ec2_instance" {
  resource "null_resource" "provisioner" {
   count = var.enable_provisioner ? 1 : 0
   # Run the provisioner commands
+  depends_on = [aws_instance.ec2_instance]
   provisioner "remote-exec" {
     # Establish SSH connection to the EC2 instance
     connection {
@@ -37,10 +38,10 @@ resource "aws_instance" "ec2_instance" {
       user        = "ubuntu"
       host        = aws_instance.ec2_instance.private_ip
 
-      # Bastion host configuration for SSH proxying
-      bastion_host        = var.bastion_host
-      bastion_user        = "ubuntu"
-      bastion_private_key = data.aws_secretsmanager_secret_version.private_key.secret_string
+      # # Bastion host configuration for SSH proxying
+      # bastion_host        = var.bastion_host
+      # bastion_user        = "ubuntu"
+      # bastion_private_key = data.aws_secretsmanager_secret_version.private_key.secret_string
     }
 
       inline = [
