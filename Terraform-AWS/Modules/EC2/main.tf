@@ -36,7 +36,7 @@ resource "aws_instance" "ec2_instance" {
       type        = "ssh"
       private_key = data.aws_secretsmanager_secret_version.private_key.secret_string
       user        = "ubuntu"
-      host        = aws_instance.ec2_instance.private_ip
+      host        = aws_instance.ec2_instance.public_ip
     }
 
       inline = [

@@ -21,6 +21,7 @@ module "Bastion_host_security_group" {
   ingress_rules  = [{
     from_port   = 22
     to_port     = 22
+    description = "SSH access"
     protocol    = "tcp"
     cidr_blocks = ["151.230.33.76/32"]
   }]
@@ -46,6 +47,7 @@ module "Jenkins_master_security_group" {
   [{
     from_port   = 22
     to_port     = 22
+    description = "SSH access"
     protocol    = "tcp"
     cidr_blocks = ["10.0.0.0/16"]
   }],
@@ -74,6 +76,7 @@ module "Jenkins_slave_security_group" {
   [{
     from_port   = 22
     to_port     = 22
+    description = "SSH access"
     protocol    = "tcp"
     cidr_blocks = ["10.0.0.0/16"]
   }],
@@ -135,7 +138,6 @@ module "Jenkins_slave_server_1" {
   root_volume_size = 20
   root_volume_type = var.root_volume_type
   delete_on_termination = var.delete_on_termination
-  bastion_host  = module.Bastion_server.public_ip
 }
 
 module "Jenkins_slave_server_2" {
