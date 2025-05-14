@@ -111,10 +111,6 @@ variable "delete_on_termination" {
   type        = bool
 }
 
-variable "bastion_host" {
-  description = "Public IP of the bastion host"
-  type        = string
-}
 
 ################################################################################################
 # ECR

@@ -75,8 +75,7 @@ module "Jenkins_slave_security_group" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    security_groups = [module.Bastion_host_security_group.security_group_id]
-    cidr_blocks =[]
+    cidr_blocks = ["10.0.0.0/16"]
   }],
     var.security_groups["master"].extra_ports
   )
@@ -129,7 +128,7 @@ module "Jenkins_slave_server_1" {
   ami           = var.ami
   instance_type = var.instance_type[1]
   security_group_id = module.Jenkins_slave_security_group.security_group_id  
-  subnet_id     = module.VPC.private_subnet_ids[1]  # Using second private subnet
+  subnet_id     = module.VPC.public_subnet_ids[1]  # Using second private subnet
   server_name   = "Jenkins-worker-node(1)"
   enable_provisioner = false
   environment = var.environment
@@ -144,14 +143,13 @@ module "Jenkins_slave_server_2" {
   ami           = var.ami
   instance_type = var.instance_type[1]
   security_group_id = module.Jenkins_slave_security_group.security_group_id  
-  subnet_id     = module.VPC.private_subnet_ids[1]  # Using second private subnet
+  subnet_id     = module.VPC.public_subnet_ids[1]  # Using second private subnet
   server_name   = "Jenkins-worker-node(2)"
   enable_provisioner = false
   environment = var.environment
   root_volume_size = 20
   root_volume_type = var.root_volume_type
   delete_on_termination = var.delete_on_termination
-  bastion_host  = module.Bastion_server.public_ip
 }
 
 ##############################################################################################################

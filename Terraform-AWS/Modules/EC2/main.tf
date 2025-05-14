@@ -37,11 +37,6 @@ resource "aws_instance" "ec2_instance" {
       private_key = data.aws_secretsmanager_secret_version.private_key.secret_string
       user        = "ubuntu"
       host        = aws_instance.ec2_instance.private_ip
-
-      # # Bastion host configuration for SSH proxying
-      # bastion_host        = var.bastion_host
-      # bastion_user        = "ubuntu"
-      # bastion_private_key = data.aws_secretsmanager_secret_version.private_key.secret_string
     }
 
       inline = [
