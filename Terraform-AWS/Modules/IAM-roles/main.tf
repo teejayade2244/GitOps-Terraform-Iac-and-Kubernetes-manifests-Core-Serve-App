@@ -9,3 +9,4 @@ resource "aws_iam_role_policy_attachment" "policy_attachment" {
   policy_arn = each.value
   role       = aws_iam_role.iam_role.name
 }
+

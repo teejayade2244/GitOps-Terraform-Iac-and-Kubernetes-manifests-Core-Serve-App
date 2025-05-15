@@ -18,3 +18,4 @@ variable "policy_arns" {
   type        = list(string)
   description = "List of IAM policy ARNs to attach"
 }
+

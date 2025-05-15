@@ -66,47 +66,44 @@ module "Jenkins_master_security_group" {
 
 ##############################################################################################################
 # IAM Roles
-module "eks_cluster_role" {
-  source             = "./Modules/IAM"
-  role_name               = "${var.cluster_name}-cluster-role"
-  role_description        = "IAM role for EKS control plane"
+module "eks_iam_roles" {
+  for_each = var.iam_roles
+  source             = "./Modules/IAM-role"
+  role_name          = "${var.cluster_name}-${each.value.name}"
+  role_description   = each.value.description
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
-      Effect = "Allow"
-      Action = "sts:AssumeRole"
-      Principal = {
-        Service = "eks.amazonaws.com"
-      }
+      Effect    = "Allow"
+      Action    = "sts:AssumeRole"
+      Principal = { Service = each.value.principal_service }
     }]
   })
-  policy_arns = [
-    "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
-    "arn:aws:iam::aws:policy/AmazonEKSServicePolicy"
-  ]
+  policy_arns        = each.value.policy_arns
 }
 
-module "eks_nodegroup_role" {
-  source             = "./Modules/IAM"
-  role_name               = "${var.cluster_name}-nodegroup-role"
-  role_description        = "IAM role for EKS nodes"
+module "jenkins_policy" {
+  source = "./Modules/IAM-policy"
+  policy_name        = var.jenkins_policy.name
+  policy_description = var.jenkins_policy.description
+  policy_document    = jsonencode(var.jenkins_policy.document)
+}
+
+module "jenkins_role" {
+  source             = "./Modules/IAM-role"
+  role_name          = "${var.cluster_name}-jenkins-role"
+  role_description   = "IAM role for Jenkins EC2 instances"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
-      Effect = "Allow"
-      Action = "sts:AssumeRole"
-      Principal = {
-        Service = "ec2.amazonaws.com"
-      }
+      Effect    = "Allow"
+      Action    = "sts:AssumeRole"
+      Principal = { Service = "ec2.amazonaws.com" }
     }]
   })
-  policy_arns = [
-    "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
-    "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
-    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-  ]
+  policy_arns        = [module.jenkins_policy.policy_arn]
 }
-
+##############################################################################################################
 # MAIN EC2 SECURITY GROUP
 # This module will create a SG for the main EC2 instance to run jenkins server and sonarqube etc
 module "Jenkins_slave_security_group" {
@@ -135,7 +132,6 @@ module "Jenkins_slave_security_group" {
     Environment = var.environment
   }
 }
-
 
 ##########################################################################################################
 # EC2
@@ -178,7 +174,7 @@ module "Jenkins_slave_server_1" {
   server_name   = "Jenkins-worker-node(1)"
   enable_provisioner = false
   environment = var.environment
-  root_volume_size = 20
+  root_volume_size = var.root_volume_size
   root_volume_type = var.root_volume_type
   delete_on_termination = var.delete_on_termination
 }
@@ -192,7 +188,7 @@ module "Jenkins_slave_server_2" {
   server_name   = "Jenkins-worker-node(2)"
   enable_provisioner = false
   environment = var.environment
-  root_volume_size = 20
+  root_volume_size = var.root_volume_size
   root_volume_type = var.root_volume_type
   delete_on_termination = var.delete_on_termination
 }

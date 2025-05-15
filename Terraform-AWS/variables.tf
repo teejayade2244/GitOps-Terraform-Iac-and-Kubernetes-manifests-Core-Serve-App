@@ -31,7 +31,6 @@ variable "region" {
 }
 
 #############################################################################################
-
 # SECURITY GROUPS VARIABLES
 variable "common_ingress_rules" {
   description = "Common ingress rules applied to all security groups"
@@ -70,28 +69,25 @@ variable "security_groups" {
 }
 
 ################################################################################################
-# IAM
-variable "role_name" {
-  type        = string
-  description = "The name of the IAM role"
+# IAM ROlES AND POLICIES
+variable "iam_roles" {
+  description = "Configuration for IAM roles"
+  type = map(object({
+    name              = string
+    description       = optional(string, "")
+    principal_service = string
+    policy_arns       = list(string)
+  }))
 }
 
-variable "role_description" {
-  type        = string
-  default     = ""
-  description = "Description of the IAM role"
+variable "jenkins_policy" {
+  description = "Configuration for Jenkins IAM policy"
+  type = object({
+    name        = string
+    description = optional(string, "")
+    document    = any
+  })
 }
-
-variable "assume_role_policy" {
-  type        = string
-  description = "Trust relationship in JSON"
-}
-
-variable "policy_arns" {
-  type        = list(string)
-  description = "List of IAM policy ARNs to attach"
-}
-
 
 #################################################################################################
 # EC2 
