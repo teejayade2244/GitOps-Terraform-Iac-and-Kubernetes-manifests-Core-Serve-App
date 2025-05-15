@@ -49,7 +49,7 @@ module "Jenkins_master_security_group" {
     to_port     = 22
     description = "SSH access"
     protocol    = "tcp"
-    cidr_blocks = ["10.0.0.0/16"]
+    cidr_blocks = ["0.0.0.0/0"]
   }],
     var.security_groups["master"].extra_ports
   )
