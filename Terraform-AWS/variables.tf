@@ -79,6 +79,7 @@ variable "role_name" {
 variable "role_description" {
   type        = string
   default     = ""
+  description = "Description of the IAM role"
 }
 
 variable "assume_role_policy" {
@@ -190,5 +191,4 @@ variable "tags" {
 variable "cluster_name" {
   description = "EKS cluster name"
   type        = string
-  default     = {}
 }

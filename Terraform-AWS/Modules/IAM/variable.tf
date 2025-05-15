@@ -6,6 +6,7 @@ variable "role_name" {
 variable "role_description" {
   type        = string
   default     = ""
+  description = "Description of the IAM role"
 }
 
 variable "assume_role_policy" {
