@@ -14,7 +14,7 @@ fi
 
 # Fetch .tfvars from SSM
 aws ssm get-parameter \
-    --name "/core-serve/dev/terraform.tfvars" \
+    --name "/core-serve/dev/dev.tfvars" \
     --with-decryption \
     --query Parameter.Value \
     --output text \
