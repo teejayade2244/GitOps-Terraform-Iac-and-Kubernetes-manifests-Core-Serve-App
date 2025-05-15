@@ -19,3 +19,8 @@ variable "policy_arns" {
   description = "List of IAM policy ARNs to attach"
 }
 
+variable "create_instance_profile" {
+  description = "Whether to create an instance profile"
+  type        = bool
+  default     = true
+}

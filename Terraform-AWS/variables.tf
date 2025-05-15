@@ -70,7 +70,7 @@ variable "security_groups" {
 
 ################################################################################################
 # IAM ROlES AND POLICIES
-variable "iam_roles" {
+variable "eks_roles" {
   description = "Configuration for IAM roles"
   type = map(object({
     name              = string
@@ -131,7 +131,11 @@ variable "delete_on_termination" {
   type        = bool
 }
 
-
+variable "iam_instance_profile" {
+  description = "IAM Instance Profile to attach to the instance"
+  type        = string
+  default     = null
+}
 ################################################################################################
 # ECR
 variable "repository_name" {

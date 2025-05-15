@@ -48,3 +48,8 @@ variable "delete_on_termination" {
   type        = bool
 }
 
+variable "iam_instance_profile" {
+  description = "IAM Instance Profile to attach to the instance"
+  type        = string
+  default     = null
+}

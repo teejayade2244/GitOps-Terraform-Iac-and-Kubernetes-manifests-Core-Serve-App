@@ -67,8 +67,8 @@ module "Jenkins_master_security_group" {
 ##############################################################################################################
 # IAM Roles
 module "eks_iam_roles" {
-  for_each = var.iam_roles
-  source             = "./Modules/IAM-role"
+  for_each = var.eks_roles
+  source             = "./Modules/IAM-roles"
   role_name          = "${var.cluster_name}-${each.value.name}"
   role_description   = each.value.description
   assume_role_policy = jsonencode({
@@ -90,7 +90,7 @@ module "jenkins_policy" {
 }
 
 module "jenkins_role" {
-  source             = "./Modules/IAM-role"
+  source             = "./Modules/IAM-roles"
   role_name          = "${var.cluster_name}-jenkins-role"
   role_description   = "IAM role for Jenkins EC2 instances"
   assume_role_policy = jsonencode({
@@ -162,6 +162,7 @@ module "jenkins_master_server" {
   root_volume_size = var.root_volume_size
   root_volume_type = var.root_volume_type
   delete_on_termination = var.delete_on_termination
+  iam_instance_profile = module.jenkins_role.instance_profile_name
 }
 
 ## Jenkins slaves
@@ -177,6 +178,7 @@ module "Jenkins_slave_server_1" {
   root_volume_size = var.root_volume_size
   root_volume_type = var.root_volume_type
   delete_on_termination = var.delete_on_termination
+  iam_instance_profile = module.jenkins_role.instance_profile_name
 }
 
 module "Jenkins_slave_server_2" {
@@ -191,6 +193,7 @@ module "Jenkins_slave_server_2" {
   root_volume_size = var.root_volume_size
   root_volume_type = var.root_volume_type
   delete_on_termination = var.delete_on_termination
+  iam_instance_profile = module.jenkins_role.instance_profile_name
 }
 
 ##############################################################################################################

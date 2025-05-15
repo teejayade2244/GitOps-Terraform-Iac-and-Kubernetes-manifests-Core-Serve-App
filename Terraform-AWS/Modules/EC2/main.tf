@@ -13,6 +13,7 @@ resource "aws_instance" "ec2_instance" {
   subnet_id              = var.subnet_id
   vpc_security_group_ids = [var.security_group_id]  # Note: This expects a single ID, not a list
   key_name               = "my-key" 
+  iam_instance_profile   = var.iam_instance_profile
   tags = {
     Name = var.server_name
     Environment = var.environment

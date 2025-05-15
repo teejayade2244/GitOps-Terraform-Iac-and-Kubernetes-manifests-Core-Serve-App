@@ -9,12 +9,6 @@ output "role_name" {
   description = "The name of the IAM role"
 }
 
-output "policy_arn" {
-  description = "ARN of the created IAM policy"
-  value       = aws_iam_policy.policy.arn
-}
-
-output "policy_name" {
-  description = "Name of the created IAM policy"
-  value       = aws_iam_policy.policy.name
+output "instance_profile_name" {
+  value = aws_iam_role.iam_role.name
 }
