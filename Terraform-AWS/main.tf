@@ -64,6 +64,49 @@ module "Jenkins_master_security_group" {
   }
 }
 
+##############################################################################################################
+# IAM Roles
+module "eks_cluster_role" {
+  source             = "./Modules/IAM"
+  role_name               = "${var.cluster_name}-cluster-role"
+  role_description        = "IAM role for EKS control plane"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Action = "sts:AssumeRole"
+      Principal = {
+        Service = "eks.amazonaws.com"
+      }
+    }]
+  })
+  policy_arns = [
+    "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
+    "arn:aws:iam::aws:policy/AmazonEKSServicePolicy"
+  ]
+}
+
+module "eks_nodegroup_role" {
+  source             = "./Modules/IAM"
+  role_name               = "${var.cluster_name}-nodegroup-role"
+  role_description        = "IAM role for EKS nodes"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Action = "sts:AssumeRole"
+      Principal = {
+        Service = "ec2.amazonaws.com"
+      }
+    }]
+  })
+  policy_arns = [
+    "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+    "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
+    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+  ]
+}
+
 # MAIN EC2 SECURITY GROUP
 # This module will create a SG for the main EC2 instance to run jenkins server and sonarqube etc
 module "Jenkins_slave_security_group" {
@@ -184,3 +227,6 @@ module "SSM" {
     Environment = var.environment
   }
 }
+
+####################################################################################################################
+# EKS CLuster
