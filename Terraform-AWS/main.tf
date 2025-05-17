@@ -169,7 +169,7 @@ module "jenkins_master_server" {
 module "Jenkins_slave_server_1" {
   source = "./Modules/EC2"
   ami           = var.ami
-  instance_type = var.instance_type[1]
+  instance_type = var.instance_type[3]
   security_group_id = module.Jenkins_slave_security_group.security_group_id  
   subnet_id     = module.VPC.public_subnet_ids[1]  # Using second private subnet
   server_name   = "Jenkins-worker-node(1)"
@@ -181,20 +181,20 @@ module "Jenkins_slave_server_1" {
   iam_instance_profile = module.jenkins_role.instance_profile_name
 }
 
-module "Jenkins_slave_server_2" {
-  source = "./Modules/EC2"
-  ami           = var.ami
-  instance_type = var.instance_type[1]
-  security_group_id = module.Jenkins_slave_security_group.security_group_id  
-  subnet_id     = module.VPC.public_subnet_ids[1]  # Using second private subnet
-  server_name   = "Jenkins-worker-node(2)"
-  enable_provisioner = false
-  environment = var.environment
-  root_volume_size = var.root_volume_size
-  root_volume_type = var.root_volume_type
-  delete_on_termination = var.delete_on_termination
-  iam_instance_profile = module.jenkins_role.instance_profile_name
-}
+# module "Jenkins_slave_server_2" {
+#   source = "./Modules/EC2"
+#   ami           = var.ami
+#   instance_type = var.instance_type[1]
+#   security_group_id = module.Jenkins_slave_security_group.security_group_id  
+#   subnet_id     = module.VPC.public_subnet_ids[1]  # Using second private subnet
+#   server_name   = "Jenkins-worker-node(2)"
+#   enable_provisioner = false
+#   environment = var.environment
+#   root_volume_size = var.root_volume_size
+#   root_volume_type = var.root_volume_type
+#   delete_on_termination = var.delete_on_termination
+#   iam_instance_profile = module.jenkins_role.instance_profile_name
+# }
 
 ##############################################################################################################
 module "ecr" {
