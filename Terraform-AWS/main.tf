@@ -136,19 +136,19 @@ module "Jenkins_slave_security_group" {
 ##########################################################################################################
 # EC2
 # Bastion Host
-module "Bastion_server" {
-  source = "./Modules/EC2"
-  ami           = var.ami
-  instance_type = var.instance_type[0]
-  security_group_id = module.Bastion_host_security_group.security_group_id
-  subnet_id     = element(module.VPC.public_subnet_ids, 0) # Using first public subnet
-  server_name   = "Bastion-Host"
-  enable_provisioner = false
-  environment = var.environment
-  root_volume_size = var.root_volume_size
-  root_volume_type = var.root_volume_type
-  delete_on_termination = var.delete_on_termination
-}
+# module "Bastion_server" {
+#   source = "./Modules/EC2"
+#   ami           = var.ami
+#   instance_type = var.instance_type[0]
+#   security_group_id = module.Bastion_host_security_group.security_group_id
+#   subnet_id     = element(module.VPC.public_subnet_ids, 0) # Using first public subnet
+#   server_name   = "Bastion-Host"
+#   enable_provisioner = false
+#   environment = var.environment
+#   root_volume_size = var.root_volume_size
+#   root_volume_type = var.root_volume_type
+#   delete_on_termination = var.delete_on_termination
+# }
 ## Jenkins server
 module "jenkins_master_server" {
   source = "./Modules/EC2"
