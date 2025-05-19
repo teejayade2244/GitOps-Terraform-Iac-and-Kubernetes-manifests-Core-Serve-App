@@ -106,32 +106,32 @@ module "jenkins_role" {
 ##############################################################################################################
 # MAIN EC2 SECURITY GROUP
 # This module will create a SG for the main EC2 instance to run jenkins server and sonarqube etc
-module "Jenkins_slave_security_group" {
-  source = "./Modules/Security-group"
-  sg_name        = var.security_groups["slave"].name
-  sg_description = var.security_groups["slave"].description
-  vpc_id         = module.VPC.vpc_id
-  environment    = var.environment
-  ingress_rules  = concat(
-  [{
-    from_port   = 22
-    to_port     = 22
-    description = "SSH access"
-    protocol    = "tcp"
-    cidr_blocks = ["10.0.0.0/16"]
-  }],
-    var.security_groups["master"].extra_ports
-  )
-  egress_rules = [{
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }]
-  tags = {
-    Environment = var.environment
-  }
-}
+# module "Jenkins_slave_security_group" {
+#   source = "./Modules/Security-group"
+#   sg_name        = var.security_groups["slave"].name
+#   sg_description = var.security_groups["slave"].description
+#   vpc_id         = module.VPC.vpc_id
+#   environment    = var.environment
+#   ingress_rules  = concat(
+#   [{
+#     from_port   = 22
+#     to_port     = 22
+#     description = "SSH access"
+#     protocol    = "tcp"
+#     cidr_blocks = ["10.0.0.0/16"]
+#   }],
+#     var.security_groups["master"].extra_ports
+#   )
+#   egress_rules = [{
+#     from_port   = 0
+#     to_port     = 0
+#     protocol    = "-1"
+#     cidr_blocks = ["0.0.0.0/0"]
+#   }]
+#   tags = {
+#     Environment = var.environment
+#   }
+# }
 
 ##########################################################################################################
 # EC2
@@ -153,7 +153,7 @@ module "Jenkins_slave_security_group" {
 module "jenkins_master_server" {
   source = "./Modules/EC2"
   ami           = var.ami
-  instance_type = var.instance_type[1]
+  instance_type = var.instance_type[4]
   security_group_id = module.Jenkins_master_security_group.security_group_id
   subnet_id     = element(module.VPC.public_subnet_ids, 0) # Using first public subnet
   server_name   = "Jenkins-Master-Controller"
@@ -166,20 +166,20 @@ module "jenkins_master_server" {
 }
 
 ## Jenkins slaves
-module "Jenkins_slave_server_1" {
-  source = "./Modules/EC2"
-  ami           = var.ami
-  instance_type = var.instance_type[3]
-  security_group_id = module.Jenkins_slave_security_group.security_group_id  
-  subnet_id     = module.VPC.public_subnet_ids[1]  # Using second private subnet
-  server_name   = "Jenkins-worker-node(1)"
-  enable_provisioner = false
-  environment = var.environment
-  root_volume_size = var.root_volume_size
-  root_volume_type = var.root_volume_type
-  delete_on_termination = var.delete_on_termination
-  iam_instance_profile = module.jenkins_role.instance_profile_name
-}
+# module "Jenkins_slave_server_1" {
+#   source = "./Modules/EC2"
+#   ami           = var.ami
+#   instance_type = var.instance_type[3]
+#   security_group_id = module.Jenkins_slave_security_group.security_group_id  
+#   subnet_id     = module.VPC.public_subnet_ids[1]  # Using second private subnet
+#   server_name   = "Jenkins-worker-node(1)"
+#   enable_provisioner = false
+#   environment = var.environment
+#   root_volume_size = var.root_volume_size
+#   root_volume_type = var.root_volume_type
+#   delete_on_termination = var.delete_on_termination
+#   iam_instance_profile = module.jenkins_role.instance_profile_name
+# }
 
 # module "Jenkins_slave_server_2" {
 #   source = "./Modules/EC2"
