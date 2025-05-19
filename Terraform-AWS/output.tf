@@ -8,10 +8,10 @@ output "main_security_group_id" {
   description = "The ID of the main security group"
 }
 
-output "EC2_security_group_id" {
-  value       = module.Jenkins_slave_security_group.security_group_id
-  description = "The ID of the EC2 security group"
-}
+# output "EC2_security_group_id" {
+#   value       = module.Jenkins_slave_security_group.security_group_id
+#   description = "The ID of the EC2 security group"
+# }
 
 
 # STEP3: GET EC2 USER NAME AND PUBLIC IP 
