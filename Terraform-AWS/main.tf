@@ -102,6 +102,50 @@ module "EKS_node_group_security_group" {
   }
 }
 ##############################################################################################################
+# IAM Users
+# This module will create IAM users for developers
+module "developers" {
+  source   = "./Modules/IAM-user"
+  for_each = var.developers_usernames
+  user_name           = each.key
+  create_login_profile = true
+  create_access_key   = true
+  tags = {
+    Environment = var.environment
+  }
+}
+
+# This module will create IAM users for admins
+module "admins" {
+  source   = "./Modules/IAM-user"
+  for_each = var.admins_usernames
+  user_name           = each.key
+  create_login_profile = true
+  create_access_key   = true
+  tags = {
+    Environment = var.environment
+  }
+}
+
+# Developer Group
+module "developers_group" {
+  source = "./Modules/IAM-group"
+  group_name  = "developers"
+  user_names  = var.developers_usernames
+  policy_arns = [
+    module.eks_developers_policy.policy_arn
+  ]
+}
+
+# Admin Group
+module "admins_group" {
+  source = "./Modules/IAM-group"
+  group_name  = "developers"
+  user_names  = var.developers_usernames
+  policy_arns = [
+    module.eks_developers_policy.policy_arn
+  ]
+}
 # IAM Roles
 module "eks_iam_roles" {
   for_each = var.eks_roles
@@ -119,12 +163,22 @@ module "eks_iam_roles" {
   policy_arns        = each.value.policy_arns
 }
 
+# Jenkins IAM Policy 
 module "jenkins_policy" {
   source = "./Modules/IAM-policy"
   policy_name        = var.jenkins_policy.name
   policy_description = var.jenkins_policy.description
   policy_document    = jsonencode(var.jenkins_policy.document)
 }
+
+# EKS Developers IAM Policy
+module "eks_developers_policy" {
+  source = "./Modules/IAM-policy"
+  policy_name        = var.eks_dev_policy.name
+  policy_description = var.eks_dev_policy.description
+  policy_document    = jsonencode(var.eks_dev_policy.document)
+}
+
 
 module "jenkins_role" {
   source             = "./Modules/IAM-roles"

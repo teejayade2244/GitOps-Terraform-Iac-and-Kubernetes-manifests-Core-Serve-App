@@ -75,10 +75,12 @@ variable "eks_roles" {
   type = map(object({
     name              = string
     description       = optional(string, "")
-    principal_service = string
+    principal_service = optional(string)
+    principal_arn     = optional(string)
     policy_arns       = list(string)
   }))
 }
+
 
 variable "jenkins_policy" {
   description = "Configuration for Jenkins IAM policy"
@@ -262,4 +264,15 @@ variable "endpoint_private_access" {
 variable "endpoint_public_access" {
   description = "Whether to enable public access to the EKS cluster endpoint"
   type        = bool
+}
+
+# IAM 
+variable "developers_usernames" {
+  description = "Map of developer users to create"
+  type = list(string)
+}
+
+variable "admins_usernames" {
+  description = "Map of admins users to create"
+  type = list(string)
 }
