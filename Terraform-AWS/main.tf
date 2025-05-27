@@ -221,6 +221,7 @@ module "eks_cluster" {
   endpoint_private_access = var.endpoint_private_access
   endpoint_public_access  = var.endpoint_public_access
 
+  
   # Node Group Configuration - On Demand
   desired_capacity_on_demand = var.desired_capacity_on_demand
   min_capacity_on_demand    = var.min_capacity_on_demand
