@@ -192,3 +192,74 @@ variable "cluster_name" {
   description = "EKS cluster name"
   type        = string
 }
+
+variable "kubernetes_version" {
+  description = "Kubernetes version for the EKS cluster"
+  type        = string
+}
+
+# Node Group - On Demand Configuration
+variable "desired_capacity_on_demand" {
+  description = "Desired number of on-demand worker nodes"
+  type        = number
+}
+
+variable "min_capacity_on_demand" {
+  description = "Minimum number of on-demand worker nodes"
+  type        = number
+}
+
+variable "max_capacity_on_demand" {
+  description = "Maximum number of on-demand worker nodes"
+  type        = number
+}
+
+variable "on_demand_instance_types" {
+  description = "List of EC2 instance types for on-demand nodes"
+  type        = list(string)
+}
+
+variable "max_unavailable_on_demand" {
+  description = "Maximum number of on-demand nodes that can be unavailable during updates"
+  type        = number
+}
+
+# Node Group - Spot Configuration
+variable "desired_capacity_spot" {
+  description = "Desired number of spot worker nodes"
+  type        = number
+}
+
+variable "min_capacity_spot" {
+  description = "Minimum number of spot worker nodes"
+  type        = number
+}
+
+variable "max_capacity_spot" {
+  description = "Maximum number of spot worker nodes"
+  type        = number
+}
+
+variable "spot_instance_types" {
+  description = "List of EC2 instance types for spot nodes"
+  type        = list(string)
+}
+
+# EKS Add-ons Configuration
+variable "eks_addons" {
+  description = "Map of EKS add-ons to enable"
+  type = map(object({
+    version = string
+  }))
+}
+
+# Access Configuration
+variable "endpoint_private_access" {
+  description = "Whether to enable private access to the EKS cluster endpoint"
+  type        = bool
+}
+
+variable "endpoint_public_access" {
+  description = "Whether to enable public access to the EKS cluster endpoint"
+  type        = bool
+}

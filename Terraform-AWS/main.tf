@@ -65,6 +65,43 @@ module "Jenkins_master_security_group" {
 }
 
 ##############################################################################################################
+# This module will create a SG for the EKS cluster
+module "EKS_cluster_security_group" {
+  source = "./Modules/Security-group"
+  sg_name        = var.security_groups["EKS_cluster"].name
+  sg_description = var.security_groups["EKS_cluster"].description
+  vpc_id         = module.VPC.vpc_id
+  environment    = var.environment
+  ingress_rules  = var.security_groups["EKS_cluster"].extra_ports
+  egress_rules = [{
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }]
+  tags = {
+    Environment = var.environment
+  }
+}
+
+module "EKS_node_group_security_group" {
+  source = "./Modules/Security-group"
+  sg_name        = var.security_groups["EKS_node_groupr"].name
+  sg_description = var.security_groups["EKS_node_group"].description
+  vpc_id         = module.VPC.vpc_id
+  environment    = var.environment
+  ingress_rules  = var.security_groups["EKS_node_group"].extra_ports
+  egress_rules = [{
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }]
+  tags = {
+    Environment = var.environment
+  }
+}
+##############################################################################################################
 # IAM Roles
 module "eks_iam_roles" {
   for_each = var.eks_roles
@@ -104,36 +141,6 @@ module "jenkins_role" {
   policy_arns        = [module.jenkins_policy.policy_arn]
 }
 ##############################################################################################################
-# MAIN EC2 SECURITY GROUP
-# This module will create a SG for the main EC2 instance to run jenkins server and sonarqube etc
-# module "Jenkins_slave_security_group" {
-#   source = "./Modules/Security-group"
-#   sg_name        = var.security_groups["slave"].name
-#   sg_description = var.security_groups["slave"].description
-#   vpc_id         = module.VPC.vpc_id
-#   environment    = var.environment
-#   ingress_rules  = concat(
-#   [{
-#     from_port   = 22
-#     to_port     = 22
-#     description = "SSH access"
-#     protocol    = "tcp"
-#     cidr_blocks = ["10.0.0.0/16"]
-#   }],
-#     var.security_groups["master"].extra_ports
-#   )
-#   egress_rules = [{
-#     from_port   = 0
-#     to_port     = 0
-#     protocol    = "-1"
-#     cidr_blocks = ["0.0.0.0/0"]
-#   }]
-#   tags = {
-#     Environment = var.environment
-#   }
-# }
-
-##########################################################################################################
 # EC2
 # Bastion Host
 # module "Bastion_server" {
@@ -165,44 +172,12 @@ module "jenkins_master_server" {
   iam_instance_profile = module.jenkins_role.instance_profile_name
 }
 
-## Jenkins slaves
-# module "Jenkins_slave_server_1" {
-#   source = "./Modules/EC2"
-#   ami           = var.ami
-#   instance_type = var.instance_type[3]
-#   security_group_id = module.Jenkins_slave_security_group.security_group_id  
-#   subnet_id     = module.VPC.public_subnet_ids[1]  # Using second private subnet
-#   server_name   = "Jenkins-worker-node(1)"
-#   enable_provisioner = false
-#   environment = var.environment
-#   root_volume_size = var.root_volume_size
-#   root_volume_type = var.root_volume_type
-#   delete_on_termination = var.delete_on_termination
-#   iam_instance_profile = module.jenkins_role.instance_profile_name
-# }
-
-# module "Jenkins_slave_server_2" {
-#   source = "./Modules/EC2"
-#   ami           = var.ami
-#   instance_type = var.instance_type[1]
-#   security_group_id = module.Jenkins_slave_security_group.security_group_id  
-#   subnet_id     = module.VPC.public_subnet_ids[1]  # Using second private subnet
-#   server_name   = "Jenkins-worker-node(2)"
-#   enable_provisioner = false
-#   environment = var.environment
-#   root_volume_size = var.root_volume_size
-#   root_volume_type = var.root_volume_type
-#   delete_on_termination = var.delete_on_termination
-#   iam_instance_profile = module.jenkins_role.instance_profile_name
-# }
-
 ##############################################################################################################
 module "ecr" {
   source          = "./Modules/ECR"
   repository_name = var.repository_name
   environment     = var.environment
 }
-
 
 ####################################################################################################################
 module "s3" {
@@ -229,3 +204,45 @@ module "SSM" {
 
 ####################################################################################################################
 # EKS CLuster
+module "eks_cluster" {
+  source = "./Modules/EKS"
+  # Cluster Configuration
+  cluster_name        = var.cluster_name
+  kubernetes_version   = var.kubernetes_version
+  cluster_role_arn    = module.eks_iam_roles["cluster_role"].role_arn
+  node_group_role_arn = module.eks_iam_roles["nodegroup_role"].role_arn
+  vpc_id              = module.VPC.vpc_id
+  # Network Configuration
+  subnet_ids         = module.VPC.subnet_ids
+  private_subnet_ids = module.VPC.private_subnet_ids
+  security_group_ids = [module.EKS_cluster_security_group.security_group_id]
+  
+  # Access Configuration
+  endpoint_private_access = var.endpoint_private_access
+  endpoint_public_access  = var.endpoint_public_access
+
+  # Node Group Configuration - On Demand
+  desired_capacity_on_demand = var.desired_capacity_on_demand
+  min_capacity_on_demand    = var.min_capacity_on_demand
+  max_capacity_on_demand    = var.max_capacity_on_demand
+  on_demand_instance_types  = var.on_demand_instance_types
+  max_unavailable_on_demand = var.max_unavailable_on_demand
+
+  # Node Group Configuration - Spot
+  desired_capacity_spot = var.desired_capacity_spot
+  min_capacity_spot    = var.min_capacity_spot
+  max_capacity_spot    = var.max_capacity_spot
+  spot_instance_types  = var.spot_instance_types
+
+  # EKS Add-ons
+  eks_addons = var.eks_addons
+
+  # Tags
+  environment = var.environment
+
+  depends_on = [
+    module.VPC,
+    module.eks_iam_roles,
+    module.EKS_cluster_security_group
+  ]
+}
