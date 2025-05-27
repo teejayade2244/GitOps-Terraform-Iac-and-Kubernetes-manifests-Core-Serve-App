@@ -5,7 +5,7 @@ resource "aws_eks_cluster" "main" {
   version  = var.kubernetes_version
 
     vpc_config {
-      subnet_ids              = var.subnet_ids
+      subnet_ids              = var.private_subnet_ids
       # List of subnet IDs where the EKS cluster will be created.
       endpoint_private_access = var.endpoint_private_access
       # If true, it allows private access to the Kubernetes API (from within your VPC).
@@ -52,11 +52,13 @@ resource "aws_eks_node_group" "on_demand" {
     max_unavailable = var.max_unavailable_on_demand
   }
   tags = {
-    "Name" = "${var.cluster_name}-on-demand-nodes"
-    environment = var.environment
+    "Name" = "${var.cluster_name}-on-demand-node"
+    "Environment" = var.environment
+    "kubernetes.io/cluster/${var.cluster_name}" = "owned"
+    "Terraform" = "true"
   }
 
-  depends_on = [aws_eks_cluster.eks]
+  depends_on = [aws_eks_cluster.main]
 }
 
 # EKS Spot Node Group
@@ -86,11 +88,13 @@ resource "aws_eks_node_group" "spot" {
   }
 
   tags = {
-    "Name" = "${var.cluster_name}-spot-nodes"
-    environment = var.environment
+    "Name" = "${var.cluster_name}-spot-node"
+    "Environment" = var.environment
+    "kubernetes.io/cluster/${var.cluster_name}" = "owned"
+    "Terraform" = "true"
   }
 
-  depends_on = [aws_eks_cluster.eks]
+  depends_on = [aws_eks_cluster.main]
 }
 
 

@@ -86,7 +86,7 @@ module "EKS_cluster_security_group" {
 
 module "EKS_node_group_security_group" {
   source = "./Modules/Security-group"
-  sg_name        = var.security_groups["EKS_node_groupr"].name
+  sg_name        = var.security_groups["EKS_node_group"].name
   sg_description = var.security_groups["EKS_node_group"].description
   vpc_id         = module.VPC.vpc_id
   environment    = var.environment
@@ -213,7 +213,7 @@ module "eks_cluster" {
   node_group_role_arn = module.eks_iam_roles["nodegroup_role"].role_arn
   vpc_id              = module.VPC.vpc_id
   # Network Configuration
-  subnet_ids         = module.VPC.subnet_ids
+  subnet_ids         = module.VPC.private_subnet_ids
   private_subnet_ids = module.VPC.private_subnet_ids
   security_group_ids = [module.EKS_cluster_security_group.security_group_id]
   
@@ -221,7 +221,7 @@ module "eks_cluster" {
   endpoint_private_access = var.endpoint_private_access
   endpoint_public_access  = var.endpoint_public_access
 
-  
+
   # Node Group Configuration - On Demand
   desired_capacity_on_demand = var.desired_capacity_on_demand
   min_capacity_on_demand    = var.min_capacity_on_demand
