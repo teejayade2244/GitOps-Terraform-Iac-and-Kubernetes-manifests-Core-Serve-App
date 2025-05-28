@@ -81,15 +81,15 @@ variable "iam_policies" {
 
 
 variable "iam_roles" {
-  description = "Configuration for EKS IAM roles"
+  description = "Configuration for IAM roles."
   type = map(object({
-    name               = string
-    description        = string
-    principal_service  = string
-    policy_arns        = list(string)
-    custom_policies    = optional(list(string), [])
+    name              = string
+    description       = string
+    principal_type    = string # <--- ADD THIS LINE
+    principal_service = string # This should already be here
+    policy_arns       = list(string)
+   
   }))
-  default = {}
 }
 
 # IAM 
