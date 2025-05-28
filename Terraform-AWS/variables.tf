@@ -71,11 +71,10 @@ variable "security_groups" {
 ################################################################################################
 # IAM ROlES AND POLICIES
 variable "iam_policies" {
-  description = "A map of IAM policy configurations."
+  description = "A map of IAM policy configurations (excluding the document itself)."
   type = map(object({
     name        = string
     description = string
-    document    = any # <--- CHANGE THIS TO 'any'
   }))
 }
 
