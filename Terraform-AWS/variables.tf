@@ -73,11 +73,11 @@ variable "security_groups" {
 variable "eks_roles" {
   description = "Configuration for EKS IAM roles"
   type = map(object({
-    name                = string
-    description         = string
-    principal_service   = string
-    managed_policy_arns = list(string)
-    custom_policies     = optional(list(string), [])
+    name               = string
+    description        = string
+    principal_service  = string
+    policy_arns        = list(string)
+    custom_policies    = optional(list(string), [])
   }))
 }
 
@@ -86,7 +86,15 @@ variable "iam_policies" {
   type = map(object({
     name        = string
     description = string
-    document    = any
+    document    = object({
+      Version   = string
+      Statement = list(object({
+        Sid       = optional(string)
+        Effect    = string
+        Action    = any
+        Resource  = any
+      }))
+    })
   }))
   default = {}
 }
