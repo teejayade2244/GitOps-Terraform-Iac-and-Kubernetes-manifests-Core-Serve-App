@@ -3,14 +3,14 @@ variable "group_name" {
   type        = string
 }
 
-variable "group_path" {
-  description = "Path to the IAM group"
+variable "path" {
+  description = "Path in which to create the group"
   type        = string
   default     = "/"
 }
 
-variable "user_names" {
-  description = "List of IAM users to add to the group"
+variable "usernames" {
+  description = "List of IAM usernames to add to the group"
   type        = list(string)
   default     = []
 }
