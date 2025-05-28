@@ -80,7 +80,7 @@ variable "iam_policies" {
 
 
 
-variable "eks_roles" {
+variable "iam_roles" {
   description = "Configuration for EKS IAM roles"
   type = map(object({
     name               = string

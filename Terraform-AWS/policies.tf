@@ -1,5 +1,4 @@
-# root/policies.tf (NEW FILE, or add to main.tf if you prefer)
-
+# This file contains the IAM policies for various roles in the AWS environment.
 data "aws_iam_policy_document" "jenkins" {
   statement {
     effect = "Allow"
