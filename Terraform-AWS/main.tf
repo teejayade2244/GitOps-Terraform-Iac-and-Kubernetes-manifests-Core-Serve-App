@@ -106,7 +106,7 @@ module "EKS_node_group_security_group" {
 # This module will create IAM users for developers group
 module "developers" {
   source   = "./Modules/IAM-user"
-  for_each = var.developers_usernames
+  for_each = toset(var.developers_usernames)
   user_name           = each.key
   create_login_profile = true
   create_access_key   = true
@@ -118,7 +118,7 @@ module "developers" {
 # This module will create IAM users for admins group
 module "admins" {
   source   = "./Modules/IAM-user"
-  for_each = var.admins_usernames
+  for_each = toset(var.admins_usernames)
   user_name           = each.key
   create_login_profile = true
   create_access_key   = true
@@ -210,7 +210,7 @@ module "jenkins_master_server" {
   root_volume_size = var.root_volume_size
   root_volume_type = var.root_volume_type
   delete_on_termination = var.delete_on_termination
-  iam_instance_profile = module.jenkins_role.instance_profile_name
+  iam_instance_profile = module.eks_iam_roles.jenkins_role.instance_profile_name
 }
 
 ##############################################################################################################

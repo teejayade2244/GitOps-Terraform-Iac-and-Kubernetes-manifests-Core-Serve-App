@@ -71,14 +71,14 @@ variable "security_groups" {
 ################################################################################################
 # IAM ROlES AND POLICIES
 variable "eks_roles" {
-  description = "Map of EKS IAM roles to create"
+  description = "Configuration for EKS IAM roles"
   type = map(object({
-    name              = string
-    description       = string
-    principal_service = string
-    policy_arns       = list(string)
+    name                = string
+    description         = string
+    principal_service   = string
+    managed_policy_arns = list(string)
+    custom_policies     = optional(list(string), [])
   }))
-  default = {}
 }
 
 variable "iam_policies" {
@@ -91,6 +91,16 @@ variable "iam_policies" {
   default = {}
 }
 
+# IAM 
+variable "developers_usernames" {
+  description = "Map of developer users to create"
+  type = list(string)
+}
+
+variable "admins_usernames" {
+  description = "Map of admins users to create"
+  type = list(string)
+}
 #################################################################################################
 # EC2 
 # Main server
@@ -266,13 +276,3 @@ variable "endpoint_public_access" {
   type        = bool
 }
 
-# IAM 
-variable "developers_usernames" {
-  description = "Map of developer users to create"
-  type = list(string)
-}
-
-variable "admins_usernames" {
-  description = "Map of admins users to create"
-  type = list(string)
-}
