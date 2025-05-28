@@ -80,8 +80,8 @@ variable "iam_policies" {
       Statement = list(object({
         Sid       = optional(string)
         Effect    = string
-        Action    = list(string)  # Changed from any to list(string)
-        Resource  = any           # Kept as any since it can be string or list
+        Action    = list(string)
+        Resource  = any  # Using 'any' since Resource can be string or list(string)
       }))
     })
   }))
