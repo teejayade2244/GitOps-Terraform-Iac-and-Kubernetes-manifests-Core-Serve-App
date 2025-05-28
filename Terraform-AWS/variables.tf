@@ -85,10 +85,9 @@ variable "iam_roles" {
   type = map(object({
     name              = string
     description       = string
-    principal_type    = string # <--- ADD THIS LINE
-    principal_service = string # This should already be here
+    principal_type    = string
+    principal_service = optional(string) # Make principal_service optional
     policy_arns       = list(string)
-   
   }))
 }
 

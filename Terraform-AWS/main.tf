@@ -161,21 +161,15 @@ module "iam_roles" {
   source           = "./Modules/IAM-roles"
   role_name        = "${var.cluster_name}-${each.value.name}"
   role_description = each.value.description
-
-  # Pass principal_type and principal_service directly from the 'iam_roles' variable
   principal_type    = each.value.principal_type
-  principal_service = each.value.principal_service # Keep this as it's used for Service principals
+  principal_service = lookup(each.value, "principal_service", null) # Use lookup to handle optional principal_service
 
-  # <--- ADD THIS BLOCK: Compute principal_arns here based on the role key
   principal_arns = (
     each.key == "admin_role" ? [for user in var.admins_usernames : module.admins[user].arn] :
     each.key == "developer_role" ? [for user in var.developers_usernames : module.developers[user].arn] :
-    [] # Default to an empty list for other roles (cluster, nodegroup, jenkins)
+    []
   )
-  # END ADDED BLOCK
 
-  # The assume_role_policy logic remains the same, but now it references
-  # the 'principal_arns' argument we are passing to the module.
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
@@ -185,7 +179,7 @@ module "iam_roles" {
         each.value.principal_type == "Service" ? {
           Service = each.value.principal_service
         } : {
-          AWS = each.value.principal_arns # This now correctly references the 'principal_arns' argument
+          AWS = each.value.principal_arns
         }
       )
     }]
@@ -197,7 +191,6 @@ module "iam_roles" {
     each.key == "developer_role" ? [module.iam_policies["eks_developer"].policy_arn] : []
   )
 }
-
 # IAM Policies
 # This module will create IAM policies based on the provided configuration
 # and attach them to the respective roles and groups.
