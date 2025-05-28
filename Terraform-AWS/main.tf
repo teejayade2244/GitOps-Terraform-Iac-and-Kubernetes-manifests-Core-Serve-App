@@ -163,25 +163,26 @@ module "iam_roles" {
   role_description = each.value.description
 
   # Calculate the assume_role_policy JSON string here
- assume_role_policy = jsonencode({
+
+  assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
       Effect = "Allow"
       Action = "sts:AssumeRole"
-      Principal = (
-        each.value.principal_type == "Service" ?
-        # If 'Service' type, return ONLY the Service block
-        {
+      Principal = merge(
+        # If principal_type is "Service", create the Service map; otherwise, an empty map
+        each.value.principal_type == "Service" ? {
           Service = lookup(each.value, "principal_service", null)
-        } :
-        # If 'IAM' type, return ONLY the AWS block
-        {
+        } : {},
+        # If principal_type is "IAM", create the AWS map; otherwise, an empty map
+        # Note: We use "IAM" here to be explicit, assuming that's the only other type
+        each.value.principal_type == "IAM" ? {
           AWS = (
             each.key == "admin_role" ? [for user in var.admins_usernames : module.admins[user].arn] :
             each.key == "developer_role" ? [for user in var.developers_usernames : module.developers[user].arn] :
             [] # Default to an empty list for other roles not assumed by users
           )
-        }
+        } : {}
       )
     }]
   })
