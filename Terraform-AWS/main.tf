@@ -303,3 +303,9 @@ module "eks_cluster" {
     module.EKS_cluster_security_group
   ]
 }
+
+module "eks_access_entries" {
+  source         = "./Modules/EKS-access-entry"
+  cluster_name   = aws_eks_cluster.this.name 
+  access_entries = local.eks_cluster_access_entries 
+}
