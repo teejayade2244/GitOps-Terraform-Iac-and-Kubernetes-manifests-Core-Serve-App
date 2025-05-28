@@ -71,13 +71,23 @@ variable "security_groups" {
 ################################################################################################
 # IAM ROlES AND POLICIES
 variable "iam_policies" {
-  description = "Map of IAM policies to create"
+  description = "A map of IAM policy configurations."
   type = map(object({
     name        = string
     description = string
-    document    = string
+    document    = map(any) # <--- Make this change!
+    # If you want to be more specific, you could define the structure of the policy document
+    # document = object({
+    #   Version   = string
+    #   Statement = list(object({
+    #     Effect   = string
+    #     Action   = list(string)
+    #     Resource = string # or list(string) depending on usage
+    #     # Add other optional keys like Sid
+    #     optional_keys = ["Sid"]
+    #   }))
+    # })
   }))
-  default = {}
 }
 
 variable "eks_roles" {
