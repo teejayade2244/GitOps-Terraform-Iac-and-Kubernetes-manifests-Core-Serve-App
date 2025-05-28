@@ -75,20 +75,28 @@ variable "eks_roles" {
   type = map(object({
     name              = string
     description       = optional(string, "")
-    principal_service = optional(string)
-    principal_arn     = optional(string)
+    principal_service = (string)
     policy_arns       = list(string)
   }))
 }
 
+variable "eks_admin_roles" {
+  description = "Map of EKS admin roles configurations"
+  type = map(object({
+    name              = string
+    description       = string
+    principal_service = string
+    policy_arns       = list(string)
+  }))
+}
 
-variable "jenkins_policy" {
-  description = "Configuration for Jenkins IAM policy"
-  type = object({
+variable "iam_policies" {
+  description = "Map of IAM policies to create"
+  type = map(object({
     name        = string
-    description = optional(string, "")
+    description = string
     document    = any
-  })
+  }))
 }
 
 #################################################################################################

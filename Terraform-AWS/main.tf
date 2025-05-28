@@ -163,37 +163,37 @@ module "eks_iam_roles" {
   policy_arns        = each.value.policy_arns
 }
 
-# Jenkins IAM Policy 
-module "jenkins_policy" {
-  source = "./Modules/IAM-policy"
-  policy_name        = var.jenkins_policy.name
-  policy_description = var.jenkins_policy.description
-  policy_document    = jsonencode(var.jenkins_policy.document)
-}
-
-# EKS Developers IAM Policy
-module "eks_developers_policy" {
-  source = "./Modules/IAM-policy"
-  policy_name        = var.eks_dev_policy.name
-  policy_description = var.eks_dev_policy.description
-  policy_document    = jsonencode(var.eks_dev_policy.document)
-}
-
-
-module "jenkins_role" {
+# EIAM ROLES
+module "IAM_roles" {
   source             = "./Modules/IAM-roles"
-  role_name          = "${var.cluster_name}-jenkins-role"
-  role_description   = "IAM role for Jenkins EC2 instances"
+  for_each          = var.eks_admin_roles
+  
+  role_name          = "${var.cluster_name}-${each.value.name}"
+  role_description   = each.value.description
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
       Effect    = "Allow"
       Action    = "sts:AssumeRole"
-      Principal = { Service = "ec2.amazonaws.com" }
+      Principal = { Service = each.value.principal_service }
     }]
   })
-  policy_arns        = [module.jenkins_policy.policy_arn]
+  policy_arns        = concat(
+    each.value.policy_arns,
+    [module.eks_admin_policy.policy_arn]
+  )
 }
+
+# IAM Policies 
+module "iam_policies" {
+  source             = "./Modules/IAM-policy"
+  for_each           = var.iam_policies
+  
+  policy_name        = each.value.name
+  policy_description = each.value.description
+  policy_document    = jsonencode(each.value.document)
+}
+
 ##############################################################################################################
 # EC2
 # Bastion Host
