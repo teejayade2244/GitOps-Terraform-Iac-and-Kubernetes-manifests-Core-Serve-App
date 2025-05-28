@@ -4,7 +4,7 @@ metadata:
   name: resource-viewer
 rules:
 - apiGroups: ["*"]
-  resources: ["pods, deployments, services, configmaps, secrets"]
+  resources: ["pods", "deployments", "services", "configmaps", "secrets"]
   verbs: ["get", "watch", "list"]
 
 ---
@@ -19,7 +19,6 @@ roleRef:
 subjects:
 - kind: Group
   name: resource-viewer
-  namespace: default
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -33,4 +32,3 @@ roleRef:
 subjects:
 - kind: Group
   name: admin-group
-  namespace: default

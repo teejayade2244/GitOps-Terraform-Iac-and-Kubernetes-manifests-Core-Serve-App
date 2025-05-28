@@ -157,24 +157,31 @@ module "admins_group" {
 # This module will create IAM roles for EKS cluster and node groups
 # and attach the necessary policies to them.
 module "iam_roles" {
-  for_each = var.iam_roles 
+  for_each = var.iam_roles
   source           = "./Modules/IAM-roles"
   role_name        = "${var.cluster_name}-${each.value.name}"
   role_description = each.value.description
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
-      Effect    = "Allow"
-      Action    = "sts:AssumeRole"
-      Principal = { Service = each.value.principal_service }
+      Effect = "Allow"
+      Action = "sts:AssumeRole"
+      Principal = (
+        each.value.principal_type == "Service" ? {
+          Service = each.value.principal_service 
+        } : {
+          AWS = each.value.principal_arns 
+        }
+      )
     }]
   })
+  
   policy_arns = concat(
     each.value.policy_arns,
     # Conditionally add the EKS admin policy if it's the admin_role
     each.key == "admin_role" ? [module.iam_policies["eks_admin"].policy_arn] : [],
     # Conditionally add the Jenkins policy if it's the jenkins_role
-    each.key == "jenkins_role" ? [module.iam_policies["jenkins"].policy_arn] : [] ,
+    each.key == "jenkins_role" ? [module.iam_policies["jenkins"].policy_arn] : [],
     each.key == "developer_role" ? [module.iam_policies["eks_developer"].policy_arn] : []
   )
 }
