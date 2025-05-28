@@ -161,6 +161,21 @@ module "iam_roles" {
   source           = "./Modules/IAM-roles"
   role_name        = "${var.cluster_name}-${each.value.name}"
   role_description = each.value.description
+
+  # Pass principal_type and principal_service directly from the 'iam_roles' variable
+  principal_type    = each.value.principal_type
+  principal_service = each.value.principal_service # Keep this as it's used for Service principals
+
+  # <--- ADD THIS BLOCK: Compute principal_arns here based on the role key
+  principal_arns = (
+    each.key == "admin_role" ? [for user in var.admins_usernames : module.admins[user].arn] :
+    each.key == "developer_role" ? [for user in var.developers_usernames : module.developers[user].arn] :
+    [] # Default to an empty list for other roles (cluster, nodegroup, jenkins)
+  )
+  # END ADDED BLOCK
+
+  # The assume_role_policy logic remains the same, but now it references
+  # the 'principal_arns' argument we are passing to the module.
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
@@ -168,19 +183,16 @@ module "iam_roles" {
       Action = "sts:AssumeRole"
       Principal = (
         each.value.principal_type == "Service" ? {
-          Service = each.value.principal_service 
+          Service = each.value.principal_service
         } : {
-          AWS = each.value.principal_arns 
+          AWS = each.value.principal_arns # This now correctly references the 'principal_arns' argument
         }
       )
     }]
   })
-  
   policy_arns = concat(
     each.value.policy_arns,
-    # Conditionally add the EKS admin policy if it's the admin_role
     each.key == "admin_role" ? [module.iam_policies["eks_admin"].policy_arn] : [],
-    # Conditionally add the Jenkins policy if it's the jenkins_role
     each.key == "jenkins_role" ? [module.iam_policies["jenkins"].policy_arn] : [],
     each.key == "developer_role" ? [module.iam_policies["eks_developer"].policy_arn] : []
   )
