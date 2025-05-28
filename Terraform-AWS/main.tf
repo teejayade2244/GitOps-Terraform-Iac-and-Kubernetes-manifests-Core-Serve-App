@@ -182,13 +182,6 @@ module "iam_roles" {
 # IAM Policies
 # This module will create IAM policies based on the provided configuration
 # and attach them to the respective roles and groups.
-locals {
-  iam_policy_documents = {
-    jenkins       = data.aws_iam_policy_document.jenkins.json
-    eks_developer = data.aws_iam_policy_document.eks_developer.json
-    eks_admin     = data.aws_iam_policy_document.eks_admin.json
-  }
-}
 module "iam_policies" {
   source             = "./Modules/IAM-policy"
   for_each           = var.iam_policies 
