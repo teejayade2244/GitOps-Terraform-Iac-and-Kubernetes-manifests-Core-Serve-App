@@ -103,7 +103,7 @@ module "EKS_node_group_security_group" {
 }
 ##############################################################################################################
 # IAM Users
-# This module will create IAM users for developers
+# This module will create IAM users for developers group
 module "developers" {
   source   = "./Modules/IAM-user"
   for_each = var.developers_usernames
@@ -115,7 +115,7 @@ module "developers" {
   }
 }
 
-# This module will create IAM users for admins
+# This module will create IAM users for admins group
 module "admins" {
   source   = "./Modules/IAM-user"
   for_each = var.admins_usernames
@@ -128,25 +128,32 @@ module "admins" {
 }
 
 # Developer Group
+# This module will create an IAM group for developers and attach policies
+# to it. The group will contain the developers' IAM users.
 module "developers_group" {
   source = "./Modules/IAM-group"
   group_name  = "developers"
   user_names  = var.developers_usernames
   policy_arns = [
-    module.eks_developers_policy.policy_arn
+    module.iam_policies["eks_developer"].policy_arn
   ]
 }
 
 # Admin Group
+# This module will create an IAM group for admins and attach policies
+# to it. The group will contain the admins' IAM users.
 module "admins_group" {
   source = "./Modules/IAM-group"
-  group_name  = "developers"
-  user_names  = var.developers_usernames
+  group_name  = "admins"
+  user_names  = var.admins_usernames
   policy_arns = [
-    module.eks_developers_policy.policy_arn
+    module.iam_policies["eks_admin"].policy_arn
   ]
 }
+
 # IAM Roles
+# This module will create IAM roles for EKS cluster and node groups
+# and attach the necessary policies to them.
 module "eks_iam_roles" {
   for_each = var.eks_roles
   source             = "./Modules/IAM-roles"
@@ -163,32 +170,12 @@ module "eks_iam_roles" {
   policy_arns        = each.value.policy_arns
 }
 
-# EIAM ROLES
-module "IAM_roles" {
-  source             = "./Modules/IAM-roles"
-  for_each          = var.eks_admin_roles
-  
-  role_name          = "${var.cluster_name}-${each.value.name}"
-  role_description   = each.value.description
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Effect    = "Allow"
-      Action    = "sts:AssumeRole"
-      Principal = { Service = each.value.principal_service }
-    }]
-  })
-  policy_arns        = concat(
-    each.value.policy_arns,
-    [module.eks_admin_policy.policy_arn]
-  )
-}
-
 # IAM Policies 
+# This module will create IAM policies based on the provided configuration
+# and attach them to the respective roles and groups.
 module "iam_policies" {
   source             = "./Modules/IAM-policy"
   for_each           = var.iam_policies
-  
   policy_name        = each.value.name
   policy_description = each.value.description
   policy_document    = jsonencode(each.value.document)
