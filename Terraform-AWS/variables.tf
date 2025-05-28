@@ -75,7 +75,7 @@ variable "iam_policies" {
   type = map(object({
     name        = string
     description = string
-    document    = string  # Changed from object to string
+    document    = string
   }))
   default = {}
 }
@@ -86,9 +86,10 @@ variable "eks_roles" {
     name               = string
     description        = string
     principal_service  = string
-    policy_arns        = list(string)  # Keep as policy_arns as you have it
+    policy_arns        = list(string)
     custom_policies    = optional(list(string), [])
   }))
+  default = {}
 }
 
 # IAM 

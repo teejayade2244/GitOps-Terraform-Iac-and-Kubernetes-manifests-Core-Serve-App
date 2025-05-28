@@ -1,5 +1,12 @@
-# iam.tf - Updated to match your variable structure
-# Create the roles
+resource "aws_iam_policy" "custom_policies" {
+  for_each = var.iam_policies
+  
+  name        = each.value.name
+  description = each.value.description
+  policy      = each.value.document
+}
+
+# iam.tf - Simplified
 resource "aws_iam_role" "eks_roles" {
   for_each = var.eks_roles
   
@@ -37,7 +44,7 @@ resource "aws_iam_role_policy_attachment" "managed_policies" {
   policy_arn = each.value.policy_arn
 }
 
-# Attach custom policies (created by your iam_policies module)
+# Attach custom policies
 resource "aws_iam_role_policy_attachment" "custom_policies" {
   for_each = {
     for combo in flatten([
@@ -52,5 +59,5 @@ resource "aws_iam_role_policy_attachment" "custom_policies" {
   }
   
   role       = aws_iam_role.eks_roles[each.value.role_key].name
-  policy_arn = module.iam_policies[each.value.policy_key].policy_arn
+  policy_arn = aws_iam_policy.custom_policies[each.value.policy_key].arn
 }

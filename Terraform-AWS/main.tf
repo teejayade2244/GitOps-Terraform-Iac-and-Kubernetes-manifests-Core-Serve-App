@@ -135,7 +135,7 @@ module "developers_group" {
   group_name  = "developers"
   user_names  = var.developers_usernames
   policy_arns = [
-    module.iam_policies["eks_developer"].policy_arn
+    aws_iam_policy.custom_policies["eks_developer"].arn
   ]
 }
 
@@ -147,7 +147,7 @@ module "admins_group" {
   group_name  = "admins"
   user_names  = var.admins_usernames
   policy_arns = [
-    module.iam_policies["eks_admin"].policy_arn
+    aws_iam_policy.custom_policies["eks_admin"].arn
   ]
 }
 
