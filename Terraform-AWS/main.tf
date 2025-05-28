@@ -188,10 +188,10 @@ locals {
 }
 module "iam_policies" {
   source             = "./Modules/IAM-policy"
-  for_each           = var.iam_policies # This iterates over "jenkins", "eks_developer", "eks_admin" etc.
+  for_each           = var.iam_policies 
   policy_name        = each.value.name
   policy_description = each.value.description
-  policy_document    = local.iam_policy_documents[each.key] # <--- THIS IS THE CORRECTED LINE
+  policy_document    = local.iam_policy_documents[each.key] 
 }
 ##############################################################################################################
 # EC2
@@ -222,7 +222,7 @@ module "jenkins_master_server" {
   root_volume_size = var.root_volume_size
   root_volume_type = var.root_volume_type
   delete_on_termination = var.delete_on_termination
-  iam_instance_profile = module.eks_iam_roles.jenkins_role.instance_profile_name
+   iam_instance_profile = module.eks_iam_roles["jenkins_role"].instance_profile_name
 }
 
 ##############################################################################################################
