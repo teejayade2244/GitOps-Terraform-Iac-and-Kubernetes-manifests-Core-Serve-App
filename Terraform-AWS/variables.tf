@@ -75,15 +75,7 @@ variable "iam_policies" {
   type = map(object({
     name        = string
     description = string
-    document    = object({
-      Version   = string
-      Statement = list(object({
-        Sid       = optional(string)
-        Effect    = string
-        Action    = list(string)
-        Resource  = any  # Using 'any' since Resource can be string or list(string)
-      }))
-    })
+    document    = string  # Changed from object to string
   }))
   default = {}
 }
@@ -94,7 +86,7 @@ variable "eks_roles" {
     name               = string
     description        = string
     principal_service  = string
-    policy_arns        = list(string)  # Changed from managed_policy_arns to policy_arns
+    policy_arns        = list(string)  # Keep as policy_arns as you have it
     custom_policies    = optional(list(string), [])
   }))
 }
