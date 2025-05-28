@@ -75,9 +75,10 @@ variable "iam_policies" {
   type = map(object({
     name        = string
     description = string
-    document    = string # <--- CHANGE THIS BACK TO STRING
+    document    = any # <--- CHANGE THIS TO 'any'
   }))
 }
+
 
 
 variable "eks_roles" {

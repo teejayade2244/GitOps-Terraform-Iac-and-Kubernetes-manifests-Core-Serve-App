@@ -184,7 +184,7 @@ module "iam_policies" {
   for_each           = var.iam_policies
   policy_name        = each.value.name
   policy_description = each.value.description
-  policy_document    = each.value.document # <--- REMOVE jsonencode() HERE
+  policy_document    = jsonencode(each.value.document) # <--- Keep jsonencode() here!
 }
 ##############################################################################################################
 # EC2
