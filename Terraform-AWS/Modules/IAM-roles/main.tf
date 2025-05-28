@@ -1,5 +1,4 @@
 # Modules/IAM-roles/main.tf (Your provided code, with added outputs and tags)
-
 resource "aws_iam_role" "iam_role" {
   name               = var.role_name
   description        = var.role_description

@@ -163,21 +163,23 @@ module "iam_roles" {
   role_description = each.value.description
 
   # Calculate the assume_role_policy JSON string here
-  assume_role_policy = jsonencode({
+ assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
       Effect = "Allow"
       Action = "sts:AssumeRole"
       Principal = (
-        each.value.principal_type == "Service" ? {
+        each.value.principal_type == "Service" ?
+        # If 'Service' type, return ONLY the Service block
+        {
           Service = lookup(each.value, "principal_service", null)
-          AWS     = [] # <--- ADD THIS: Explicitly set AWS to an empty list
-        } : {
-          Service = null # <--- ADD THIS: Explicitly set Service to null
-          AWS     = (
+        } :
+        # If 'IAM' type, return ONLY the AWS block
+        {
+          AWS = (
             each.key == "admin_role" ? [for user in var.admins_usernames : module.admins[user].arn] :
             each.key == "developer_role" ? [for user in var.developers_usernames : module.developers[user].arn] :
-            [] # Default to an empty list
+            [] # Default to an empty list for other roles not assumed by users
           )
         }
       )
