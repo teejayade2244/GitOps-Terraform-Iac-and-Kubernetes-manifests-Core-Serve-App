@@ -23,13 +23,3 @@ resource "aws_iam_instance_profile" "instance_profile" {
   role = aws_iam_role.iam_role.name
 }
 
-# <--- Add these output blocks if they are not already present
-output "role_arn" {
-  description = "The ARN of the IAM role"
-  value       = aws_iam_role.iam_role.arn
-}
-
-output "role_name" {
-  description = "The Name of the IAM role"
-  value       = aws_iam_role.iam_role.name
-}
