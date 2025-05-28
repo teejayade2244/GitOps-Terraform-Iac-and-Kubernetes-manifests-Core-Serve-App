@@ -156,8 +156,11 @@ module "admins_group" {
 # IAM Roles
 # This module will create IAM roles for EKS cluster and node groups
 # and attach the necessary policies to them.
+# root/main.tf (Locate your module "eks_iam_roles" block)
+
 module "eks_iam_roles" {
-  for_each = var.eks_roles
+  for_each = var.eks_roles # This iterates through all roles defined in var.eks_roles (dev.tfvars)
+
   source           = "./Modules/IAM-roles"
   role_name        = "${var.cluster_name}-${each.value.name}"
   role_description = each.value.description
@@ -169,10 +172,12 @@ module "eks_iam_roles" {
       Principal = { Service = each.value.principal_service }
     }]
   })
-  # Dynamically add the eks_admin policy if this is the 'admin_role'
   policy_arns = concat(
-    each.value.policy_arns,
-    each.key == "admin_role" ? [module.iam_policies["eks_admin"].policy_arn] : []
+    each.value.policy_arns, # Start with policies already defined in dev.tfvars for this role
+    # Conditionally add the EKS admin policy if it's the admin_role
+    each.key == "admin_role" ? [module.iam_policies["eks_admin"].policy_arn] : [],
+    # Conditionally add the Jenkins policy if it's the jenkins_role
+    each.key == "jenkins_role" ? [module.iam_policies["jenkins"].policy_arn] : [] # <--- ADD THIS LINE!
   )
 }
 
