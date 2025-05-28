@@ -111,7 +111,7 @@ module "developers" {
   for_each             = toset(var.developers_usernames)
   user_name            = each.key
   create_login_profile = true
-  create_access_key    = true
+  create_access_key    = false
   tags = {
     Environment = var.environment
   }
@@ -123,7 +123,7 @@ module "admins" {
   for_each             = toset(var.admins_usernames)
   user_name            = each.key
   create_login_profile = true
-  create_access_key    = true
+  create_access_key    = false
   tags = {
     Environment = var.environment
   }
