@@ -225,7 +225,7 @@ module "jenkins_master_server" {
   root_volume_size = var.root_volume_size
   root_volume_type = var.root_volume_type
   delete_on_termination = var.delete_on_termination
-   iam_instance_profile = module.eks_iam_roles["jenkins_role"].instance_profile_name
+   iam_instance_profile = module.iam_roles["jenkins_role"].instance_profile_name
 }
 
 ##############################################################################################################
@@ -265,8 +265,8 @@ module "eks_cluster" {
   # Cluster Configuration
   cluster_name        = var.cluster_name
   kubernetes_version   = var.kubernetes_version
-  cluster_role_arn    = module.eks_iam_roles["cluster_role"].role_arn
-  node_group_role_arn = module.eks_iam_roles["nodegroup_role"].role_arn
+  cluster_role_arn    = module.iam_roles["cluster_role"].role_arn
+  node_group_role_arn = module.iam_roles["nodegroup_role"].role_arn
   vpc_id              = module.VPC.vpc_id
   # Network Configuration
   subnet_ids         = module.VPC.private_subnet_ids
