@@ -299,7 +299,7 @@ module "eks_cluster" {
 
   depends_on = [
     module.VPC,
-    module.eks_iam_roles,
+    module.iam_roles,
     module.EKS_cluster_security_group
   ]
 }
