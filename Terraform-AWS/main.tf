@@ -170,14 +170,14 @@ module "iam_roles" {
       Action = "sts:AssumeRole"
       Principal = (
         each.value.principal_type == "Service" ? {
-          # Use lookup to safely get principal_service, defaulting to null if not present
           Service = lookup(each.value, "principal_service", null)
+          AWS     = [] # <--- ADD THIS: Explicitly set AWS to an empty list
         } : {
-          # This calculates the list of user ARNs directly for IAM principal types
-          AWS = (
+          Service = null # <--- ADD THIS: Explicitly set Service to null
+          AWS     = (
             each.key == "admin_role" ? [for user in var.admins_usernames : module.admins[user].arn] :
             each.key == "developer_role" ? [for user in var.developers_usernames : module.developers[user].arn] :
-            [] # Default to an empty list for other roles not assumed by users
+            [] # Default to an empty list
           )
         }
       )
