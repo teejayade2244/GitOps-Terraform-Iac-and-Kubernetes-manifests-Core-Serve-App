@@ -156,7 +156,7 @@ module "admins_group" {
 # IAM Roles
 # This module will create IAM roles for EKS cluster and node groups
 # and attach the necessary policies to them.
-module "eks_iam_roles" {
+module "iam_roles" {
   for_each = var.iam_roles 
   source           = "./Modules/IAM-roles"
   role_name        = "${var.cluster_name}-${each.value.name}"
@@ -225,7 +225,7 @@ module "jenkins_master_server" {
   root_volume_size = var.root_volume_size
   root_volume_type = var.root_volume_type
   delete_on_termination = var.delete_on_termination
-   iam_instance_profile = module.iam_roles["jenkins_role"].instance_profile_name
+  iam_instance_profile = module.iam_roles["jenkins_role"].instance_profile_name
 }
 
 ##############################################################################################################
