@@ -175,7 +175,7 @@ module "eks_iam_roles" {
     each.key == "admin_role" ? [module.iam_policies["eks_admin"].policy_arn] : [],
     # Conditionally add the Jenkins policy if it's the jenkins_role
     each.key == "jenkins_role" ? [module.iam_policies["jenkins"].policy_arn] : [] ,
-    each.key == "developer_role" ? [module.iam_policies["eks_developer "].policy_arn] : []
+    each.key == "developer_role" ? [module.iam_policies["eks_developer"].policy_arn] : []
   )
 }
 
