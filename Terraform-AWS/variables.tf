@@ -78,15 +78,13 @@ variable "iam_policies" {
   }))
 }
 
-
-
 variable "iam_roles" {
   description = "Configuration for IAM roles."
   type = map(object({
     name              = string
     description       = string
     principal_type    = string
-    principal_service = optional(string) # Make principal_service optional
+    principal_service = optional(string) # Needs to be optional here because it's null for IAM principals
     policy_arns       = list(string)
   }))
 }

@@ -1,7 +1,14 @@
+# Modules/IAM-roles/main.tf (Your provided code, with added outputs and tags)
+
 resource "aws_iam_role" "iam_role" {
   name               = var.role_name
   description        = var.role_description
-  assume_role_policy = var.assume_role_policy
+  assume_role_policy = var.assume_role_policy # This is correct
+
+  tags = { # Consider adding tags for better resource management
+    Name = var.role_name
+    # Add other common tags if needed, e.g., Environment = var.environment if passed as a variable
+  }
 }
 
 resource "aws_iam_role_policy_attachment" "policy_attachment" {
@@ -11,7 +18,18 @@ resource "aws_iam_role_policy_attachment" "policy_attachment" {
 }
 
 resource "aws_iam_instance_profile" "instance_profile" {
-  count = var.create_instance_profile ? 1 : 0
+  count = var.create_instance_profile ? 1 : 0 # Uses the variable passed from root/main.tf
   name = "${var.role_name}-instance-profile"
-  role       = aws_iam_role.iam_role.name
+  role = aws_iam_role.iam_role.name
+}
+
+# <--- Add these output blocks if they are not already present
+output "role_arn" {
+  description = "The ARN of the IAM role"
+  value       = aws_iam_role.iam_role.arn
+}
+
+output "role_name" {
+  description = "The Name of the IAM role"
+  value       = aws_iam_role.iam_role.name
 }

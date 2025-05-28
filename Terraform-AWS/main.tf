@@ -161,15 +161,8 @@ module "iam_roles" {
   source           = "./Modules/IAM-roles"
   role_name        = "${var.cluster_name}-${each.value.name}"
   role_description = each.value.description
-  principal_type    = each.value.principal_type
-  principal_service = lookup(each.value, "principal_service", null) # Use lookup to handle optional principal_service
 
-  principal_arns = (
-    each.key == "admin_role" ? [for user in var.admins_usernames : module.admins[user].arn] :
-    each.key == "developer_role" ? [for user in var.developers_usernames : module.developers[user].arn] :
-    []
-  )
-
+  # Calculate the assume_role_policy JSON string here
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
@@ -177,20 +170,33 @@ module "iam_roles" {
       Action = "sts:AssumeRole"
       Principal = (
         each.value.principal_type == "Service" ? {
-          Service = each.value.principal_service
+          # Use lookup to safely get principal_service, defaulting to null if not present
+          Service = lookup(each.value, "principal_service", null)
         } : {
-          AWS = each.value.principal_arns
+          # This calculates the list of user ARNs directly for IAM principal types
+          AWS = (
+            each.key == "admin_role" ? [for user in var.admins_usernames : module.admins[user].arn] :
+            each.key == "developer_role" ? [for user in var.developers_usernames : module.developers[user].arn] :
+            [] # Default to an empty list for other roles not assumed by users
+          )
         }
       )
     }]
   })
+
+  # Pass the list of policy ARNs as an input variable
   policy_arns = concat(
     each.value.policy_arns,
     each.key == "admin_role" ? [module.iam_policies["eks_admin"].policy_arn] : [],
     each.key == "jenkins_role" ? [module.iam_policies["jenkins"].policy_arn] : [],
     each.key == "developer_role" ? [module.iam_policies["eks_developer"].policy_arn] : []
   )
+
+  # Pass the create_instance_profile flag, if your module expects it
+  # Example: only create instance profile for nodegroup_role
+  create_instance_profile = each.key == "nodegroup_role" ? true : false
 }
+
 # IAM Policies
 # This module will create IAM policies based on the provided configuration
 # and attach them to the respective roles and groups.

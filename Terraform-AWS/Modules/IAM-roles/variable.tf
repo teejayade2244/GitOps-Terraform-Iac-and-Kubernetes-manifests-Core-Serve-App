@@ -1,43 +1,29 @@
+
 variable "role_name" {
+  description = "The name of the IAM role."
   type        = string
-  description = "The name of the IAM role"
 }
 
 variable "role_description" {
+  description = "The description of the IAM role."
   type        = string
   default     = ""
-  description = "Description of the IAM role"
 }
 
+# Define assume_role_policy as a string variable
 variable "assume_role_policy" {
+  description = "The policy that grants an entity permission to assume the role (as a JSON string)."
   type        = string
-  description = "Trust relationship in JSON"
 }
 
 variable "policy_arns" {
+  description = "A list of IAM policy ARNs to attach to the role."
   type        = list(string)
-  description = "List of IAM policy ARNs to attach"
+  default     = []
 }
 
 variable "create_instance_profile" {
-  description = "Whether to create an instance profile"
+  description = "Whether to create an instance profile for this role."
   type        = bool
-  default     = true
-}
-
-variable "principal_type" {
-  description = "Type of principal that can assume this role (Service or IAM)."
-  type        = string
-}
-
-variable "principal_service" {
-  description = "Service principal for assume role policy (e.g., ec2.amazonaws.com). Required if principal_type is 'Service'."
-  type        = string
-  default     = null # Make it optional
-}
-
-variable "principal_arns" {
-  description = "List of IAM User/Role ARNs that can assume this role. Required if principal_type is 'IAM'."
-  type        = list(string)
-  default     = [] # Make it optional and default to empty
+  default     = false # Set a default if it's not always passed
 }
