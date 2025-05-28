@@ -7,3 +7,5 @@ output "policy_name" {
   description = "Name of the created IAM policy"
   value       = aws_iam_policy.policy.name
 }
+
+
