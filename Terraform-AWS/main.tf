@@ -299,6 +299,6 @@ module "eks_cluster" {
 
 module "eks_access_entries" {
   source         = "./Modules/EKS-access-entry"
-  cluster_name   = aws_eks_cluster.this.name 
+  cluster_name   = var.cluster_name
   access_entries = local.eks_cluster_access_entries 
 }
