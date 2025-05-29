@@ -7,7 +7,6 @@ spec:
   description: "core-serve project for managing applications"
   sourceRepos:
     - https://github.com/teejayade2244/GitOps-Terraform-Iac-and-Kubernetes-manifests-Core-Serve-App.git  
-    - namespace: core-serve
       server: https://kubernetes.default.svc
   clusterResourceWhitelist:
     - group: '*'
