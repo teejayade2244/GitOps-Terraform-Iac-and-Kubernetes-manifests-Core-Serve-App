@@ -165,29 +165,27 @@ module "iam_roles" {
 
   # Calculate the assume_role_policy JSON string here
 
-  assume_role_policy = jsonencode({
+assume_role_policy = each.value.principal_type == "Service" ? jsonencode({
   Version = "2012-10-17"
   Statement = [{
     Effect = "Allow"
     Action = "sts:AssumeRole"
-    Principal = (
-      # Service principals
-      each.value.principal_type == "Service" ? {
-        Service = each.value.principal_service
-      } :
-      # User principals (changed from "IAM" to "User")
-      each.value.principal_type == "User" ? {
-        AWS = (
-          each.key == "admin_role" ? [for user in var.admins_usernames : module.admins[user].arn] :
-          each.key == "developer_role" ? [for user in var.developers_usernames : module.developers[user].arn] :
-          ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"] # Keep as array
-        )
-      } :
-      # Default fallback - keep as array for consistency
-      {
-        AWS = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
-      }
-    )
+    Principal = {
+      Service = each.value.principal_service
+    }
+  }]
+}) : jsonencode({
+  Version = "2012-10-17"
+  Statement = [{
+    Effect = "Allow"
+    Action = "sts:AssumeRole"
+    Principal = {
+      AWS = (
+        each.key == "admin_role" ? [for user in var.admins_usernames : module.admins[user].arn] :
+        each.key == "developer_role" ? [for user in var.developers_usernames : module.developers[user].arn] :
+        ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
+      )
+    }
   }]
 })
 
