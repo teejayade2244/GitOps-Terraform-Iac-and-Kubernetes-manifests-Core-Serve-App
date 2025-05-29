@@ -270,7 +270,7 @@ resource "aws_s3_object" "eks_admin_script" {
 
 resource "aws_s3_object" "eks_dev_script" {
   bucket = module.s3_EKS_Access_entry_Scripts.bucket_id
-  key    = "dev.sh"
+  key    = "EKS-dev.sh"
   source = "../EKS-dev.sh"
   content_type = "text/x-shellscript"
   etag   = filemd5("../EKS-dev.sh")
