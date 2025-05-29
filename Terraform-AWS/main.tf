@@ -156,6 +156,7 @@ module "admins_group" {
 # IAM Roles
 # This module will create IAM roles for EKS cluster and node groups
 # and attach the necessary policies to them.
+data "aws_caller_identity" "current" {}
 module "iam_roles" {
   for_each = var.iam_roles
   source           = "./Modules/IAM-roles"
@@ -169,19 +170,23 @@ module "iam_roles" {
   Statement = [{
     Effect = "Allow"
     Action = "sts:AssumeRole"
-    Principal = merge(
+    Principal = (
       # Service principals
       each.value.principal_type == "Service" ? {
         Service = each.value.principal_service
-      } : {},
-      # User principals - only for roles that should be assumable by users
-      each.value.principal_type == "User" && lookup(each.value, "assumable_by_users", false) ? {
+      } :
+      # IAM user principals
+      each.value.principal_type == "IAM" ? {
         AWS = (
           each.key == "admin_role" ? [for user in var.admins_usernames : module.admins[user].arn] :
           each.key == "developer_role" ? [for user in var.developers_usernames : module.developers[user].arn] :
-          []
+          ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"] # Fallback for other IAM roles
         )
-      } : {}
+      } :
+      # Default fallback - should never reach here
+      {
+        AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+      }
     )
   }]
 })
