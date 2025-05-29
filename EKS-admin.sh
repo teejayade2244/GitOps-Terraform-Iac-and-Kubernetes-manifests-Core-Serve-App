@@ -1,11 +1,8 @@
 #!/bin/bash
-
-
 # you need to have the AWS CLI configured with a profile that has permission to assume the EKS Admin role.
 # You can set this up using:
 # aws configure --profile admin-name
 
-# --- Configuration ---
 AWS_BASE_PROFILE="admin-name" # The AWS CLI profile that has permission to assume the admin role
 EKS_ADMIN_ROLE_ARN="arn:aws:iam::911167885172:role/core-serve-eks-cluster-eks-admin-role" # EKS Admin Role ARN
 EKS_CLUSTER_NAME="core-serve-eks-cluster" # EKS Cluster Name

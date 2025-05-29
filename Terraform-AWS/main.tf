@@ -260,6 +260,7 @@ module "s3_EKS_Access_entry_Scripts" {
   
 }
 
+# Uploading scripts to S3 bucket for EKS access entries
 resource "aws_s3_object" "eks_admin_script" {
   bucket = module.s3_EKS_Access_entry_Scripts.bucket_id
   key    = "EKS-admin.sh"
@@ -275,6 +276,7 @@ resource "aws_s3_object" "eks_dev_script" {
   content_type = "text/x-shellscript"
   etag   = filemd5("../EKS-dev.sh")
 }
+
 ####################################################################################################################
 locals {
   tfvars_content = file("../Terraform-AWS/dev.tfvars")
