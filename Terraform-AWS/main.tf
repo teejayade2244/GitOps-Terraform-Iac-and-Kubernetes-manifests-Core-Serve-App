@@ -162,29 +162,29 @@ module "iam_roles" {
   source           = "./Modules/IAM-roles"
   role_name        = "${var.cluster_name}-${each.value.name}"
   role_description = each.value.description
-assume_role_policy = each.value.principal_type == "Service" ? jsonencode({
-  Version = "2012-10-17"
-  Statement = [{
-    Effect = "Allow"
-    Action = "sts:AssumeRole"
-    Principal = {
-      Service = each.value.principal_service
-    }
-  }]
-}) : jsonencode({
-  Version = "2012-10-17"
-  Statement = [{
-    Effect = "Allow"
-    Action = "sts:AssumeRole"
-    Principal = {
-      AWS = (
-        each.key == "admin_role" ? [for user in var.admins_usernames : module.admins[user].arn] :
-        each.key == "developer_role" ? [for user in var.developers_usernames : module.developers[user].arn] :
-        ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
-      )
-    }
-  }]
-})
+    assume_role_policy = each.value.principal_type == "Service" ? jsonencode({
+      Version = "2012-10-17"
+      Statement = [{
+        Effect = "Allow"
+        Action = "sts:AssumeRole"
+        Principal = {
+          Service = each.value.principal_service
+        }
+      }]
+    }) : jsonencode({
+      Version = "2012-10-17"
+      Statement = [{
+        Effect = "Allow"
+        Action = "sts:AssumeRole"
+        Principal = {
+          AWS = (
+            each.key == "admin_role" ? [for user in var.admins_usernames : module.admins[user].arn] :
+            each.key == "developer_role" ? [for user in var.developers_usernames : module.developers[user].arn] :
+            ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
+          )
+        }
+      }]
+    })
 
   # Pass the list of policy ARNs as an input variable
   policy_arns = concat(
