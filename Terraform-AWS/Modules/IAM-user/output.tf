@@ -9,7 +9,7 @@ output "secret_access_key" {
 
 output "arn" {
   description = "The ARN of the IAM user."
-  value       = aws_iam_user.user.arn # Ensure 'aws_iam_user.user' matches your resource name
+  value       = aws_iam_user.user.arn #
 }
 
 output "name" {

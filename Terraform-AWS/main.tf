@@ -165,27 +165,26 @@ module "iam_roles" {
   # Calculate the assume_role_policy JSON string here
 
   assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Effect = "Allow"
-      Action = "sts:AssumeRole"
-      Principal = merge(
-        # If principal_type is "Service", create the Service map; otherwise, an empty map
-        each.value.principal_type == "Service" ? {
-          Service = lookup(each.value, "principal_service", null)
-        } : {},
-        # If principal_type is "IAM", create the AWS map; otherwise, an empty map
-        # Note: We use "IAM" here to be explicit, assuming that's the only other type
-        each.value.principal_type == "IAM" ? {
-          AWS = (
-            each.key == "admin_role" ? [for user in var.admins_usernames : module.admins[user].arn] :
-            each.key == "developer_role" ? [for user in var.developers_usernames : module.developers[user].arn] :
-            [] # Default to an empty list for other roles not assumed by users
-          )
-        } : {}
-      )
-    }]
-  })
+  Version = "2012-10-17"
+  Statement = [{
+    Effect = "Allow"
+    Action = "sts:AssumeRole"
+    Principal = merge(
+      # Service principals
+      each.value.principal_type == "Service" ? {
+        Service = each.value.principal_service
+      } : {},
+      # User principals - only for roles that should be assumable by users
+      each.value.principal_type == "User" && lookup(each.value, "assumable_by_users", false) ? {
+        AWS = (
+          each.key == "admin_role" ? [for user in var.admins_usernames : module.admins[user].arn] :
+          each.key == "developer_role" ? [for user in var.developers_usernames : module.developers[user].arn] :
+          []
+        )
+      } : {}
+    )
+  }]
+})
 
   # Pass the list of policy ARNs as an input variable
   policy_arns = concat(
