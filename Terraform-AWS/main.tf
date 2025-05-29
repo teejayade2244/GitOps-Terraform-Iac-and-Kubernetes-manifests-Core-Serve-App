@@ -162,9 +162,6 @@ module "iam_roles" {
   source           = "./Modules/IAM-roles"
   role_name        = "${var.cluster_name}-${each.value.name}"
   role_description = each.value.description
-
-  # Calculate the assume_role_policy JSON string here
-
 assume_role_policy = each.value.principal_type == "Service" ? jsonencode({
   Version = "2012-10-17"
   Statement = [{
@@ -196,9 +193,7 @@ assume_role_policy = each.value.principal_type == "Service" ? jsonencode({
     each.key == "jenkins_role" ? [module.iam_policies["jenkins"].policy_arn] : [],
     each.key == "developer_role" ? [module.iam_policies["eks_developer"].policy_arn] : []
   )
-
   # Pass the create_instance_profile flag, if your module expects it
-  # Example: only create instance profile for nodegroup_role
   create_instance_profile = each.key == "nodegroup_role" ? true : false
 }
 
@@ -258,6 +253,12 @@ module "s3" {
   bucket_description = var.bucket_description
 }
 
+module "s3_EKS_Access_entry_Scripts" {
+  source = "./Modules/S3"
+  bucket_name        = "EKS_Access_entry_Scripts"
+  bucket_description = "S3 bucket for EKS Access Entry Scripts"
+  
+}
 ####################################################################################################################
 locals {
   tfvars_content = file("../Terraform-AWS/dev.tfvars")
