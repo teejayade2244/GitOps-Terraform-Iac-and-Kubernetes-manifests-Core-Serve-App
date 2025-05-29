@@ -253,12 +253,12 @@ module "s3" {
   bucket_description = var.bucket_description
 }
 
-# module "s3_EKS_Access_entry_Scripts" {
-#   source = "./Modules/S3"
-#   bucket_name        = "EKS_Access_entry_Scripts"
-#   bucket_description = "S3 bucket for EKS Access Entry Scripts"
+module "s3_EKS_Access_entry_Scripts" {
+  source = "./Modules/S3"
+  bucket_name        = "EKS_Access_entry_Scripts"
+  bucket_description = "S3 bucket for EKS Access Entry Scripts"
   
-# }
+}
 ####################################################################################################################
 locals {
   tfvars_content = file("../Terraform-AWS/dev.tfvars")
