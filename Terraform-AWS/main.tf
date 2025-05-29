@@ -259,6 +259,22 @@ module "s3_EKS_Access_entry_Scripts" {
   bucket_description = "S3 bucket for EKS Access Entry Scripts"
   
 }
+
+resource "aws_s3_object" "eks_admin_script" {
+  bucket = module.s3_EKS_Access_entry_Scripts.bucket_id
+  key    = "EKS-admin.sh"
+  source = "../EKS-admin.sh"
+  content_type = "text/x-shellscript"
+  etag   = filemd5("${path.module}/scripts/EKS-admin.sh")
+}
+
+resource "aws_s3_object" "eks_dev_script" {
+  bucket = module.s3_EKS_Access_entry_Scripts.bucket_id
+  key    = "dev.sh"
+  source = "../EKS-dev.sh"
+  content_type = "text/x-shellscript"
+  etag   = filemd5("${path.module}/scripts/dev.sh")
+}
 ####################################################################################################################
 locals {
   tfvars_content = file("../Terraform-AWS/dev.tfvars")
