@@ -20,11 +20,11 @@ provider "aws" {
 }
 
 data "aws_eks_cluster" "cluster" {
-  name = aws.eks_cluster.eks_cluster.name
+  name = var.cluster_name  # Changed to use variable
 }
 
 data "aws_eks_cluster_auth" "cluster" {
-  name = aws.eks_cluster.eks_cluster.name
+  name = var.cluster_name  # Changed to use variable
 }
 
 provider "kubernetes" {
