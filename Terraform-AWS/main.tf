@@ -175,17 +175,17 @@ module "iam_roles" {
       each.value.principal_type == "Service" ? {
         Service = each.value.principal_service
       } :
-      # IAM user principals
-      each.value.principal_type == "IAM" ? {
+      # User principals (changed from "IAM" to "User")
+      each.value.principal_type == "User" ? {
         AWS = (
           each.key == "admin_role" ? [for user in var.admins_usernames : module.admins[user].arn] :
           each.key == "developer_role" ? [for user in var.developers_usernames : module.developers[user].arn] :
-          ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"] # Fallback for other IAM roles
+          ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"] # Keep as array
         )
       } :
-      # Default fallback - should never reach here
+      # Default fallback - keep as array for consistency
       {
-        AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+        AWS = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
       }
     )
   }]
