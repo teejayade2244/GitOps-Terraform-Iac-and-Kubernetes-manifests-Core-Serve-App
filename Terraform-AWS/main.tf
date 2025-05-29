@@ -255,7 +255,7 @@ module "s3" {
 
 module "s3_EKS_Access_entry_Scripts" {
   source = "./Modules/S3"
-  bucket_name        = "eks_access_entry_scripts"
+  bucket_name        = "eks-access-entry-scripts"
   bucket_description = "S3 bucket for EKS Access Entry Scripts"
   
 }
