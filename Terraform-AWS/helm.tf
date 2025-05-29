@@ -20,3 +20,19 @@ resource "helm_release" "nginx_ingress" {
     value = "true"
   }
 }
+
+
+resource "helm_release" "argocd" {
+  name             = "argocd"
+  repository       = "https://argoproj.github.io/argo-helm"
+  chart            = "argo-cd"
+  namespace        = "argocd"
+  create_namespace = true
+  version          = "5.53.0"
+
+  # values = [
+  #   templatefile("${path.module}/values/argocd-values.yaml", {})
+  # ]
+  wait = true
+  timeout = 600 #
+}
