@@ -265,7 +265,7 @@ resource "aws_s3_object" "eks_admin_script" {
   key    = "EKS-admin.sh"
   source = "../EKS-admin.sh"
   content_type = "text/x-shellscript"
-  etag   = filemd5("${path.module}/scripts/EKS-admin.sh")
+  etag   = filemd5("../EKS-admin.sh")
 }
 
 resource "aws_s3_object" "eks_dev_script" {
@@ -273,7 +273,7 @@ resource "aws_s3_object" "eks_dev_script" {
   key    = "dev.sh"
   source = "../EKS-dev.sh"
   content_type = "text/x-shellscript"
-  etag   = filemd5("${path.module}/scripts/dev.sh")
+  etag   = filemd5("../EKS-dev.sh")
 }
 ####################################################################################################################
 locals {
