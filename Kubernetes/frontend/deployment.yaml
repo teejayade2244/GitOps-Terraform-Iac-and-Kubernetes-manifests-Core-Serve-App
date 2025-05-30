@@ -7,23 +7,6 @@ metadata:
     app: core-serve-frontend
     type: front-end
 spec:
-  topologySpreadConstraints:
-    # Constraint 1: Spread across AWS Availability Zones (AZs)
-    - maxSkew: 1 
-      topologyKey: topology.kubernetes.io/zone 
-      whenUnsatisfiable: DoNotSchedule 
-      labelSelector:
-        matchLabels:
-          app: core-serve-frontend
-          type: front-end
-    # Constraint 2: Spread across individual Nodes (Hostnames) within AZs
-    - maxSkew: 1 
-      topologyKey: kubernetes.io/hostname 
-      whenUnsatisfiable: DoNotSchedule 
-      labelSelector:
-        matchLabels:
-          app: core-serve-frontend
-          type: front-end
   selector:
     matchLabels:
       app: core-serve-frontend
@@ -36,38 +19,47 @@ spec:
         app: core-serve-frontend
         type: front-end
     spec:
-      serviceAccountName: core-serve-service-account 
+      serviceAccountName: core-serve-service-account
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app: core-serve-frontend
+              type: front-end
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app: core-serve-frontend
+              type: front-end
       containers:
         - name: core-serve-frontend
           image: 911167885172.dkr.ecr.eu-west-2.amazonaws.com/core-serve-frontend-app:PR-86-1
-          # --- Resource Requests and Limits ---
           resources:
             requests:
-              memory: "64Mi"  
-              cpu: "250m"    
+              memory: "64Mi"
+              cpu: "250m"
             limits:
-              memory: "500m" 
-              cpu: "1Gi"     
-          # --- Container Port ---
+              memory: "500Mi"
+              cpu: "1Gi"
           ports:
             - containerPort: 3000
-          # --- Liveness Probe ---
-          # Checks if the container is still running and healthy. If it fails, Kubernetes restarts the container.
           livenessProbe:
             httpGet:
-              path: /healthz 
+              path: /healthz
               port: 3000
             initialDelaySeconds: 10
-            periodSeconds: 5      
-            timeoutSeconds: 3     
-            failureThreshold: 3   
-          # --- Readiness Probe ---
-          # Checks if the container is ready to serve traffic. If it fails, Kubernetes removes the pod from service endpoints.
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
           readinessProbe:
             httpGet:
-              path: /readyz 
+              path: /readyz
               port: 3000
-            initialDelaySeconds: 5  
-            periodSeconds: 3       
-            timeoutSeconds: 2     
-            failureThreshold: 2    
+            initialDelaySeconds: 5
+            periodSeconds: 3
+            timeoutSeconds: 2
+            failureThreshold: 2
