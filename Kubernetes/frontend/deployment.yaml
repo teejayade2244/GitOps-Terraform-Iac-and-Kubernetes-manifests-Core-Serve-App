@@ -40,11 +40,11 @@ spec:
           image: 911167885172.dkr.ecr.eu-west-2.amazonaws.com/core-serve-frontend-app:PR-86-1
           resources:
             requests:
-              memory: "64Mi"
+              memory: "240Mi"
               cpu: "250m"
             limits:
-              memory: "500Mi"
-              cpu: "1Gi"
+              memory: "1Gi"
+              cpu: "500m"
           ports:
             - containerPort: 3000
           livenessProbe:
