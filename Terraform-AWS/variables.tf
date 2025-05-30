@@ -155,6 +155,7 @@ variable "ecr_repositories" {
     environment         = string
     image_tag_mutability = string
     scan_on_push        = bool
+     force_delete        = optional(bool, false)
   }))
 }
 
