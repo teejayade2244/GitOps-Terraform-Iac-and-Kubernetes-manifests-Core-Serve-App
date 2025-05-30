@@ -236,3 +236,17 @@ data "aws_iam_policy_document" "aws_alb_controller" {
     resources = ["*"]
   }
 }
+
+data "aws_iam_policy_document" "ecr_pull_policy" {
+  statement {
+    sid    = "ECRPullAccess"
+    effect = "Allow"
+    actions = [
+      "ecr:GetDownloadUrlForLayer",
+      "ecr:BatchGetImage",
+      "ecr:BatchCheckLayerStatus",
+      "ecr:GetAuthorizationToken"
+    ]
+    resources = ["*"]  
+  }
+}

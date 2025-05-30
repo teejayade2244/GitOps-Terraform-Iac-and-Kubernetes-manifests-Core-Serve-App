@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: core-serve-frontend
+    namespace: staging 
+    labels:
+        app: core-serve-frontend
+        type: front-end
+spec:
+    topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: topology.kubernetes.io/zone 
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            app: core-serve-frontend
+            type: front-end
+    selector:
+        matchLabels:
+            app: core-serve-frontend
+            type: front-end
+    replicas: 3
+    template:
+        metadata:
+            name: core-serve-frontend
+            labels:
+                app: core-serve-frontend
+                type: front-end
+        spec:
+            imagePullSecrets:
+                - name: ecr-secret
+            containers:
+            - name: core-serve-frontend
+              image: 911167885172.dkr.ecr.eu-west-2.amazonaws.com/core-serve-frontend-app:PR-86-1
+              resources:
+                requests:
+                  memory: "64Mi"
+                  cpu: "250m"
+                limits:
+                  memory: "500m"
+                  cpu: "1Gi"
+              ports:
+                - containerPort: 3000
+            
