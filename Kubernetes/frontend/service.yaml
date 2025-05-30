@@ -4,6 +4,7 @@ metadata:
   name: core-serve-frontend
   namespace: core-serve
 spec:
+  type: LoadBalancer
   selector:
     app: core-serve-frontend
     type: front-end
