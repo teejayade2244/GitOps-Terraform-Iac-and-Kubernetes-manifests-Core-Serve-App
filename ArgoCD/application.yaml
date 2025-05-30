@@ -1,7 +1,10 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: my-app
+  name: core-serve-frontend
+  labels:
+    app.kubernetes.io/name: core-serve-frontend
+    app.kubernetes.io/part-of: core-serve
   namespace: argocd
 spec:
   project: core-serve-project
