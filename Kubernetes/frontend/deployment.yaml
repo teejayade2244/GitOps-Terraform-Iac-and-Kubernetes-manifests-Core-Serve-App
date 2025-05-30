@@ -37,7 +37,7 @@ spec:
               type: front-end
       containers:
         - name: core-serve-frontend
-          image: 911167885172.dkr.ecr.eu-west-2.amazonaws.com/core-serve-frontend-app:PR-86-1
+          image: 911167885172.dkr.ecr.eu-west-2.amazonaws.com/core-serve-frontend-app:PR-90-1
           resources:
             requests:
               memory: "240Mi"
