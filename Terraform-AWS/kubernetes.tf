@@ -30,7 +30,7 @@ resource "aws_iam_role_policy_attachment" "ecr_pull_attachment" {
   policy_arn = aws_iam_policy.ecr_pull_policy.arn
 }
 
-# Define your Kubernetes Service Account (using `kubernetes_service_account` resource or helm chart values)
+
 resource "kubernetes_service_account_v1" "core_serve_sa" {
   metadata {
     name      = "core-serve-service-account"

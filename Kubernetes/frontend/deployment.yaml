@@ -27,8 +27,7 @@ spec:
                 app: core-serve-frontend
                 type: front-end
         spec:
-            imagePullSecrets:
-                - name: ecr-secret
+            serviceAccountName: core-serve-service-account
             containers:
             - name: core-serve-frontend
               image: 911167885172.dkr.ecr.eu-west-2.amazonaws.com/core-serve-frontend-app:PR-86-1
