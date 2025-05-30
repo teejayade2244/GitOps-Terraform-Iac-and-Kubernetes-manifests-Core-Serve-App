@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
     name: core-serve-frontend
-    namespace: staging 
+    namespace: core-serve
     labels:
         app: core-serve-frontend
         type: front-end
