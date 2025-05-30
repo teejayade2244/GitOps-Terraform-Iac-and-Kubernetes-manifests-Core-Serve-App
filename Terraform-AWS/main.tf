@@ -241,9 +241,12 @@ module "jenkins_master_server" {
 
 ##############################################################################################################
 module "ecr" {
-  source          = "./Modules/ECR"
-  repository_name = var.repository_name
-  environment     = var.environment
+  source    = "./Modules/ECR"
+  for_each  = var.ecr_repositories
+  repository_name       = each.value.name
+  environment          = each.value.environment
+  image_tag_mutability = each.value.image_tag_mutability
+  scan_on_push        = each.value.scan_on_push
 }
 
 ####################################################################################################################

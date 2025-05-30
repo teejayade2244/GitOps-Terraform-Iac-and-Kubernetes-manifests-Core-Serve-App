@@ -148,9 +148,14 @@ variable "iam_instance_profile" {
 }
 ################################################################################################
 # ECR
-variable "repository_name" {
-  description = "The name of the ECR repository"
-  type        = string
+variable "ecr_repositories" {
+  description = "Map of ECR repositories to create"
+  type = map(object({
+    name                 = string
+    environment         = string
+    image_tag_mutability = string
+    scan_on_push        = bool
+  }))
 }
 
 
