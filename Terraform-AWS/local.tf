@@ -4,6 +4,7 @@ locals {
     jenkins       = data.aws_iam_policy_document.jenkins.json
     eks_developer = data.aws_iam_policy_document.eks_developer.json
     eks_admin     = data.aws_iam_policy_document.eks_admin.json
+    ecr_pull_policy     = data.aws_iam_policy_document.ecr_pull_policy.json
     aws_alb_controller = data.aws_iam_policy_document.aws_alb_controller.json
   }
 
