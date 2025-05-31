@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.app.name }}
+  namespace: {{ .Values.app.namespace }}
+  labels:
+    {{- include "core-serve-frontend.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "core-serve-frontend.selectorLabels" . | nindent 6 }}
+  replicas: {{ .Values.app.replicas }}
+  template:
+    metadata:
+      labels:
+        {{- include "core-serve-frontend.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ .Values.serviceAccount.name }}
+      {{- if or .Values.topologySpread.zones.enabled .Values.topologySpread.nodes.enabled }}
+      topologySpreadConstraints:
+        {{- if .Values.topologySpread.zones.enabled }}
+        - maxSkew: {{ .Values.topologySpread.maxSkew }}
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              {{- include "core-serve-frontend.selectorLabels" . | nindent 14 }}
+        {{- end }}
+        {{- if .Values.topologySpread.nodes.enabled }}
+        - maxSkew: {{ .Values.topologySpread.maxSkew }}
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              {{- include "core-serve-frontend.selectorLabels" . | nindent 14 }}
+        {{- end }}
+      {{- end }}
+      containers:
+        - name: {{ .Values.app.name }}
+          image: {{ .Values.container.image.repository }}:{{ .Values.container.image.tag }}
+          resources:
+            {{- toYaml .Values.container.resources | nindent 12 }}
+          ports:
+            - containerPort: {{ .Values.container.port }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.probes.liveness.path }}
+              port: {{ .Values.container.port }}
+            initialDelaySeconds: {{ .Values.probes.liveness.initialDelay }}
+            periodSeconds: {{ .Values.probes.liveness.period }}
+            timeoutSeconds: {{ .Values.probes.liveness.timeout }}
+            failureThreshold: {{ .Values.probes.liveness.failureThreshold }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.probes.readiness.path }}
+              port: {{ .Values.container.port }}
+            initialDelaySeconds: {{ .Values.probes.readiness.initialDelay }}
+            periodSeconds: {{ .Values.probes.readiness.period }}
+            timeoutSeconds: {{ .Values.probes.readiness.timeout }}
+            failureThreshold: {{ .Values.probes.readiness.failureThreshold }}

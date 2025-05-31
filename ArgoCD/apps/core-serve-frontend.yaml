@@ -2,16 +2,18 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: core-serve-frontend-staging
-  labels:
-    app.kubernetes.io/name: core-serve-frontend-staging
-    app.kubernetes.io/part-of: core-serve
   namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
 spec:
   project: core-serve-project
   source:
     repoURL: https://github.com/teejayade2244/GitOps-Terraform-Iac-and-Kubernetes-manifests-Core-Serve-App.git
     targetRevision: master
-    path: Kubernetes/frontend
+    path: Helm/core-serve-frontend
+    helm:
+      valueFiles:
+        - values/staging.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: staging
@@ -19,22 +21,34 @@ spec:
     automated:
       prune: true
       selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - PruneLast=true
+      - PrunePropagationPolicy=foreground
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
 
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: core-serve-frontend-production
-  labels:
-    app.kubernetes.io/name: core-serve-frontend-production
-    app.kubernetes.io/part-of: core-serve
   namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
 spec:
   project: core-serve-project
   source:
     repoURL: https://github.com/teejayade2244/GitOps-Terraform-Iac-and-Kubernetes-manifests-Core-Serve-App.git
     targetRevision: master
-    path: Kubernetes/frontend
+    path: Helm/core-serve-frontend
+    helm:
+      valueFiles:
+        - values/prod.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: production
@@ -42,3 +56,13 @@ spec:
     automated:
       prune: true
       selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - PruneLast=true
+      - PrunePropagationPolicy=foreground
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m

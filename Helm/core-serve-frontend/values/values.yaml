@@ -1,0 +1,43 @@
+# Base/Common values
+app:
+  type: front-end
+
+container:
+  resources:
+    requests:
+      memory: "240Mi"
+      cpu: "250m"
+    limits:
+      memory: "1Gi"
+      cpu: "500m"
+  port: 3000
+
+# Common probe settings
+probes:
+  liveness:
+    path: /healthz
+    initialDelay: 10
+    period: 5
+    timeout: 3
+    failureThreshold: 3
+  readiness:
+    path: /readyz
+    initialDelay: 5
+    period: 3
+    timeout: 2
+    failureThreshold: 2
+
+serviceAccount:
+  name: core-serve-service-account
+
+service:
+  type: LoadBalancer
+  protocol: TCP
+  port: 3000
+
+topologySpread:
+  maxSkew: 2
+  zones:
+    enabled: true
+  nodes:
+    enabled: true

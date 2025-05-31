@@ -1,0 +1,17 @@
+apiVersion: v2
+name: core-serve-backend
+description: A Helm chart for Core Serve Fbackend Application
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+
+maintainers:
+  - name: DevOps Team
+    email: adebunmi33@gmail.com
+
+keywords:
+  - backend
+  - express
+  - nodejs
+  - core-serve
+

@@ -1,0 +1,11 @@
+app:
+  name: core-serve-frontend-staging
+  namespace: staging
+  replicas: 2
+
+container:
+  image:
+    repository: 911167885172.dkr.ecr.eu-west-2.amazonaws.com/core-serve-frontend-app
+    tag: feature-dev-9
+
+
