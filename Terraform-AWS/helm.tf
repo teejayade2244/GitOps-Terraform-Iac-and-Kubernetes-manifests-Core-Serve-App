@@ -36,3 +36,40 @@ resource "helm_release" "argocd" {
   wait = true
   timeout = 600 #
 }
+
+resource "helm_release" "vault" {
+  name             = "vault"
+  repository       = "https://helm.releases.hashicorp.com"
+  chart            = "vault"
+  namespace        = "vault"
+  create_namespace = true
+  version          = "0.27.0"
+
+  set {
+    name  = "server.dev.enabled"
+    value = "true"
+  }
+
+  set {
+    name  = "server.ha.enabled"
+    value = "false"
+  }
+
+  set {
+    name  = "injector.enabled"
+    value = "true"
+  }
+
+  set {
+    name  = "ui.enabled"
+    value = "true"
+  }
+
+  set {
+    name  = "server.service.type"
+    value = "ClusterIP"
+  }
+
+  wait    = true
+  timeout = 600
+}
