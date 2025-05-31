@@ -1,0 +1,34 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: resource-viewer
+rules:
+- apiGroups: ["*"]
+  resources: ["pods", "deployments", "services", "configmaps", "secrets"]
+  verbs: ["get", "watch", "list"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding  
+metadata:
+  name: resource-viewer-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: resource-viewer
+subjects:
+- kind: Group
+  name: resource-viewer
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding  
+metadata:
+  name: admin-role-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: Group
+  name: admin-group

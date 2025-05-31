@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: core-serve-frontend
+  namespace: staging
+  labels:
+    app: core-serve-frontend
+    type: front-end
+spec:
+  selector:
+    matchLabels:
+      app: core-serve-frontend
+      type: front-end
+  replicas: 3
+  template:
+    metadata:
+      name: core-serve-frontend
+      labels:
+        app: core-serve-frontend
+        type: front-end
+    spec:
+      serviceAccountName: core-serve-service-account
+      topologySpreadConstraints:
+        - maxSkew: 2
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app: core-serve-frontend
+              type: front-end
+        - maxSkew: 2
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app: core-serve-frontend
+              type: front-end
+      containers:
+        - name: core-serve-frontend
+          image: 911167885172.dkr.ecr.eu-west-2.amazonaws.com/core-serve-frontend-app:feature-dev-9
+          resources:
+            requests:
+              memory: "240Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
+          ports:
+            - containerPort: 3000
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 3
+            timeoutSeconds: 2
+            failureThreshold: 2

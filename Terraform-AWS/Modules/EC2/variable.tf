@@ -32,3 +32,24 @@ variable "enable_provisioner" {
   type    = bool
   default = false   
 }
+
+variable "root_volume_size" {
+  description = "Size of the root volume in GB"
+  type        = number
+}
+
+variable "root_volume_type" {
+  description = "Type of the root EBS volume"
+  type        = string
+}
+
+variable "delete_on_termination" {
+  description = "Type of the root EBS volume"
+  type        = bool
+}
+
+variable "iam_instance_profile" {
+  description = "IAM Instance Profile to attach to the instance"
+  type        = string
+  default     = null
+}

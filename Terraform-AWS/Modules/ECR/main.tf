@@ -1,15 +1,22 @@
 resource "aws_ecr_repository" "ecr_repo" {
   name                 = var.repository_name
-  image_tag_mutability = "MUTABLE"
+  image_tag_mutability = var.image_tag_mutability
 
-  encryption_configuration {
-    encryption_type = "AES256" 
+  image_scanning_configuration {
+    scan_on_push = var.scan_on_push
   }
 
   tags = {
-    Name        = var.repository_name
     Environment = var.environment
-    Managed_by  = "Terraform"
+  }
+
+  lifecycle {
+    prevent_destroy = true
+    ignore_changes = [
+      image_tag_mutability,
+      image_scanning_configuration,
+      tags
+    ]
   }
 }
 

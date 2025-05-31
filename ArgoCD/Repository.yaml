@@ -1,0 +1,10 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Repository
+metadata:
+  name: core-serve-repo
+  namespace: argocd
+spec:
+  type: git
+  url: https://github.com/teejayade2244/GitOps-Terraform-Iac-and-Kubernetes-manifests-Core-Serve-App.git
+  project: core-serve-project
+  name: core-serve-repo
