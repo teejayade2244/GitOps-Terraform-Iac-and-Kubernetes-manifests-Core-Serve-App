@@ -4,13 +4,13 @@ description: A Helm chart for Core Serve Frontend Application
 type: application
 version: 0.1.0
 appVersion: "1.0.0"
+icon: https://your-icon-url.svg 
 
 maintainers:
-  - name: DevOps Team
-    email: adebunmi33@gmail.com
+    - name: DevOps Team
+      email: devops@core-serve.com
 
 keywords:
-  - frontend
-  - react
-  - core-serve
-
+    - frontend
+    - react
+    - core-serve
