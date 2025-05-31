@@ -1,14 +1,15 @@
 apiVersion: v1
 kind: Service
 metadata:
-    name: { { .Values.app.name } }
-    namespace: { { .Values.app.namespace } }
-    labels: { { - include "core-serve-frontend.labels" . | nindent 4 } }
+  name: {{ .Values.app.name }}
+  namespace: {{ .Values.app.namespace }}
+  labels:
+    {{- include "core-serve-frontend.labels" . | nindent 4 }}
 spec:
-    type: { { .Values.service.type } }
-    selector:
-        { { - include "core-serve-frontend.selectorLabels" . | nindent 4 } }
-    ports:
-        - protocol: { { .Values.service.protocol } }
-          port: { { .Values.service.port } }
-          targetPort: { { .Values.container.port } }
+  type: {{ .Values.service.type }}
+  selector:
+    {{- include "core-serve-frontend.selectorLabels" . | nindent 4 }}
+  ports:
+    - protocol: {{ .Values.service.protocol }}
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.container.port }}
