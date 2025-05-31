@@ -10,7 +10,7 @@ spec:
   project: core-serve-project
   source:
     repoURL: https://github.com/teejayade2244/GitOps-Terraform-Iac-and-Kubernetes-manifests-Core-Serve-App.git
-    targetRevision: feature/dev
+    targetRevision: master
     path: Kubernetes/frontend
   destination:
     server: https://kubernetes.default.svc
