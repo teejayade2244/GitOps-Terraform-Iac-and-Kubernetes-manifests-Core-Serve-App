@@ -1,9 +1,9 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: core-serve-frontend
+  name: core-serve-frontend-staging
   labels:
-    app.kubernetes.io/name: core-serve-frontend
+    app.kubernetes.io/name: core-serve-frontend-staging
     app.kubernetes.io/part-of: core-serve
   namespace: argocd
 spec:
@@ -24,9 +24,9 @@ spec:
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: core-serve-frontend
+  name: core-serve-frontend-production
   labels:
-    app.kubernetes.io/name: core-serve-frontend
+    app.kubernetes.io/name: core-serve-frontend-production
     app.kubernetes.io/part-of: core-serve
   namespace: argocd
 spec:
