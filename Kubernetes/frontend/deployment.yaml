@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: core-serve-frontend
-  namespace: core-serve 
+  namespace: staging
   labels:
     app: core-serve-frontend
     type: front-end
@@ -21,14 +21,14 @@ spec:
     spec:
       serviceAccountName: core-serve-service-account
       topologySpreadConstraints:
-        - maxSkew: 1
+        - maxSkew: 2
           topologyKey: topology.kubernetes.io/zone
           whenUnsatisfiable: DoNotSchedule
           labelSelector:
             matchLabels:
               app: core-serve-frontend
               type: front-end
-        - maxSkew: 1
+        - maxSkew: 2
           topologyKey: kubernetes.io/hostname
           whenUnsatisfiable: DoNotSchedule
           labelSelector:
