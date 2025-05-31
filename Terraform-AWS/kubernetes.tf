@@ -17,7 +17,7 @@ resource "aws_iam_role" "ecr_pull_role" {
         Action = "sts:AssumeRoleWithWebIdentity"
         Condition = {
           StringEquals = {
-            "${replace(data.aws_eks_cluster.cluster.identity[0].oidc[0].issuer, "https://", "")}:sub" : "system:serviceaccount:core-serve:core-serve-service-account"
+            "${replace(data.aws_eks_cluster.cluster.identity[0].oidc[0].issuer, "https://", "")}:sub" : "system:serviceaccount:staging:core-serve-service-account"
           }
         }
       }
@@ -34,7 +34,7 @@ resource "aws_iam_role_policy_attachment" "ecr_pull_attachment" {
 resource "kubernetes_service_account_v1" "core_serve_sa" {
   metadata {
     name      = "core-serve-service-account"
-    namespace = "core-serve" 
+    namespace = "staging" 
     annotations = {
       "eks.amazonaws.com/role-arn" = aws_iam_role.ecr_pull_role.arn
     }

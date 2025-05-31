@@ -1,9 +1,32 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: core-serve-frontend
+  name: core-serve-frontend-staging
   labels:
-    app.kubernetes.io/name: core-serve-frontend
+    app.kubernetes.io/name: core-serve-frontend-staging
+    app.kubernetes.io/part-of: core-serve
+  namespace: argocd
+spec:
+  project: core-serve-project
+  source:
+    repoURL: https://github.com/teejayade2244/GitOps-Terraform-Iac-and-Kubernetes-manifests-Core-Serve-App.git
+    targetRevision: feature/dev
+    path: Kubernetes/frontend
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: staging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: core-serve-frontend-production
+  labels:
+    app.kubernetes.io/name: core-serve-frontend-production
     app.kubernetes.io/part-of: core-serve
   namespace: argocd
 spec:
@@ -14,7 +37,7 @@ spec:
     path: Kubernetes/frontend
   destination:
     server: https://kubernetes.default.svc
-    namespace: core-serve
+    namespace: production
   syncPolicy:
     automated:
       prune: true

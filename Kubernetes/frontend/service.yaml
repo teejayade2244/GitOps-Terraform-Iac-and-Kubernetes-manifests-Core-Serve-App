@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: core-serve-frontend
-  namespace: core-serve
+  namespace: staging
 spec:
   type: LoadBalancer
   selector:

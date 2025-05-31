@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: core-serve-frontend
-  namespace: core-serve 
+  namespace: staging
   labels:
     app: core-serve-frontend
     type: front-end
@@ -37,7 +37,7 @@ spec:
               type: front-end
       containers:
         - name: core-serve-frontend
-          image: 911167885172.dkr.ecr.eu-west-2.amazonaws.com/core-serve-frontend-app:PR-90-1
+          image: 911167885172.dkr.ecr.eu-west-2.amazonaws.com/core-serve-frontend-app:feature-dev-9
           resources:
             requests:
               memory: "240Mi"
