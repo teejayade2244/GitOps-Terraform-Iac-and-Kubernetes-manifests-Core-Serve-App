@@ -44,6 +44,9 @@ spec:
       containers:
         - name: {{ .Values.app.name }}
           image: {{ .Values.container.image.repository }}:{{ .Values.container.image.tag }}
+          envFrom:
+          - secretRef:
+              name: core-serve-secret
           resources:
             {{- toYaml .Values.container.resources | nindent 12 }}
           ports:
