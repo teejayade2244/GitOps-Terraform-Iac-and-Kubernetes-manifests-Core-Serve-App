@@ -66,3 +66,37 @@ spec:
         duration: 5s
         factor: 2
         maxDuration: 3m
+  
+ 
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: core-serve-Ingress
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: core-serve-project
+  source:
+    repoURL: https://github.com/teejayade2244/GitOps-Terraform-Iac-and-Kubernetes-manifests-Core-Serve-App.git
+    targetRevision: master
+    path: Kubernetes/
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: staging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - PruneLast=true
+      - PrunePropagationPolicy=foreground
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
