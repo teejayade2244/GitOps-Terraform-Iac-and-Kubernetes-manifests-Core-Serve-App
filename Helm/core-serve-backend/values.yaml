@@ -30,7 +30,7 @@ probes:
 serviceAccount:
     name: core-serve-backend-sa
 service:
-    type: ClusterIP
+    type: LoadBalancer
     protocol: TCP
     port: 5000
 
