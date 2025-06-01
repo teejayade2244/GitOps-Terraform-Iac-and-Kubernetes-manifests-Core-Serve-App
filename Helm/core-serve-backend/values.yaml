@@ -26,10 +26,8 @@ probes:
         period: 3
         timeout: 2
         failureThreshold: 2
-
 serviceAccount:
     name: core-serve-backend-sa
-
 service:
     type: ClusterIP
     protocol: TCP

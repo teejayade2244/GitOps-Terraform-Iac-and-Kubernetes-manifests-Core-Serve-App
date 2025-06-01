@@ -5,7 +5,6 @@ metadata:
   namespace: {{ .Values.app.namespace }}
   labels:
     {{- include "core-serve-backend.labels" . | nindent 4 }}
-
 spec:
   selector:
     matchLabels:
