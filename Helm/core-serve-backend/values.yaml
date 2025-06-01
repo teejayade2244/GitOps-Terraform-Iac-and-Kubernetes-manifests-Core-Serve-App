@@ -28,7 +28,7 @@ probes:
     failureThreshold: 2
 
 serviceAccount:
-  name: core-serve-service-account
+  name: core-serve-backend-sa
 
 service:
   type: ClusterIP
