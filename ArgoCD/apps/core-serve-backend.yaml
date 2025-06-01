@@ -9,7 +9,7 @@ spec:
   project: core-serve-project
   source:
     repoURL: https://github.com/teejayade2244/GitOps-Terraform-Iac-and-Kubernetes-manifests-Core-Serve-App.git
-    targetRevision: main
+    targetRevision: master
     path: Helm/core-serve-backend
     helm:
       valueFiles:
@@ -44,7 +44,7 @@ spec:
   project: core-serve-project
   source:
     repoURL: https://github.com/teejayade2244/GitOps-Terraform-Iac-and-Kubernetes-manifests-Core-Serve-App.git
-    targetRevision: main
+    targetRevision: master
     path: Helm/core-serve-backend
     helm:
       valueFiles:
