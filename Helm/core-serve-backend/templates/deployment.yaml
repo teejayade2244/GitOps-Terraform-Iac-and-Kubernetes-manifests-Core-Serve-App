@@ -5,6 +5,12 @@ metadata:
   namespace: {{ .Values.app.namespace }}
   labels:
     {{- include "core-serve-backend.labels" . | nindent 4 }}
+  # annotations:
+    [vault.hashicorp.com/agent-inject](https://vault.hashicorp.com/agent-inject): "true"
+    [vault.hashicorp.com/agent-inject-secret-mongodb-url](https://vault.hashicorp.com/agent-inject-secret-mongodb-url): "/v1/kv/data/core-serve"
+    [vault.hashicorp.com/agent-inject-path-mongodb-url](https://vault.hashicorp.com/agent-inject-path-mongodb-url): "mongodb-url"
+    [vault.hashicorp.com/auth-method](https://vault.hashicorp.com/auth-method): "kubernetes"
+    [vault.hashicorp.com/auth-kubernetes-role](https://vault.hashicorp.com/auth-kubernetes-role): "my-backend-app-role"
 spec:
   selector:
     matchLabels:
