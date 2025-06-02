@@ -162,15 +162,16 @@ variable "ecr_repositories" {
 ################################################################################################
 # S3
 
-variable "bucket_name" {
-  description = "The name of the s3 bucket"
-  type        = string
-}
-
-
-variable "bucket_description" {
-  description = "s3 bucket description"
-  type        = string
+variable "s3_buckets" {
+  description = "Map of S3 buckets to create"
+  type = map(object({
+    bucket_name        = string
+    bucket_description = string
+    versioning        = optional(bool, false)
+    encryption        = optional(bool, true)
+    force_destroy     = optional(bool, false)
+    tags             = optional(map(string), {})
+  }))
 }
 
 #########################################################################################################

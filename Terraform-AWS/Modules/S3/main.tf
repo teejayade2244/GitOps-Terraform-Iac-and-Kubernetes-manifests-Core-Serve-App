@@ -1,25 +1,24 @@
 # this create an S3 bucket for remote backend
 resource "aws_s3_bucket" "s3_bucket" {
   bucket = var.bucket_name
-  lifecycle {
-    prevent_destroy = true  # Prevent accidental deletion of the bucket
-  }
-  tags = {
+  force_destroy = var.force_destroy
+
+  tags = merge({
     Name        = var.bucket_name
-    description = var.bucket_description
-  }
+    Description = var.bucket_description
+  }, var.tags)
 }
 
-
-resource "aws_s3_bucket_versioning" "s3_bucket_versioning" {
+resource "aws_s3_bucket_versioning" "versioning" {
+  count  = var.versioning ? 1 : 0
   bucket = aws_s3_bucket.s3_bucket.id
   versioning_configuration {
     status = "Enabled"
   }
 }
 
-# Enable server-side encryption by default
-resource "aws_s3_bucket_server_side_encryption_configuration" "s3_server_side_encryption_configuration" {
+resource "aws_s3_bucket_server_side_encryption_configuration" "encryption" {
+  count  = var.encryption ? 1 : 0
   bucket = aws_s3_bucket.s3_bucket.id
 
   rule {

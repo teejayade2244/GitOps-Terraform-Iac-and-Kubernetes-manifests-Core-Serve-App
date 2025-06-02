@@ -250,22 +250,23 @@ module "ecr" {
 }
 
 ####################################################################################################################
-module "s3" {
-  source = "./Modules/S3"
-  bucket_name        = var.bucket_name
-  bucket_description = var.bucket_description
+# S3 Buckets
+module "s3_buckets" {
+  source    = "./Modules/S3"
+  for_each  = var.s3_buckets
+  bucket_name        = each.value.bucket_name
+  bucket_description = each.value.bucket_description
+  versioning        = each.value.versioning
+  encryption        = each.value.encryption
+  force_destroy     = each.value.force_destroy
+  tags             = merge(each.value.tags, {
+    Environment = var.environment
+  })
 }
 
-module "s3_EKS_Access_entry_Scripts" {
-  source = "./Modules/S3"
-  bucket_name        = "eks-access-entry-scripts"
-  bucket_description = "S3 bucket for EKS Access Entry Scripts"
-  
-}
-
-# Uploading scripts to S3 bucket for EKS access entries
+# Upload scripts to S3
 resource "aws_s3_object" "eks_admin_script" {
-  bucket = module.s3_EKS_Access_entry_Scripts.bucket_id
+  bucket = module.s3_buckets["eks_scripts"].bucket_id
   key    = "EKS-admin.sh"
   source = "../EKS-admin.sh"
   content_type = "text/x-shellscript"
@@ -273,7 +274,7 @@ resource "aws_s3_object" "eks_admin_script" {
 }
 
 resource "aws_s3_object" "eks_dev_script" {
-  bucket = module.s3_EKS_Access_entry_Scripts.bucket_id
+  bucket = module.s3_buckets["eks_scripts"].bucket_id
   key    = "EKS-dev.sh"
   source = "../EKS-dev.sh"
   content_type = "text/x-shellscript"
