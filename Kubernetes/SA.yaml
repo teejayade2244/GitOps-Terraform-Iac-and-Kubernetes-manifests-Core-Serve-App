@@ -8,3 +8,12 @@ metadata:
   namespace: production
 
 
+---
+apiVersion: v1
+automountServiceAccountToken: true
+kind: ServiceAccount
+metadata:
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::911167885172:role/core-serve-ecr-pull-role
+  name: core-serve-service-account
+  namespace: staging

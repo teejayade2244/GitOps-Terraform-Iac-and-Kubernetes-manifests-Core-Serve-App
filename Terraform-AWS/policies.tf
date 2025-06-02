@@ -209,7 +209,9 @@ data "aws_iam_policy_document" "aws_alb_controller" {
       "elasticloadbalancing:DeleteLoadBalancer",
       "elasticloadbalancing:ModifyTargetGroup",
       "elasticloadbalancing:ModifyTargetGroupAttributes",
-      "elasticloadbalancing:DeleteTargetGroup"
+      "elasticloadbalancing:DeleteTargetGroup",
+      "ec2:DeleteSecurityGroup",
+			"ec2:CreateSecurityGroup"
     ]
     resources = ["*"]
     condition {
