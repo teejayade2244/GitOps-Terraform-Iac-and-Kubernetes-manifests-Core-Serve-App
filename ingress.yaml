@@ -28,3 +28,35 @@ spec:
                 name: core-serve-frontend-staging
                 port:
                   number: 3000
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: core-serve-ingress
+  namespace: production
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]' 
+    # alb.ingress.kubernetes.io/ssl-redirect: '443' # <-- REMOVE THIS LINE
+    # alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:eu-west-2:911167885172:certificate/abcdefgh-ijkl-mnop-qrst-uvwxyz123456" # <-- REMOVE THIS LINE
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: core-serve-backend-staging
+                port:
+                  number: 5000
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: core-serve-frontend-staging
+                port:
+                  number: 3000
