@@ -58,6 +58,7 @@ data "aws_iam_policy_document" "aws_alb_controller" {
       "ec2:DescribeAvailabilityZones",
       "ec2:DescribeInternetGateways",
       "ec2:DescribeVpcs",
+      "elasticloadbalancing:AddTags",
       "ec2:DescribeVpcPeeringConnections",
       "ec2:DescribeSubnets",
       "ec2:DescribeSecurityGroups",
