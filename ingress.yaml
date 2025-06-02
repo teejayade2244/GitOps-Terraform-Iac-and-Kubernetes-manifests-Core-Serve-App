@@ -50,13 +50,13 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: core-serve-backend-staging
+                name: core-serve-backend-production
                 port:
                   number: 5000
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: core-serve-frontend-staging
+                name: core-serve-frontend-production
                 port:
                   number: 3000
