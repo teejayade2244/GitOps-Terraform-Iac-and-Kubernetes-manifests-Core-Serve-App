@@ -44,7 +44,8 @@ metadata:
     alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:eu-west-2:911167885172:certificate/6af614a8-3ff0-445d-b5db-cf08ec7691d5"
 spec:
   rules:
-    - http:
+    - host: coreservetest.co.uk
+      http:
         paths:
           - path: /api
             pathType: Prefix
