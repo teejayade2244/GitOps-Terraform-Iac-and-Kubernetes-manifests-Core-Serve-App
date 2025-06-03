@@ -39,9 +39,9 @@ metadata:
     kubernetes.io/ingress.class: alb
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
-    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]' 
-    # alb.ingress.kubernetes.io/ssl-redirect: '443' # <-- REMOVE THIS LINE
-    # alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:eu-west-2:911167885172:certificate/abcdefgh-ijkl-mnop-qrst-uvwxyz123456" # <-- REMOVE THIS LINE
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:eu-west-2:911167885172:certificate/6af614a8-3ff0-445d-b5db-cf08ec7691d5"
 spec:
   rules:
     - http:
