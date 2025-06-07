@@ -6,5 +6,5 @@ app:
 container:
   image:
     repository: 911167885172.dkr.ecr.eu-west-2.amazonaws.com/core-serve-backend-app
-    tag: main-2
+    tag: main-4
 
