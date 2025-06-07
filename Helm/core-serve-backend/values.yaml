@@ -30,6 +30,7 @@ probes:
 serviceAccount:
     name: core-serve-backend-sa
 service:
+    name: metrics
     type: ClusterIP
     protocol: TCP
     port: 5000

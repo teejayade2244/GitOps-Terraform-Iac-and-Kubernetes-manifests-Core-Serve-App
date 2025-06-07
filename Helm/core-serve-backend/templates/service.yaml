@@ -11,5 +11,6 @@ spec:
     {{- include "core-serve-backend.selectorLabels" . | nindent 4 }}
   ports:
     - protocol: {{ .Values.service.protocol }}
+      name: {{ .Values.service.name }}
       port: {{ .Values.service.port }}
       targetPort: {{ .Values.container.port }}
