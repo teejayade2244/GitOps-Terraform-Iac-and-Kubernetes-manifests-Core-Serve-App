@@ -14,3 +14,7 @@ spec:
       name: {{ .Values.service.name }}
       port: {{ .Values.service.port }}
       targetPort: {{ .Values.container.port }}
+    - protocol: {{ .Values.service.protocol }}
+      name: {{ .Values.service.name }}-metrics
+      port: {{ .Values.service.metricsPort }}
+      targetPort: {{ .Values.container.metricsPort }}

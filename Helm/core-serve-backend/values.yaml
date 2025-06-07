@@ -11,6 +11,7 @@ container:
             memory: "1Gi"
             cpu: "500m"
     port: 5000
+    metricsPort: 7000
 
 # Common probe settings
 probes:
@@ -29,11 +30,13 @@ probes:
         
 serviceAccount:
     name: core-serve-backend-sa
+    
 service:
-    name: metrics
+    name: core-serve-backend
     type: ClusterIP
     protocol: TCP
     port: 5000
+    metricsPort: 7000
 
 topologySpread:
     maxSkew: 2
