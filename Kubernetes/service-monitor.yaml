@@ -29,7 +29,7 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: core-serve-backend-production
+      app: core-serve-backend
   namespaceSelector:
     matchNames:
       - production
