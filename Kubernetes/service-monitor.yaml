@@ -14,7 +14,7 @@ spec:
     matchNames:
       - staging
   endpoints:
-    - port: metrics
+    - port: core-serve-backend-metrics
       path: /metrics
       interval: 15s
       scrapeTimeout: 14s
@@ -35,7 +35,7 @@ spec:
     matchNames:
       - production
   endpoints:
-    - port: metrics
+    - port: core-serve-backend-metrics
       path: /metrics
       interval: 15s
       scrapeTimeout: 14s
