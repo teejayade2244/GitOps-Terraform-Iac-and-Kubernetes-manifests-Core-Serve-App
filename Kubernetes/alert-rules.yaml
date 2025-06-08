@@ -6,7 +6,7 @@ metadata:
   labels:
     release: kube-prometheus-stack
     app: core-serve
-    team: backend
+    team: backend # Keeping 'backend' label, but these rules apply more broadly
 spec:
   groups:
     - name: core-serve.api.rules
@@ -18,7 +18,7 @@ spec:
           (
             sum(rate(core_serve_api_errors_total[5m])) by (endpoint, method, status_code)
             / 
-            sum(rate(core_serve_http_request_duration_seconds_count[5m])) by (endpoint, method) # Corrected metric name
+            sum(rate(core_serve_http_request_duration_seconds_count[5m])) by (endpoint, method) 
           ) * 100 > 5
         for: 2m
         labels:
@@ -38,7 +38,7 @@ spec:
           (
             sum(rate(core_serve_api_errors_total[5m])) by (endpoint, method)
             / 
-            sum(rate(core_serve_http_request_duration_seconds_count[5m])) by (endpoint, method) # Corrected metric name
+            sum(rate(core_serve_http_request_duration_seconds_count[5m])) by (endpoint, method) 
           ) * 100 > 2
         for: 5m
         labels:
@@ -50,7 +50,7 @@ spec:
           summary: "Elevated API error rate on {{ $labels.endpoint }}"
           description: "Error rate is {{ $value | humanizePercentage }} on endpoint {{ $labels.endpoint }} (method: {{ $labels.method }}). Monitor closely."
 
-      # Slow API Response with different severity levels (these metrics were already correct)
+      # Slow API Response with different severity levels
       - alert: SlowAPIResponseCritical
         expr: histogram_quantile(0.95, rate(core_serve_http_request_duration_seconds_bucket[5m])) > 5
         for: 3m
@@ -76,9 +76,9 @@ spec:
           summary: "Slow API responses detected"
           description: "95th percentile latency is {{ $value | humanizeDuration }}"
 
-      # API Availability Alert (metric 'up' is Prometheus built-in, job label required from scrape config)
+      # API Availability Alert (still relevant for service-level availability)
       - alert: APIDown
-        expr: up{job="core-serve-backend-staging"} == 0 # Adjusted job label to match serviceMonitor's job
+        expr: up{job="core-serve-backend-staging"} == 0 # You might want similar rules for other jobs
         for: 1m
         labels:
           severity: critical
@@ -276,3 +276,85 @@ spec:
         annotations:
           summary: "Health check failing for Core Serve"
           description: "Application health check has been failing for more than 2 minutes"
+    
+    - name: core-serve.pod.rules
+      interval: 30s
+      rules:
+      # Alert for Pods CrashLooping (frequent restarts)
+      - alert: CoreServePodCrashLooping
+        expr: |
+          sum by (namespace, pod, container) (
+            rate(kube_pod_container_status_restarts_total{
+              namespace=~"staging|production",
+              pod=~"core-serve-backend.*|core-serve-frontend.*"
+            }[5m])
+          ) > 2
+        for: 5m
+        labels:
+          severity: critical
+          team: sre
+          service: core-serve
+          alert_type: stability
+        annotations:
+          summary: "Core Serve Pod {{ $labels.pod }} ({{ $labels.namespace }}) is crash-looping"
+          description: "Container {{ $labels.container }} in pod {{ $labels.pod }} has restarted {{ $value | humanize }} times in the last 5 minutes. This indicates a serious issue."
+          runbook_url: "https://runbooks.company.com/pod-crashloop"
+
+      # Alert for Pods Stuck in Pending State
+      - alert: CoreServePodPendingTooLong
+        expr: |
+          kube_pod_status_phase{
+            phase="Pending",
+            namespace=~"staging|production",
+            pod=~"core-serve-backend.*|core-serve-frontend.*"
+          } == 1
+        for: 10m
+        labels:
+          severity: warning
+          team: sre
+          service: core-serve
+          alert_type: availability
+        annotations:
+          summary: "Core Serve Pod {{ $labels.pod }} ({{ $labels.namespace }}) is stuck in Pending"
+          description: "Pod {{ $labels.pod }} has been in a 'Pending' state for more than 10 minutes. This might indicate resource shortages or scheduling issues."
+          runbook_url: "https://runbooks.company.com/pod-pending"
+
+      # Alert for Pods Not Ready (Liveness/Readiness Probe Failures)
+      - alert: CoreServePodNotReady
+        expr: |
+          kube_pod_container_status_ready{
+            condition="false", # Container is explicitly not ready
+            namespace=~"staging|production",
+            pod=~"core-serve-backend.*|core-serve-frontend.*"
+          } == 1
+        for: 5m
+        labels:
+          severity: critical
+          team: backend
+          service: core-serve
+          alert_type: availability
+        annotations:
+          summary: "Core Serve Pod {{ $labels.pod }} ({{ $labels.namespace }}) is not ready"
+          description: "Pod {{ $labels.pod }} is not ready. This could indicate a failing liveness or readiness probe, or an application issue."
+          runbook_url: "https://runbooks.company.com/pod-not-ready"
+
+      # Alert for Pods in Failed State (e.g., container exited with non-zero code)
+      - alert: CoreServePodFailed
+        expr: |
+          kube_pod_status_phase{
+            phase="Failed",
+            namespace=~"staging|production",
+            pod=~"core-serve-backend.*|core-serve-frontend.*"
+          } == 1
+        for: 1m
+        labels:
+          severity: critical
+          team: sre
+          service: core-serve
+          alert_type: availability
+        annotations:
+          summary: "Core Serve Pod {{ $labels.pod }} ({{ $labels.namespace }}) is in Failed state"
+          description: "Pod {{ $labels.pod }} has entered a 'Failed' state. Check pod logs for errors."
+          runbook_url: "https://runbooks.company.com/pod-failed"
+
+    
