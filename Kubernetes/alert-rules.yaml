@@ -1,0 +1,294 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: core-serve-alerts
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack
+    app: core-serve
+    team: backend
+spec:
+  groups:
+    - name: core-serve.api.rules
+      interval: 30s
+      rules:
+      # API Error Rate Alert - Corrected metric name
+      - alert: APIHighErrorRate
+        expr: |
+          (
+            sum(rate(core_serve_api_errors_total[5m])) by (endpoint, method, status_code)
+            / 
+            sum(rate(core_serve_http_request_duration_seconds_count[5m])) by (endpoint, method) # Corrected metric name
+          ) * 100 > 5
+        for: 2m
+        labels:
+          severity: critical
+          team: backend
+          service: core-serve
+          alert_type: error_rate
+        annotations:
+          summary: "High API error rate on {{ $labels.endpoint }}"
+          description: "Error rate is {{ $value | humanizePercentage }} on endpoint {{ $labels.endpoint }} (method: {{ $labels.method }}). This indicates potential issues with the API."
+          runbook_url: "https://runbooks.company.com/api-error-rate"
+          dashboard_url: "https://grafana.company.com/d/api-dashboard"
+
+      # API Error Rate Warning - Corrected metric name
+      - alert: APIErrorRateWarning
+        expr: |
+          (
+            sum(rate(core_serve_api_errors_total[5m])) by (endpoint, method)
+            / 
+            sum(rate(core_serve_http_request_duration_seconds_count[5m])) by (endpoint, method) # Corrected metric name
+          ) * 100 > 2
+        for: 5m
+        labels:
+          severity: warning
+          team: backend
+          service: core-serve
+          alert_type: error_rate
+        annotations:
+          summary: "Elevated API error rate on {{ $labels.endpoint }}"
+          description: "Error rate is {{ $value | humanizePercentage }} on endpoint {{ $labels.endpoint }} (method: {{ $labels.method }}). Monitor closely."
+
+      # Slow API Response with different severity levels (these metrics were already correct)
+      - alert: SlowAPIResponseCritical
+        expr: histogram_quantile(0.95, rate(core_serve_http_request_duration_seconds_bucket[5m])) > 5
+        for: 3m
+        labels:
+          severity: critical
+          team: backend
+          service: core-serve
+          alert_type: latency
+        annotations:
+          summary: "Very slow API responses detected"
+          description: "95th percentile latency is {{ $value | humanizeDuration }} which is critically high"
+          runbook_url: "https://runbooks.company.com/api-latency"
+
+      - alert: SlowAPIResponseWarning
+        expr: histogram_quantile(0.95, rate(core_serve_http_request_duration_seconds_bucket[5m])) > 2
+        for: 5m
+        labels:
+          severity: warning
+          team: backend
+          service: core-serve
+          alert_type: latency
+        annotations:
+          summary: "Slow API responses detected"
+          description: "95th percentile latency is {{ $value | humanizeDuration }}"
+
+      # API Availability Alert (metric 'up' is Prometheus built-in, job label required from scrape config)
+      - alert: APIDown
+        expr: up{job="core-serve-backend-staging"} == 0 # Adjusted job label to match serviceMonitor's job
+        for: 1m
+        labels:
+          severity: critical
+          team: backend
+          service: core-serve
+          alert_type: availability
+        annotations:
+          summary: "Core Serve API is down"
+          description: "The Core Serve API on {{ $labels.instance }} has been down for more than 1 minute"
+          runbook_url: "https://runbooks.company.com/api-down"
+
+    - name: core-serve.infrastructure.rules
+      interval: 30s
+      rules:
+      # Fixed CPU Usage Alert - More accurate expression (Node Exporter metrics)
+      - alert: HighCPUUsage
+        expr: |
+          (
+            100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)
+          ) > 90
+        for: 5m
+        labels:
+          severity: critical
+          team: sre
+          service: core-serve
+          alert_type: resource
+        annotations:
+          summary: "High CPU usage detected on {{ $labels.instance }}"
+          description: "CPU usage is {{ $value | humanizePercentage }} on {{ $labels.instance }}. Check process usage immediately."
+          runbook_url: "https://runbooks.company.com/high-cpu"
+
+      - alert: HighCPUUsageWarning
+        expr: |
+          (
+            100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)
+          ) > 75
+        for: 10m
+        labels:
+          severity: warning
+          team: sre
+          service: core-serve
+          alert_type: resource
+        annotations:
+          summary: "Elevated CPU usage on {{ $labels.instance }}"
+          description: "CPU usage is {{ $value | humanizePercentage }} on {{ $labels.instance }}"
+
+      # Improved Memory Usage Alert (Node Exporter metrics)
+      - alert: HighMemoryUsage
+        expr: |
+          (
+            (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes
+          ) * 100 > 90
+        for: 5m
+        labels:
+          severity: critical
+          team: platform
+          service: core-serve
+          alert_type: resource
+        annotations:
+          summary: "High memory usage detected on {{ $labels.instance }}"
+          description: "Memory usage is {{ $value | humanizePercentage }} on {{ $labels.instance }}"
+          runbook_url: "https://runbooks.company.com/high-memory"
+
+      - alert: HighMemoryUsageWarning
+        expr: |
+          (
+            (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes
+          ) * 100 > 80
+        for: 10m
+        labels:
+          severity: warning
+          team: platform
+          service: core-serve
+          alert_type: resource
+        annotations:
+          summary: "Elevated memory usage on {{ $labels.instance }}"
+          description: "Memory usage is {{ $value | humanizePercentage }} on {{ $labels.instance }}"
+
+      # Container Memory Usage (kube-state-metrics)
+      - alert: ContainerMemoryUsageHigh
+        expr: |
+          (
+            container_memory_usage_bytes{pod=~"core-serve.*"} / 
+            container_spec_memory_limit_bytes{pod=~"core-serve.*"}
+          ) * 100 > 90
+        for: 5m
+        labels:
+          severity: critical
+          team: platform
+          service: core-serve
+          alert_type: resource
+        annotations:
+          summary: "High container memory usage in pod {{ $labels.pod }}"
+          description: "Container memory usage is {{ $value | humanizePercentage }} of limit in pod {{ $labels.pod }}"
+
+      # Disk Space Alert (Node Exporter metrics)
+      - alert: DiskSpaceHigh
+        expr: |
+          (
+            (node_filesystem_size_bytes{fstype!="tmpfs"} - node_filesystem_free_bytes{fstype!="tmpfs"}) /
+            node_filesystem_size_bytes{fstype!="tmpfs"}
+          ) * 100 > 90
+        for: 5m
+        labels:
+          severity: critical
+          team: sre
+          service: core-serve
+          alert_type: resource
+        annotations:
+          summary: "High disk usage on {{ $labels.instance }}"
+          description: "Disk usage is {{ $value | humanizePercentage }} on {{ $labels.instance }} ({{ $labels.mountpoint }})"
+
+    - name: core-serve.security.rules
+      interval: 30s
+      rules:
+      # Enhanced Failed Login Alert
+      - alert: HighFailedLogins
+        expr: rate(core_serve_failed_login_total[5m]) > 0.5
+        for: 5m
+        labels:
+          severity: critical
+          team: security
+          service: core-serve
+          alert_type: security
+        annotations:
+          summary: "High rate of failed login attempts"
+          description: "Failed login rate is {{ $value | humanize }} per second over the last 5 minutes. Possible brute force attack."
+          runbook_url: "https://runbooks.company.com/security-incident"
+
+      - alert: FailedLoginsWarning
+        expr: rate(core_serve_failed_login_total[15m]) > 0.1
+        for: 10m
+        labels:
+          severity: warning
+          team: security
+          service: core-serve
+          alert_type: security
+        annotations:
+          summary: "Elevated failed login attempts"
+          description: "Failed login rate is {{ $value | humanize }} per second over the last 15 minutes"
+
+      # Suspicious Activity Alert - Corrected metric name
+      - alert: UnusualTrafficSpike
+        expr: |
+          rate(core_serve_http_request_duration_seconds_count[5m]) > 
+          (avg_over_time(rate(core_serve_http_request_duration_seconds_count[5m])[1h:5m]) * 3) 
+        for: 5m
+        labels:
+          severity: warning
+          team: security
+          service: core-serve
+          alert_type: security
+        annotations:
+          summary: "Unusual traffic spike detected"
+          description: "Request rate is {{ $value | humanize }} per second, which is 3x higher than normal"
+
+    - name: core-serve.database.rules
+      interval: 30s
+      rules:
+      # Database Connection Pool Alert - NEW metric
+      - alert: DatabaseConnectionPoolHigh
+        expr: core_serve_db_connections_active / core_serve_db_connections_max > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          team: backend
+          service: core-serve
+          alert_type: database
+        annotations:
+          summary: "Database connection pool usage high"
+          description: "Database connection pool usage is {{ $value | humanizePercentage }}"
+
+      # Database Query Latency - NEW metric
+      - alert: DatabaseQuerySlow
+        expr: histogram_quantile(0.95, rate(core_serve_db_query_duration_seconds_bucket[5m])) > 1
+        for: 5m
+        labels:
+          severity: warning
+          team: backend
+          service: core-serve
+          alert_type: database
+        annotations:
+          summary: "Slow database queries detected"
+          description: "95th percentile database query latency is {{ $value | humanizeDuration }}"
+
+    - name: core-serve.business.rules
+      interval: 60s
+      rules:
+      # Business Logic Alerts - Corrected metric name
+      - alert: LowUserRegistrations
+        expr: rate(core_serve_registration_total[1h]) < 0.1 
+        for: 30m
+        labels:
+          severity: warning
+          team: product
+          service: core-serve
+          alert_type: business
+        annotations:
+          summary: "Low user registration rate"
+          description: "User registration rate is {{ $value | humanize }} per second over the last hour"
+
+      # Application Health Check - NEW metric
+      - alert: HealthCheckFailing
+        expr: core_serve_health_check_status != 1
+        for: 2m
+        labels:
+          severity: critical
+          team: backend
+          service: core-serve
+          alert_type: health
+        annotations:
+          summary: "Health check failing for Core Serve"
+          description: "Application health check has been failing for more than 2 minutes"
