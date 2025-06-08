@@ -6,7 +6,7 @@ app:
 container:
   image:
     repository: 911167885172.dkr.ecr.eu-west-2.amazonaws.com/core-serve-frontend-app
-    tag: master-4
+    tag: PR-111-1
     
 
 
