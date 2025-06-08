@@ -1,3 +1,14 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: smtp-secret
+  namespace: monitoring
+type: Opaque
+stringData:
+  username: 'adebunmi33@gmail.com'
+  password: 'njid zanu qmtl fyjx'
+
+---
 apiVersion: monitoring.coreos.com/v1alpha1
 kind: AlertmanagerConfig
 metadata:
@@ -8,10 +19,10 @@ metadata:
 spec: 
   route:
     receiver: 'default-receiver'
-    group_by: ['alertname', 'cluster', 'service', 'severity'] 
-    group_wait: 30s 
-    group_interval: 5m 
-    repeat_interval: 4h 
+    groupBy: ['alertname', 'cluster', 'service', 'severity'] 
+    groupWait: 30s 
+    groupInterval: 5m 
+    repeatInterval: 4h 
     routes:
     # Route for critical alerts
     - match:
@@ -36,9 +47,9 @@ spec:
         service: core-serve
         severity: critical
       receiver: 'core-serve-critical' 
-      group_by: ['alertname', 'pod', 'instance'] 
-      group_wait: 10s 
-      repeat_interval: 1h 
+      groupBy: ['alertname', 'pod', 'instance'] 
+      groupWait: 10s 
+      repeatInterval: 1h 
   receivers:
   - name: 'default-receiver'
     # Default Email recipient
@@ -48,8 +59,12 @@ spec:
         sendResolved: true 
         html: true 
         smarthost: 'smtp.gmail.com:587' 
-        smtp_auth_username: 'adebunmi33@gmail.com' 
-        smtp_auth_password: 'njid zanu qmtl fyjx' 
+        authUsername:
+          name: smtp-secret
+          key: username
+        authPassword:
+          name: smtp-secret
+          key: password
   
   - name: 'critical-alerts'
     emailConfigs:
@@ -58,8 +73,12 @@ spec:
         sendResolved: true
         html: true
         smarthost: 'smtp.gmail.com:587'
-        smtp_auth_username: 'adebunmi33@gmail.com'
-        smtp_auth_password: 'njid zanu qmtl fyjx'
+        authUsername:
+          name: smtp-secret
+          key: username
+        authPassword:
+          name: smtp-secret
+          key: password
   
   - name: 'warning-alerts'
     emailConfigs:
@@ -68,8 +87,12 @@ spec:
         sendResolved: true
         html: true
         smarthost: 'smtp.gmail.com:587'
-        smtp_auth_username: 'adebunmi33@gmail.com'
-        smtp_auth_password: 'njid zanu qmtl fyjx'
+        authUsername:
+          name: smtp-secret
+          key: username
+        authPassword:
+          name: smtp-secret
+          key: password
 
   - name: 'security-alerts'
     emailConfigs:
@@ -78,8 +101,12 @@ spec:
         sendResolved: true
         html: true
         smarthost: 'smtp.gmail.com:587'
-        smtp_auth_username: 'adebunmi33@gmail.com'
-        smtp_auth_password: 'njid zanu qmtl fyjx'
+        authUsername:
+          name: smtp-secret
+          key: username
+        authPassword:
+          name: smtp-secret
+          key: password
 
   - name: 'core-serve-critical'
     emailConfigs:
@@ -88,5 +115,9 @@ spec:
         sendResolved: true
         html: true
         smarthost: 'smtp.gmail.com:587'
-        smtp_auth_username: 'adebunmi33@gmail.com'
-        smtp_auth_password: 'njid zanu qmtl fyjx'
+        authUsername:
+          name: smtp-secret
+          key: username
+        authPassword:
+          name: smtp-secret
+          key: password
