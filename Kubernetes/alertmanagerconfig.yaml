@@ -1,14 +1,3 @@
-apiVersion: v1
-kind: Secret
-metadata:
-  name: smtp-secret
-  namespace: monitoring
-type: Opaque
-stringData:
-  username: 'adebunmi33@gmail.com'
-  password: 'njid zanu qmtl fyjx'
-
----
 apiVersion: monitoring.coreos.com/v1alpha1
 kind: AlertmanagerConfig
 metadata:
@@ -59,9 +48,7 @@ spec:
         sendResolved: true 
         html: true 
         smarthost: 'smtp.gmail.com:587' 
-        authUsername:
-          name: smtp-secret
-          key: username
+        authUsername: 'adebunmi33@gmail.com'
         authPassword:
           name: smtp-secret
           key: password
@@ -73,9 +60,7 @@ spec:
         sendResolved: true
         html: true
         smarthost: 'smtp.gmail.com:587'
-        authUsername:
-          name: smtp-secret
-          key: username
+        authUsername: 'adebunmi33@gmail.com'
         authPassword:
           name: smtp-secret
           key: password
@@ -87,9 +72,7 @@ spec:
         sendResolved: true
         html: true
         smarthost: 'smtp.gmail.com:587'
-        authUsername:
-          name: smtp-secret
-          key: username
+        authUsername: 'adebunmi33@gmail.com'
         authPassword:
           name: smtp-secret
           key: password
@@ -101,9 +84,7 @@ spec:
         sendResolved: true
         html: true
         smarthost: 'smtp.gmail.com:587'
-        authUsername:
-          name: smtp-secret
-          key: username
+        authUsername: 'adebunmi33@gmail.com'
         authPassword:
           name: smtp-secret
           key: password
@@ -115,9 +96,7 @@ spec:
         sendResolved: true
         html: true
         smarthost: 'smtp.gmail.com:587'
-        authUsername:
-          name: smtp-secret
-          key: username
+        authUsername: 'adebunmi33@gmail.com'
         authPassword:
           name: smtp-secret
           key: password
