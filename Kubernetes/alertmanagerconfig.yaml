@@ -4,44 +4,19 @@ metadata:
   name: main-rules-alert-config
   namespace: monitoring
   labels:
-    # IMPORTANT: This label must match the 'alertmanagerConfigSelector'
-    # in your main Alertmanager CRD (e.g., kube-prometheus-stack-alertmanager).
-    # For kube-prometheus-stack, it's typically 'release: kube-prometheus-stack'.
     release: kube-prometheus-stack 
 spec: 
-  # The 'route' section defines how incoming alerts are routed to different receivers.
-  # This is the top-level route; all alerts pass through here.
   route:
-    # 'receiver' specifies the default receiver for alerts that don't match any
-    # more specific nested routes.
     receiver: 'default-receiver'
-    
-    # 'group_by' is a list of labels by which alerts are grouped together
-    # before sending notifications. Alerts with identical values for these
-    # labels form a single notification group.
     group_by: ['alertname', 'cluster', 'service', 'severity'] 
-    
-    # 'group_wait' is the time to wait after the first alert in a new group arrives
-    # before sending the initial notification. This allows other related alerts to join.
     group_wait: 30s 
-    
-    # 'group_interval' is the time to wait before sending subsequent notifications
-    # for an already existing alert group that has new alerts or status changes.
     group_interval: 5m 
-    
-    # 'repeat_interval' is the minimum time to wait before re-sending a notification
-    # for an alert that is still firing (persistent issues).
     repeat_interval: 4h 
-
-    # 'routes' is a list of nested routing rules. Alerts are evaluated against these
-    # rules in order. The first matching rule dictates the receiver.
     routes:
     # Route for critical alerts
     - match:
         severity: critical
       receiver: 'critical-alerts'
-      # 'continue: true' means alerts matching this route will also be evaluated
-      # against subsequent routes, allowing an alert to go to multiple receivers.
       continue: true 
 
     # Route for warning alerts
@@ -53,95 +28,65 @@ spec:
     # Route for security team-specific alerts
     - match:
         team: security 
-      receiver: 'security-alerts' # Renamed for clarity as it includes email
+      receiver: 'security-alerts' 
       continue: true
 
     # Route for critical alerts specific to 'core-serve' service
     - match:
         service: core-serve
         severity: critical
-      receiver: 'core-serve-critical' # Renamed for clarity
-      # You can override grouping settings for specific routes
+      receiver: 'core-serve-critical' 
       group_by: ['alertname', 'pod', 'instance'] 
       group_wait: 10s 
       repeat_interval: 1h 
-
-  # The 'receivers' section defines the actual notification destinations.
-  # Each receiver must have a unique 'name' referenced in the 'route' section.
   receivers:
   - name: 'default-receiver'
-    # Default Slack channel
-    slackConfigs:
-      - channel: '#alerts-general'
-        api_url: 'YOUR_SLACK_WEBHOOK_URL_GENERAL'
-        text: '{{ template "slack.default.message" . }}' # Uses default template
     # Default Email recipient
     emailConfigs:
-      - to: 'your-general-alerts-email@example.com' # Replace with your actual recipient email
-        # The 'from', 'smarthost', 'smtp_auth_username', 'smtp_auth_password'
-        # fields here are per-receiver overrides. If you have global SMTP
-        # settings on your main Alertmanager configuration (recommended for
-        # all emails using the same SMTP), you can omit these.
-        # For simplicity here, they are included directly.
-        from: 'your-gmail-address@gmail.com' # Your Gmail address
-        sendResolved: true # Send notification when alert resolves
-        html: true # Send rich HTML emails
-        smarthost: 'smtp.gmail.com:587' # Gmail's SMTP server
-        smtp_auth_username: 'your-gmail-address@gmail.com' # Your Gmail address
-        smtp_auth_password: 'YOUR_GMAIL_APP_PASSWORD' # Your Gmail App Password
+      - to: 'adebunmi33@gmail.com' 
+        from: 'adebunmi33@gmail.com' 
+        sendResolved: true 
+        html: true 
+        smarthost: 'smtp.gmail.com:587' 
+        smtp_auth_username: 'adebunmi33@gmail.com' 
+        smtp_auth_password: 'njid zanu qmtl fyjx' 
   
   - name: 'critical-alerts'
-    slackConfigs:
-      - channel: '#alerts-critical'
-        api_url: 'YOUR_SLACK_WEBHOOK_URL_CRITICAL'
-        text: '{{ template "slack.critical.message" . }}'
     emailConfigs:
-      - to: 'your-critical-alerts-email@example.com'
-        from: 'your-gmail-address@gmail.com'
+      - to: 'adebunmi33@gmail.com'
+        from: 'adebunmi33@gmail.com'
         sendResolved: true
         html: true
         smarthost: 'smtp.gmail.com:587'
-        smtp_auth_username: 'your-gmail-address@gmail.com'
-        smtp_auth_password: 'YOUR_GMAIL_APP_PASSWORD'
+        smtp_auth_username: 'adebunmi33@gmail.com'
+        smtp_auth_password: 'njid zanu qmtl fyjx'
   
   - name: 'warning-alerts'
-    slackConfigs:
-      - channel: '#alerts-warnings'
-        api_url: 'YOUR_SLACK_WEBHOOK_URL_WARNINGS'
-        text: '{{ template "slack.warning.message" . }}'
     emailConfigs:
-      - to: 'your-warning-alerts-email@example.com'
-        from: 'your-gmail-address@gmail.com'
+      - to: 'adebunmi33@gmail.com'
+        from: 'adebunmi33@gmail.com'
         sendResolved: true
         html: true
         smarthost: 'smtp.gmail.com:587'
-        smtp_auth_username: 'your-gmail-address@gmail.com'
-        smtp_auth_password: 'YOUR_GMAIL_APP_PASSWORD'
+        smtp_auth_username: 'adebunmi33@gmail.com'
+        smtp_auth_password: 'njid zanu qmtl fyjx'
 
   - name: 'security-alerts'
-    slackConfigs:
-      - channel: '#alerts-security'
-        api_url: 'YOUR_SLACK_WEBHOOK_URL_SECURITY'
-        text: '{{ template "slack.security.message" . }}'
     emailConfigs:
-      - to: 'your-security-alerts-email@example.com'
-        from: 'your-gmail-address@gmail.com'
+      - to: 'adebunmi33@gmail.com'
+        from: 'adebunmi33@gmail.com'
         sendResolved: true
         html: true
         smarthost: 'smtp.gmail.com:587'
-        smtp_auth_username: 'your-gmail-address@gmail.com'
-        smtp_auth_password: 'YOUR_GMAIL_APP_PASSWORD'
+        smtp_auth_username: 'adebunmi33@gmail.com'
+        smtp_auth_password: 'njid zanu qmtl fyjx'
 
   - name: 'core-serve-critical'
-    slackConfigs:
-      - channel: '#core-serve-ops'
-        api_url: 'YOUR_SLACK_WEBHOOK_URL_CORE_SERVE'
-        text: '{{ template "slack.critical.message" . }}'
     emailConfigs:
-      - to: 'core-serve-ops-email@example.com'
-        from: 'your-gmail-address@gmail.com'
+      - to: 'adebunmi33@gmail.com'
+        from: 'adebunmi33@gmail.com'
         sendResolved: true
         html: true
         smarthost: 'smtp.gmail.com:587'
-        smtp_auth_username: 'your-gmail-address@gmail.com'
-        smtp_auth_password: 'YOUR_GMAIL_APP_PASSWORD'
+        smtp_auth_username: 'adebunmi33@gmail.com'
+        smtp_auth_password: 'njid zanu qmtl fyjx'

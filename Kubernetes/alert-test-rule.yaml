@@ -1,0 +1,21 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: test-gmail-alert
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack 
+spec:
+  groups:
+  - name: test.rules
+    rules:
+    - alert: GmailTestNotification
+      expr: vector(1) 
+      for: 5s 
+      labels:
+        severity: critical 
+        service: test-email-service
+        cluster: my-eks-cluster
+      annotations:
+        summary: "This is a test alert to your Gmail from Alertmanager!"
+        description: "If you see this, Gmail integration is working."
