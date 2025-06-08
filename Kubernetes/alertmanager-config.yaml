@@ -1,123 +1,85 @@
-apiVersion: monitoring.coreos.com/v1alpha1
-kind: AlertmanagerConfig
+apiVersion: v1
+kind: ConfigMap
 metadata:
-  name: main-rules-alert-config
-  namespace: monitoring
-  labels:
-    release: kube-prometheus-stack
-spec:
-  route:
-    receiver: 'default-receiver'
-    groupBy: ['alertname', 'cluster', 'service', 'severity']
-    groupWait: 30s
-    groupInterval: 5m
-    repeatInterval: 4h
-    routes:
-    - matchers:
-      - name: severity
-        value: critical
-      receiver: 'critical-alerts'
-      continue: true
-    - matchers:
-      - name: severity
-        value: warning
-      receiver: 'warning-alerts'
-      continue: true
-    - matchers:
-      - name: team
-        value: security
-      receiver: 'security-alerts'
-      continue: true
-    - matchers:
-      - name: service
-        value: core-serve
-      - name: severity
-        value: critical
-      receiver: 'core-serve-critical'
-      groupBy: ['alertname', 'pod', 'instance']
-      groupWait: 10s
-      repeatInterval: 1h
-
-  receivers:
-  - name: 'default-receiver'
-    emailConfigs:
-    - to: 'adebunmi33@gmail.com'
-      from: 'adebunmi33@gmail.com'
-      sendResolved: true
-      smarthost: 'smtp.gmail.com:587'
-      authUsername: 'adebunmi33@gmail.com'
-      authPassword:
+  name: alertmanager-main-config
+  namespace: monitoring # Or whatever namespace your Alertmanager is in
+data:
+  alertmanager.yaml: |
+    global:
+      resolve_timeout: 5m
+      smtp_hello: localhost
+      smtp_require_tls: true
+      smtp_tls_config:
+        insecure_skip_verify: false
+      smtp_smarthost: 'smtp.gmail.com:587'
+      smtp_auth_username: 'adebunmi33@gmail.com'
+      smtp_auth_password: 'njidzanuqmtlfyjx'
         name: smtp-secret
         key: password
-      # Corrected: Use 'headers' as an array of key-value pairs
-      headers:
-      - key: Subject
-        value: '[ALERT] {{ .GroupLabels.alertname }}'
-      html: |
-        {{ range .Alerts }}
-        Alert: {{ .Annotations.summary }}
-        Description: {{ .Annotations.description }}
-        Severity: {{ .Labels.severity }}
-        Instance: {{ .Labels.instance }}
-        Started: {{ .StartsAt }}
-        {{ end }}
+      smtp_from: 'adebunmi33@gmail.com' # Global from address
 
-  - name: 'critical-alerts'
-    emailConfigs:
-    - to: 'adebunmi33@gmail.com'
-      from: 'adebunmi33@gmail.com'
-      sendResolved: true
-      smarthost: 'smtp.gmail.com:587'
-      authUsername: 'adebunmi33@gmail.com'
-      authPassword:
-        name: smtp-secret
-        key: password
-      # Corrected: Use 'headers' as an array of key-value pairs
-      headers:
-      - key: Subject
-        value: '🚨 [CRITICAL] {{ .GroupLabels.alertname }}'
+    route:
+      receiver: 'default-receiver'
+      group_by: ['alertname', 'cluster', 'service', 'severity']
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 4h
+      routes:
+      - matchers:
+        - severity: 'critical'
+        receiver: 'critical-alerts'
+        continue: true
+      - matchers:
+        - severity: 'warning'
+        receiver: 'warning-alerts'
+        continue: true
+      - matchers:
+        - team: 'security'
+        receiver: 'security-alerts'
+        continue: true
+      - matchers:
+        - service: 'core-serve'
+        - severity: 'critical'
+        receiver: 'core-serve-critical'
+        group_by: ['alertname', 'pod', 'instance']
+        group_wait: 10s
+        repeat_interval: 1h
 
-  - name: 'warning-alerts'
-    emailConfigs:
-    - to: 'adebunmi33@gmail.com'
-      from: 'adebunmi33@gmail.com'
-      sendResolved: true
-      smarthost: 'smtp.gmail.com:587'
-      authUsername: 'adebunmi33@gmail.com'
-      authPassword:
-        name: smtp-secret
-        key: password
-      # Corrected: Use 'headers' as an array of key-value pairs
-      headers:
-      - key: Subject
-        value: '⚠️ [WARNING] {{ .GroupLabels.alertname }}'
+    receivers:
+    - name: 'default-receiver'
+      email_configs: # Use email_configs for native Alertmanager config
+      - to: 'adebunmi33@gmail.com'
+        send_resolved: true
+        subject: '[ALERT] {{ .GroupLabels.alertname }}' # Native Alertmanager uses 'subject' directly
+        html: |
+          {{ range .Alerts }}
+          Alert: {{ .Annotations.summary }}
+          Description: {{ .Annotations.description }}
+          Severity: {{ .Labels.severity }}
+          Instance: {{ .Labels.instance }}
+          Started: {{ .StartsAt }}
+          {{ end }}
 
-  - name: 'security-alerts'
-    emailConfigs:
-    - to: 'adebunmi33@gmail.com'
-      from: 'adebunmi33@gmail.com'
-      sendResolved: true
-      smarthost: 'smtp.gmail.com:587'
-      authUsername: 'adebunmi33@gmail.com'
-      authPassword:
-        name: smtp-secret
-        key: password
-      # Corrected: Use 'headers' as an array of key-value pairs
-      headers:
-      - key: Subject
-        value: '🔒 [SECURITY] {{ .GroupLabels.alertname }}'
+    - name: 'critical-alerts'
+      email_configs:
+      - to: 'adebunmi33@gmail.com'
+        send_resolved: true
+        subject: '🚨 [CRITICAL] {{ .GroupLabels.alertname }}'
 
-  - name: 'core-serve-critical'
-    emailConfigs:
-    - to: 'adebunmi33@gmail.com'
-      from: 'adebunmi33@gmail.com'
-      sendResolved: true
-      smarthost: 'smtp.gmail.com:587'
-      authUsername: 'adebunmi33@gmail.com'
-      authPassword:
-        name: smtp-secret
-        key: password
-      # Corrected: Use 'headers' as an array of key-value pairs
-      headers:
-      - key: Subject
-        value: '🚨 [CORE-SERVE CRITICAL] {{ .GroupLabels.alertname }}'
+    - name: 'warning-alerts'
+      email_configs:
+      - to: 'adebunmi33@gmail.com'
+        send_resolved: true
+        subject: '⚠️ [WARNING] {{ .GroupLabels.alertname }}'
+
+    - name: 'security-alerts'
+      email_configs:
+      - to: 'adebunmi33@gmail.com'
+        send_resolved: true
+        subject: '🔒 [SECURITY] {{ .GroupLabels.alertname }}'
+
+    - name: 'core-serve-critical'
+      email_configs:
+      - to: 'adebunmi33@gmail.com'
+        send_resolved: true
+        subject: '🚨 [CORE-SERVE CRITICAL] {{ .GroupLabels.alertname }}'
