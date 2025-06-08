@@ -13,28 +13,21 @@ spec:
     groupInterval: 5m
     repeatInterval: 4h
     routes:
-    # Route for critical alerts
-    - matchers:  # Fixed: changed from 'match' to 'matchers'
+    - matchers:
       - name: severity
         value: critical
       receiver: 'critical-alerts'
       continue: true
-
-    # Route for warning alerts
     - matchers:
       - name: severity
         value: warning
       receiver: 'warning-alerts'
       continue: true
-
-    # Route for security team-specific alerts
     - matchers:
       - name: team
         value: security
       receiver: 'security-alerts'
       continue: true
-
-    # Route for critical alerts specific to 'core-serve' service
     - matchers:
       - name: service
         value: core-serve
@@ -56,8 +49,9 @@ spec:
       authPassword:
         name: smtp-secret
         key: password
-      subject: '[ALERT] {{ .GroupLabels.alertname }}'
-      body: |
+      headers:
+        Subject: '[ALERT] {{ .GroupLabels.alertname }}'
+      html: |
         {{ range .Alerts }}
         Alert: {{ .Annotations.summary }}
         Description: {{ .Annotations.description }}
@@ -76,7 +70,8 @@ spec:
       authPassword:
         name: smtp-secret
         key: password
-      subject: '🚨 [CRITICAL] {{ .GroupLabels.alertname }}'
+      headers:
+        Subject: '🚨 [CRITICAL] {{ .GroupLabels.alertname }}'
 
   - name: 'warning-alerts'
     emailConfigs:
@@ -88,7 +83,8 @@ spec:
       authPassword:
         name: smtp-secret
         key: password
-      subject: '⚠️ [WARNING] {{ .GroupLabels.alertname }}'
+      headers:
+        Subject: '⚠️ [WARNING] {{ .GroupLabels.alertname }}'
 
   - name: 'security-alerts'
     emailConfigs:
@@ -100,7 +96,8 @@ spec:
       authPassword:
         name: smtp-secret
         key: password
-      subject: '🔒 [SECURITY] {{ .GroupLabels.alertname }}'
+      headers:
+        Subject: '🔒 [SECURITY] {{ .GroupLabels.alertname }}'
 
   - name: 'core-serve-critical'
     emailConfigs:
@@ -112,4 +109,5 @@ spec:
       authPassword:
         name: smtp-secret
         key: password
-      subject: '🚨 [CORE-SERVE CRITICAL] {{ .GroupLabels.alertname }}'
+      headers:
+        Subject: '🚨 [CORE-SERVE CRITICAL] {{ .GroupLabels.alertname }}'
