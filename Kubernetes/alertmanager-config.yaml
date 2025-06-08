@@ -49,8 +49,10 @@ spec:
       authPassword:
         name: smtp-secret
         key: password
-      # Corrected: Use 'subject' directly under emailConfigs
-      subject: '[ALERT] {{ .GroupLabels.alertname }}'
+      # Corrected: Use 'headers' as an array of key-value pairs
+      headers:
+      - key: Subject
+        value: '[ALERT] {{ .GroupLabels.alertname }}'
       html: |
         {{ range .Alerts }}
         Alert: {{ .Annotations.summary }}
@@ -70,8 +72,10 @@ spec:
       authPassword:
         name: smtp-secret
         key: password
-      # Corrected: Use 'subject' directly under emailConfigs
-      subject: '🚨 [CRITICAL] {{ .GroupLabels.alertname }}'
+      # Corrected: Use 'headers' as an array of key-value pairs
+      headers:
+      - key: Subject
+        value: '🚨 [CRITICAL] {{ .GroupLabels.alertname }}'
 
   - name: 'warning-alerts'
     emailConfigs:
@@ -83,8 +87,10 @@ spec:
       authPassword:
         name: smtp-secret
         key: password
-      # Corrected: Use 'subject' directly under emailConfigs
-      subject: '⚠️ [WARNING] {{ .GroupLabels.alertname }}'
+      # Corrected: Use 'headers' as an array of key-value pairs
+      headers:
+      - key: Subject
+        value: '⚠️ [WARNING] {{ .GroupLabels.alertname }}'
 
   - name: 'security-alerts'
     emailConfigs:
@@ -96,8 +102,10 @@ spec:
       authPassword:
         name: smtp-secret
         key: password
-      # Corrected: Use 'subject' directly under emailConfigs
-      subject: '🔒 [SECURITY] {{ .GroupLabels.alertname }}'
+      # Corrected: Use 'headers' as an array of key-value pairs
+      headers:
+      - key: Subject
+        value: '🔒 [SECURITY] {{ .GroupLabels.alertname }}'
 
   - name: 'core-serve-critical'
     emailConfigs:
@@ -109,5 +117,7 @@ spec:
       authPassword:
         name: smtp-secret
         key: password
-      # Corrected: Use 'subject' directly under emailConfigs
-      subject: '🚨 [CORE-SERVE CRITICAL] {{ .GroupLabels.alertname }}'
+      # Corrected: Use 'headers' as an array of key-value pairs
+      headers:
+      - key: Subject
+        value: '🚨 [CORE-SERVE CRITICAL] {{ .GroupLabels.alertname }}'
