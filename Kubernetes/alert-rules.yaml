@@ -264,22 +264,6 @@ spec:
           summary: "Slow database queries detected"
           description: "95th percentile database query latency is {{ $value | humanizeDuration }}"
 
-    - name: core-serve.business.rules
-      interval: 60s
-      rules:
-      # Business Logic Alerts - Corrected metric name
-      - alert: LowUserRegistrations
-        expr: rate(core_serve_registration_total[1h]) < 0.1 
-        for: 30m
-        labels:
-          severity: warning
-          team: product
-          service: core-serve
-          alert_type: business
-        annotations:
-          summary: "Low user registration rate"
-          description: "User registration rate is {{ $value | humanize }} per second over the last hour"
-
       # Application Health Check - NEW metric
       - alert: HealthCheckFailing
         expr: core_serve_health_check_status != 1
