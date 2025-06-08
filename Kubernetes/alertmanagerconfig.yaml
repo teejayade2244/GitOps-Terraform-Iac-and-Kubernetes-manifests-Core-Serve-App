@@ -46,7 +46,6 @@ spec:
       - to: 'adebunmi33@gmail.com' 
         from: 'adebunmi33@gmail.com' 
         sendResolved: true 
-        html: true 
         smarthost: 'smtp.gmail.com:587' 
         authUsername: 'adebunmi33@gmail.com'
         authPassword:
@@ -58,7 +57,6 @@ spec:
       - to: 'adebunmi33@gmail.com'
         from: 'adebunmi33@gmail.com'
         sendResolved: true
-        html: true
         smarthost: 'smtp.gmail.com:587'
         authUsername: 'adebunmi33@gmail.com'
         authPassword:
@@ -70,7 +68,6 @@ spec:
       - to: 'adebunmi33@gmail.com'
         from: 'adebunmi33@gmail.com'
         sendResolved: true
-        html: true
         smarthost: 'smtp.gmail.com:587'
         authUsername: 'adebunmi33@gmail.com'
         authPassword:
@@ -82,7 +79,6 @@ spec:
       - to: 'adebunmi33@gmail.com'
         from: 'adebunmi33@gmail.com'
         sendResolved: true
-        html: true
         smarthost: 'smtp.gmail.com:587'
         authUsername: 'adebunmi33@gmail.com'
         authPassword:
@@ -94,7 +90,6 @@ spec:
       - to: 'adebunmi33@gmail.com'
         from: 'adebunmi33@gmail.com'
         sendResolved: true
-        html: true
         smarthost: 'smtp.gmail.com:587'
         authUsername: 'adebunmi33@gmail.com'
         authPassword:
