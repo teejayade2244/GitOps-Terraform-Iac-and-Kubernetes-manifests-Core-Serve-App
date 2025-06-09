@@ -52,15 +52,15 @@ spec:
       requireTLS: true
       tlsConfig:
         insecureSkipVerify: false
-      headers:
-        Subject: '[ALERT] {{ .GroupLabels.alertname }}'
       html: |
+        <h2>[ALERT] {{ .GroupLabels.alertname }}</h2>
         {{ range .Alerts }}
-        Alert: {{ .Annotations.summary }}
-        Description: {{ .Annotations.description }}
-        Severity: {{ .Labels.severity }}
-        Instance: {{ .Labels.instance }}
-        Started: {{ .StartsAt }}
+        <p><strong>Alert:</strong> {{ .Annotations.summary }}</p>
+        <p><strong>Description:</strong> {{ .Annotations.description }}</p>
+        <p><strong>Severity:</strong> {{ .Labels.severity }}</p>
+        <p><strong>Instance:</strong> {{ .Labels.instance }}</p>
+        <p><strong>Started:</strong> {{ .StartsAt }}</p>
+        <hr>
         {{ end }}
 
   - name: 'critical-alerts'
@@ -76,8 +76,16 @@ spec:
       requireTLS: true
       tlsConfig:
         insecureSkipVerify: false
-      headers:
-        Subject: '🚨 [CRITICAL] {{ .GroupLabels.alertname }}'
+      html: |
+        <h2>🚨 [CRITICAL] {{ .GroupLabels.alertname }}</h2>
+        {{ range .Alerts }}
+        <p><strong>Alert:</strong> {{ .Annotations.summary }}</p>
+        <p><strong>Description:</strong> {{ .Annotations.description }}</p>
+        <p><strong>Severity:</strong> {{ .Labels.severity }}</p>
+        <p><strong>Instance:</strong> {{ .Labels.instance }}</p>
+        <p><strong>Started:</strong> {{ .StartsAt }}</p>
+        <hr>
+        {{ end }}
 
   - name: 'warning-alerts'
     emailConfigs:
@@ -92,8 +100,16 @@ spec:
       requireTLS: true
       tlsConfig:
         insecureSkipVerify: false
-      headers:
-        Subject: '⚠️ [WARNING] {{ .GroupLabels.alertname }}'
+      html: |
+        <h2>⚠️ [WARNING] {{ .GroupLabels.alertname }}</h2>
+        {{ range .Alerts }}
+        <p><strong>Alert:</strong> {{ .Annotations.summary }}</p>
+        <p><strong>Description:</strong> {{ .Annotations.description }}</p>
+        <p><strong>Severity:</strong> {{ .Labels.severity }}</p>
+        <p><strong>Instance:</strong> {{ .Labels.instance }}</p>
+        <p><strong>Started:</strong> {{ .StartsAt }}</p>
+        <hr>
+        {{ end }}
 
   - name: 'security-alerts'
     emailConfigs:
@@ -108,8 +124,16 @@ spec:
       requireTLS: true
       tlsConfig:
         insecureSkipVerify: false
-      headers:
-        Subject: '🔒 [SECURITY] {{ .GroupLabels.alertname }}'
+      html: |
+        <h2>🔒 [SECURITY] {{ .GroupLabels.alertname }}</h2>
+        {{ range .Alerts }}
+        <p><strong>Alert:</strong> {{ .Annotations.summary }}</p>
+        <p><strong>Description:</strong> {{ .Annotations.description }}</p>
+        <p><strong>Severity:</strong> {{ .Labels.severity }}</p>
+        <p><strong>Instance:</strong> {{ .Labels.instance }}</p>
+        <p><strong>Started:</strong> {{ .StartsAt }}</p>
+        <hr>
+        {{ end }}
 
   - name: 'core-serve-critical'
     emailConfigs:
@@ -124,5 +148,13 @@ spec:
       requireTLS: true
       tlsConfig:
         insecureSkipVerify: false
-      headers:
-        Subject: '🚨 [CORE-SERVE CRITICAL] {{ .GroupLabels.alertname }}'
+      html: |
+        <h2>🚨 [CORE-SERVE CRITICAL] {{ .GroupLabels.alertname }}</h2>
+        {{ range .Alerts }}
+        <p><strong>Alert:</strong> {{ .Annotations.summary }}</p>
+        <p><strong>Description:</strong> {{ .Annotations.description }}</p>
+        <p><strong>Severity:</strong> {{ .Labels.severity }}</p>
+        <p><strong>Instance:</strong> {{ .Labels.instance }}</p>
+        <p><strong>Started:</strong> {{ .StartsAt }}</p>
+        <hr>
+        {{ end }}
