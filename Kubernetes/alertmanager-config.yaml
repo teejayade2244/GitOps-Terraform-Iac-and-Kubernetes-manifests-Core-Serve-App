@@ -47,11 +47,10 @@ spec:
         groupWait: 10s
         repeatInterval: 30m
 
-    # --- Application namespace alerts ---
+    # --- Application namespace alerts (staging/production) ---
     - matchers:
       - name: namespace
-        value: '(staging|production)'
-        regex: true
+        value: staging
       receiver: 'default-receiver'
       continue: true
       routes:
@@ -82,7 +81,41 @@ spec:
         groupWait: 10s
         repeatInterval: 30m
 
-    # --- Watchdog alerts ---
+    # --- Production namespace alerts ---
+    - matchers:
+      - name: namespace
+        value: production
+      receiver: 'default-receiver'
+      continue: true
+      routes:
+      - matchers:
+        - name: severity
+          value: critical
+        receiver: 'critical-alerts'
+        continue: true
+        groupWait: 10s
+        repeatInterval: 1h
+      - matchers:
+        - name: severity
+          value: warning
+        receiver: 'warning-alerts'
+        continue: true
+      - matchers:
+        - name: team
+          value: security
+        receiver: 'security-alerts'
+        continue: true
+      - matchers:
+        - name: service
+          value: core-serve
+        - name: severity
+          value: critical
+        receiver: 'core-serve-critical'
+        groupBy: ['alertname', 'pod', 'instance']
+        groupWait: 10s
+        repeatInterval: 30m
+
+    # --- Watchdog alerts (silence them) ---
     - matchers:
       - name: alertname
         value: "Watchdog"
@@ -100,6 +133,7 @@ spec:
     equal: ['alertname', 'cluster', 'service']
 
   receivers:
+  # Default receiver
   - name: 'default-receiver'
     emailConfigs:
     - to: 'adebunmi33@gmail.com'
@@ -113,17 +147,24 @@ spec:
       requireTLS: true
       tlsConfig:
         insecureSkipVerify: false
+      subject: '[ALERT] {{ .GroupLabels.alertname }} - {{ .CommonLabels.namespace }}'
       html: |
         <h2>[ALERT] {{ .GroupLabels.alertname }}</h2>
+        <p><strong>Namespace:</strong> {{ .CommonLabels.namespace }}</p>
+        <p><strong>Cluster:</strong> {{ .CommonLabels.cluster }}</p>
         {{ range .Alerts }}
-        <p><strong>Alert:</strong> {{ .Annotations.summary }}</p>
-        <p><strong>Description:</strong> {{ .Annotations.description }}</p>
-        <p><strong>Severity:</strong> {{ .Labels.severity }}</p>
-        <p><strong>Instance:</strong> {{ .Labels.instance }}</p>
-        <p><strong>Started:</strong> {{ .StartsAt }}</p>
-        <hr>
+        <div style="border: 1px solid #ddd; padding: 10px; margin: 10px 0;">
+          <p><strong>Alert:</strong> {{ .Annotations.summary }}</p>
+          <p><strong>Description:</strong> {{ .Annotations.description }}</p>
+          <p><strong>Severity:</strong> {{ .Labels.severity }}</p>
+          <p><strong>Instance:</strong> {{ .Labels.instance }}</p>
+          <p><strong>Service:</strong> {{ .Labels.service }}</p>
+          <p><strong>Started:</strong> {{ .StartsAt }}</p>
+          {{ if .EndsAt }}<p><strong>Ended:</strong> {{ .EndsAt }}</p>{{ end }}
+        </div>
         {{ end }}
 
+  # Critical alerts receiver
   - name: 'critical-alerts'
     emailConfigs:
     - to: 'adebunmi33@gmail.com'
@@ -137,17 +178,25 @@ spec:
       requireTLS: true
       tlsConfig:
         insecureSkipVerify: false
+      subject: '🚨 [CRITICAL] {{ .GroupLabels.alertname }} - {{ .CommonLabels.namespace }}'
       html: |
-        <h2>🚨 [CRITICAL] {{ .GroupLabels.alertname }}</h2>
+        <h2 style="color: red;">🚨 [CRITICAL ALERT] {{ .GroupLabels.alertname }}</h2>
+        <p><strong>Namespace:</strong> {{ .CommonLabels.namespace }}</p>
+        <p><strong>Cluster:</strong> {{ .CommonLabels.cluster }}</p>
         {{ range .Alerts }}
-        <p><strong>Alert:</strong> {{ .Annotations.summary }}</p>
-        <p><strong>Description:</strong> {{ .Annotations.description }}</p>
-        <p><strong>Severity:</strong> {{ .Labels.severity }}</p>
-        <p><strong>Instance:</strong> {{ .Labels.instance }}</p>
-        <p><strong>Started:</strong> {{ .StartsAt }}</p>
-        <hr>
+        <div style="border: 2px solid red; padding: 15px; margin: 10px 0; background-color: #ffe6e6;">
+          <p><strong>Alert:</strong> {{ .Annotations.summary }}</p>
+          <p><strong>Description:</strong> {{ .Annotations.description }}</p>
+          <p><strong>Severity:</strong> {{ .Labels.severity }}</p>
+          <p><strong>Instance:</strong> {{ .Labels.instance }}</p>
+          <p><strong>Service:</strong> {{ .Labels.service }}</p>
+          <p><strong>Pod:</strong> {{ .Labels.pod }}</p>
+          <p><strong>Started:</strong> {{ .StartsAt }}</p>
+          {{ if .EndsAt }}<p><strong>Ended:</strong> {{ .EndsAt }}</p>{{ end }}
+        </div>
         {{ end }}
 
+  # Warning alerts receiver
   - name: 'warning-alerts'
     emailConfigs:
     - to: 'adebunmi33@gmail.com'
@@ -161,17 +210,24 @@ spec:
       requireTLS: true
       tlsConfig:
         insecureSkipVerify: false
+      subject: '⚠️ [WARNING] {{ .GroupLabels.alertname }} - {{ .CommonLabels.namespace }}'
       html: |
-        <h2>⚠️ [WARNING] {{ .GroupLabels.alertname }}</h2>
+        <h2 style="color: orange;">⚠️ [WARNING] {{ .GroupLabels.alertname }}</h2>
+        <p><strong>Namespace:</strong> {{ .CommonLabels.namespace }}</p>
+        <p><strong>Cluster:</strong> {{ .CommonLabels.cluster }}</p>
         {{ range .Alerts }}
-        <p><strong>Alert:</strong> {{ .Annotations.summary }}</p>
-        <p><strong>Description:</strong> {{ .Annotations.description }}</p>
-        <p><strong>Severity:</strong> {{ .Labels.severity }}</p>
-        <p><strong>Instance:</strong> {{ .Labels.instance }}</p>
-        <p><strong>Started:</strong> {{ .StartsAt }}</p>
-        <hr>
+        <div style="border: 2px solid orange; padding: 10px; margin: 10px 0; background-color: #fff3cd;">
+          <p><strong>Alert:</strong> {{ .Annotations.summary }}</p>
+          <p><strong>Description:</strong> {{ .Annotations.description }}</p>
+          <p><strong>Severity:</strong> {{ .Labels.severity }}</p>
+          <p><strong>Instance:</strong> {{ .Labels.instance }}</p>
+          <p><strong>Service:</strong> {{ .Labels.service }}</p>
+          <p><strong>Started:</strong> {{ .StartsAt }}</p>
+          {{ if .EndsAt }}<p><strong>Ended:</strong> {{ .EndsAt }}</p>{{ end }}
+        </div>
         {{ end }}
 
+  # Security alerts receiver
   - name: 'security-alerts'
     emailConfigs:
     - to: 'adebunmi33@gmail.com'
@@ -185,17 +241,25 @@ spec:
       requireTLS: true
       tlsConfig:
         insecureSkipVerify: false
+      subject: '🔒 [SECURITY] {{ .GroupLabels.alertname }} - {{ .CommonLabels.namespace }}'
       html: |
-        <h2>🔒 [SECURITY] {{ .GroupLabels.alertname }}</h2>
+        <h2 style="color: purple;">🔒 [SECURITY ALERT] {{ .GroupLabels.alertname }}</h2>
+        <p><strong>Namespace:</strong> {{ .CommonLabels.namespace }}</p>
+        <p><strong>Cluster:</strong> {{ .CommonLabels.cluster }}</p>
         {{ range .Alerts }}
-        <p><strong>Alert:</strong> {{ .Annotations.summary }}</p>
-        <p><strong>Description:</strong> {{ .Annotations.description }}</p>
-        <p><strong>Severity:</strong> {{ .Labels.severity }}</p>
-        <p><strong>Instance:</strong> {{ .Labels.instance }}</p>
-        <p><strong>Started:</strong> {{ .StartsAt }}</p>
-        <hr>
+        <div style="border: 2px solid purple; padding: 15px; margin: 10px 0; background-color: #f3e5f5;">
+          <p><strong>Alert:</strong> {{ .Annotations.summary }}</p>
+          <p><strong>Description:</strong> {{ .Annotations.description }}</p>
+          <p><strong>Severity:</strong> {{ .Labels.severity }}</p>
+          <p><strong>Instance:</strong> {{ .Labels.instance }}</p>
+          <p><strong>Service:</strong> {{ .Labels.service }}</p>
+          <p><strong>Team:</strong> {{ .Labels.team }}</p>
+          <p><strong>Started:</strong> {{ .StartsAt }}</p>
+          {{ if .EndsAt }}<p><strong>Ended:</strong> {{ .EndsAt }}</p>{{ end }}
+        </div>
         {{ end }}
 
+  # Core-serve critical alerts receiver
   - name: 'core-serve-critical'
     emailConfigs:
     - to: 'adebunmi33@gmail.com'
@@ -209,16 +273,27 @@ spec:
       requireTLS: true
       tlsConfig:
         insecureSkipVerify: false
+      subject: '🚨 [CORE-SERVE CRITICAL] {{ .GroupLabels.alertname }} - {{ .CommonLabels.namespace }}'
       html: |
-        <h2>🚨 [CORE-SERVE CRITICAL] {{ .GroupLabels.alertname }}</h2>
+        <h2 style="color: darkred;">🚨 [CORE-SERVE CRITICAL] {{ .GroupLabels.alertname }}</h2>
+        <p><strong>Namespace:</strong> {{ .CommonLabels.namespace }}</p>
+        <p><strong>Service:</strong> core-serve</p>
+        <p><strong>Cluster:</strong> {{ .CommonLabels.cluster }}</p>
         {{ range .Alerts }}
-        <p><strong>Alert:</strong> {{ .Annotations.summary }}</p>
-        <p><strong>Description:</strong> {{ .Annotations.description }}</p>
-        <p><strong>Severity:</strong> {{ .Labels.severity }}</p>
-        <p><strong>Instance:</strong> {{ .Labels.instance }}</p>
-        <p><strong>Started:</strong> {{ .StartsAt }}</p>
-        <hr>
+        <div style="border: 3px solid darkred; padding: 20px; margin: 15px 0; background-color: #ffebee;">
+          <p><strong>Alert:</strong> {{ .Annotations.summary }}</p>
+          <p><strong>Description:</strong> {{ .Annotations.description }}</p>
+          <p><strong>Severity:</strong> {{ .Labels.severity }}</p>
+          <p><strong>Instance:</strong> {{ .Labels.instance }}</p>
+          <p><strong>Pod:</strong> {{ .Labels.pod }}</p>
+          <p><strong>Job:</strong> {{ .Labels.job }}</p>
+          <p><strong>Alert Type:</strong> {{ .Labels.alert_type }}</p>
+          <p><strong>Started:</strong> {{ .StartsAt }}</p>
+          {{ if .EndsAt }}<p><strong>Ended:</strong> {{ .EndsAt }}</p>{{ end }}
+        </div>
         {{ end }}
 
+  # Null receiver for watchdog alerts
   - name: 'null'
-    # This is the null receiver for watchdog alerts
+    # This receiver does nothing - used to silence watchdog alerts
+
