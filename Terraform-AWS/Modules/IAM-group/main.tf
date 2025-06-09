@@ -13,7 +13,7 @@ resource "aws_iam_group_membership" "group_membership" {
 
 # IAM Group Policy Attachment
 resource "aws_iam_group_policy_attachment" "group_policy_attachment" {
-  count      = length(var.policy_arns) # Use 'count' based on the number of ARNs passed in the list
+  count      = length(var.policy_arns) 
   group      = aws_iam_group.main.name
-  policy_arn = var.policy_arns[count.index] # Access each ARN by its index in the list
+  policy_arn = var.policy_arns[count.index] 
 }

@@ -1,6 +1,6 @@
 # reads the private key from AWS Secret Manager and uses it to establish an SSH connection with the EC2 instance.
 data "aws_secretsmanager_secret" "private_key_secret" {
-  name = "my-key.pem"  # Replace with your secret name
+  name = "my-key.pem"  
 }
 
 data "aws_secretsmanager_secret_version" "private_key" {
@@ -11,7 +11,7 @@ resource "aws_instance" "ec2_instance" {
   ami                    = var.ami
   instance_type          = var.instance_type
   subnet_id              = var.subnet_id
-  vpc_security_group_ids = [var.security_group_id]  # Note: This expects a single ID, not a list
+  vpc_security_group_ids = [var.security_group_id]  
   key_name               = "my-key" 
   iam_instance_profile   = var.iam_instance_profile
   tags = {
