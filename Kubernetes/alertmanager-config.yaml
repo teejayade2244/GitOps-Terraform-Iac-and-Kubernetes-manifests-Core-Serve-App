@@ -8,36 +8,76 @@ metadata:
 spec:
   route:
     receiver: 'default-receiver'
-    groupBy: ['alertname', 'service', 'severity']
+    groupBy: ['alertname', 'cluster', 'service', 'severity']
     groupWait: 30s
     groupInterval: 5m
     repeatInterval: 4h
     routes:
     - matchers:
-      - name: severity
-        value: critical
-      receiver: 'critical-alerts'
+      - name: namespace
+        value: monitoring 
+      receiver: 'monitoring/main-rules-alert-config/default-receiver' 
       continue: true
+      routes: 
+      - matchers:
+        - name: severity
+          value: critical
+        receiver: 'critical-alerts'
+        continue: true
+      - matchers:
+        - name: severity
+          value: warning
+        receiver: 'warning-alerts'
+        continue: true
+      - matchers:
+        - name: team
+          value: security
+        receiver: 'security-alerts'
+        continue: true
+      - matchers:
+        - name: service
+          value: core-serve 
+        - name: severity
+          value: critical
+        receiver: 'core-serve-critical'
+        groupBy: ['alertname', 'pod', 'instance']
+        groupWait: 10s
+        repeatInterval: 1h
     - matchers:
-      - name: severity
-        value: warning
-      receiver: 'warning-alerts'
+      - name: namespace
+        value: 'staging|production'          
+      receiver: 'monitoring/main-rules-alert-config/default-receiver' 
       continue: true
+      routes:
+      - matchers:
+        - name: severity
+          value: critical
+        receiver: 'critical-alerts'
+        continue: true
+      - matchers:
+        - name: severity
+          value: warning
+        receiver: 'warning-alerts'
+        continue: true
+      - matchers:
+        - name: team
+          value: security
+        receiver: 'security-alerts'
+        continue: true
+      - matchers:
+        - name: service
+          value: core-serve
+        - name: severity
+          value: critical
+        receiver: 'core-serve-critical'
+        groupBy: ['alertname', 'pod', 'instance']
+        groupWait: 10s
+        repeatInterval: 1h
     - matchers:
-      - name: team
-        value: security
-      receiver: 'security-alerts'
-      continue: true
-    - matchers:
-      - name: service
-        value: core-serve
-      - name: severity
-        value: critical
-      receiver: 'core-serve-critical'
-      groupBy: ['alertname', 'pod', 'instance']
-      groupWait: 10s
-      repeatInterval: 1h
-
+      - name: alertname
+        value: "Watchdog"
+      receiver: 'null' 
+      continue: false
   receivers:
   - name: 'default-receiver'
     emailConfigs:
