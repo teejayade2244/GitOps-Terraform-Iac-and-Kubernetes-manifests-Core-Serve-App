@@ -102,8 +102,6 @@ module "EKS_node_group_security_group" {
   }
 }
 ##############################################################################################################
-# main.tf (UPDATED - as provided in previous response, confirming validity with your module outputs)
-
 # IAM Users
 # This module will create IAM users for developers group
 module "developers" {
@@ -185,15 +183,12 @@ module "iam_roles" {
         }
       }]
     })
-
-  # Pass the list of policy ARNs as an input variable
   policy_arns = concat(
     each.value.policy_arns,
     each.key == "admin_role" ? [module.iam_policies["eks_admin"].policy_arn] : [],
     each.key == "jenkins_role" ? [module.iam_policies["jenkins"].policy_arn] : [],
     each.key == "developer_role" ? [module.iam_policies["eks_developer"].policy_arn] : []
   )
-  # Pass the create_instance_profile flag, if your module expects it
   create_instance_profile = each.key == "nodegroup_role" ? true : false
 }
 
