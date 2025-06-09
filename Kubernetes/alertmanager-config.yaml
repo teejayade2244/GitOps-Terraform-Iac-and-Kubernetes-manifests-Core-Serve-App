@@ -8,24 +8,22 @@ metadata:
 spec:
   route:
     receiver: 'default-receiver'
-    groupBy: ['alertname', 'service', 'severity']
+    groupBy: ['alertname', 'cluster', 'service', 'severity']
     groupWait: 30s
     groupInterval: 5m
     repeatInterval: 4h
     routes:
     - matchers:
       - name: namespace
-        value: monitoring 
-      receiver: 'default-receiver'  # Fixed receiver name
+        value: monitoring # This handles monitoring-stack alerts
+      receiver: 'monitoring/main-rules-alert-config/default-receiver' # Route internal monitoring alerts
       continue: true
-      routes: 
+      routes: # Sub-routes for monitoring namespace
       - matchers:
         - name: severity
           value: critical
         receiver: 'critical-alerts'
         continue: true
-        groupWait: 10s  # Shorter wait for critical alerts
-        repeatInterval: 1h  # More frequent for critical
       - matchers:
         - name: severity
           value: warning
@@ -38,26 +36,35 @@ spec:
         continue: true
       - matchers:
         - name: service
-          value: core-serve
+          value: core-serve # Note: This means core-serve alerts in monitoring namespace
         - name: severity
           value: critical
         receiver: 'core-serve-critical'
         groupBy: ['alertname', 'pod', 'instance']
-        groupWait: 10s
-        repeatInterval: 30m  # More frequent for core-serve critical
-    - matchers:
-      - name: namespace
-        value: 'staging|production'          
-      receiver: 'default-receiver'  # Fixed receiver name
-      continue: true
-      routes:
-      - matchers:
-        - name: severity
-          value: critical
-        receiver: 'critical-alerts'
-        continue: true
         groupWait: 10s
         repeatInterval: 1h
+
+    # --- NEW ROUTE FOR APPLICATION NAMESPACES LIKE "STAGING" AND "PRODUCTION" ---
+    - matchers:
+      - name: namespace
+        # Use a regex matcher for multiple namespaces
+        # The syntax for regex in v1alpha1 is slightly different, usually just the regex pattern
+        # This will depend on your exact Prometheus Operator version/CRD definitions.
+        # Often, it's just `regex: "staging|production"` if 'value' is a regex.
+        # If 'value' expects a literal, you might need separate matchers for each namespace
+        value: 'staging|production' # This is often interpreted as a regex if `name` is matched
+                                   # Check your CRD definition for `matchers` field.
+                                   # Some versions might require a `match_re` field.
+                                   # Assuming `value` can take regex for common setups.
+      receiver: 'monitoring/main-rules-alert-config/default-receiver' # Or a new receiver for application alerts
+      continue: true
+      routes:
+      # Duplicate or adapt your specific routing logic for application alerts here:
+      - matchers:
+        - name: severity
+          value: critical
+        receiver: 'critical-alerts'
+        continue: true
       - matchers:
         - name: severity
           value: warning
@@ -76,23 +83,15 @@ spec:
         receiver: 'core-serve-critical'
         groupBy: ['alertname', 'pod', 'instance']
         groupWait: 10s
-        repeatInterval: 30m
+        repeatInterval: 1h
+
+    # (Other top-level routes, e.g., Watchdog if you have one)
     - matchers:
       - name: alertname
         value: "Watchdog"
-      receiver: 'null' 
+      receiver: 'null' # Still sending Watchdog to null
       continue: false
-  
-  # Inhibition rules to prevent duplicate alerts
-  inhibitRules:
-  - sourceMatch:
-    - name: severity
-      value: 'critical'
-    targetMatch:
-    - name: severity
-      value: 'warning'
-    equal: ['alertname', 'cluster', 'service']
-  
+
   receivers:
   - name: 'default-receiver'
     emailConfigs:
@@ -141,15 +140,6 @@ spec:
         <p><strong>Started:</strong> {{ .StartsAt }}</p>
         <hr>
         {{ end }}
-    # Added Slack integration for critical alerts
-    # slackConfigs:
-    # - apiURL: 
-    #     name: slack-webhook
-    #     key: url
-    #   channel: '#devops_sre'
-    #   sendResolved: true
-    #   title: '{{ template "slack.title" . }}'
-    #   text: '{{ template "slack.text" . }}'
 
   - name: 'warning-alerts'
     emailConfigs:
@@ -177,7 +167,7 @@ spec:
 
   - name: 'security-alerts'
     emailConfigs:
-    - to: 'security-team@example.com'  # Changed to security team email
+    - to: 'adebunmi33@gmail.com'
       from: 'adebunmi33@gmail.com'
       sendResolved: true
       smarthost: 'smtp.gmail.com:587'
@@ -198,15 +188,10 @@ spec:
         <p><strong>Started:</strong> {{ .StartsAt }}</p>
         <hr>
         {{ end }}
-    pagerdutyConfigs:
-    - routingKey:
-        name: pagerduty-key
-        key: routingKey
-      severity: 'critical'
 
   - name: 'core-serve-critical'
     emailConfigs:
-    - to: 'core-serve-team@example.com'  # Specific team email
+    - to: 'adebunmi33@gmail.com'
       from: 'adebunmi33@gmail.com'
       sendResolved: true
       smarthost: 'smtp.gmail.com:587'
@@ -227,9 +212,3 @@ spec:
         <p><strong>Started:</strong> {{ .StartsAt }}</p>
         <hr>
         {{ end }}
-    opsgenieConfigs:
-    - apiKey:
-        name: opsgenie-key
-        key: apiKey
-      message: 'Core Serve Critical Alert'
-      priority: 'P1'
