@@ -6,13 +6,13 @@ metadata:
   labels:
     release: kube-prometheus-stack
     app: core-serve
-    team: backend # Keeping 'backend' label, but these rules apply more broadly
+    team: backend 
 spec:
   groups:
     - name: core-serve.api.rules
       interval: 30s
       rules:
-      # API Error Rate Alert - Corrected metric name
+      # API Error Rate Alert 
       - alert: APIHighErrorRate
         expr: |
           (
@@ -32,7 +32,7 @@ spec:
           runbook_url: "https://runbooks.company.com/api-error-rate"
           dashboard_url: "https://grafana.company.com/d/api-dashboard"
 
-      # API Error Rate Warning - Corrected metric name
+      # API Error Rate Warning 
       - alert: APIErrorRateWarning
         expr: |
           (
@@ -76,9 +76,9 @@ spec:
           summary: "Slow API responses detected"
           description: "95th percentile latency is {{ $value | humanizeDuration }}"
 
-      # API Availability Alert (still relevant for service-level availability)
+      # API Availability Alert 
       - alert: APIDown
-        expr: up{job="core-serve-backend-staging"} == 0 # You might want similar rules for other jobs
+        expr: up{job="core-serve-backend-staging"} == 0 
         for: 1m
         labels:
           severity: critical
@@ -93,7 +93,7 @@ spec:
     - name: core-serve.infrastructure.rules
       interval: 30s
       rules:
-      # Fixed CPU Usage Alert - More accurate expression (Node Exporter metrics)
+      # CPU Usage Alert 
       - alert: HighCPUUsage
         expr: |
           (
@@ -125,7 +125,7 @@ spec:
           summary: "Elevated CPU usage on {{ $labels.instance }}"
           description: "CPU usage is {{ $value | humanizePercentage }} on {{ $labels.instance }}"
 
-      # Improved Memory Usage Alert (Node Exporter metrics)
+      # Memory Usage Alert (Node Exporter metrics)
       - alert: HighMemoryUsage
         expr: |
           (
@@ -220,7 +220,7 @@ spec:
           summary: "Elevated failed login attempts"
           description: "Failed login rate is {{ $value | humanize }} per second over the last 15 minutes"
 
-      # Suspicious Activity Alert - Corrected metric name
+      # Suspicious Activity Alert 
       - alert: UnusualTrafficSpike
         expr: |
           rate(core_serve_http_request_duration_seconds_count[5m]) > 
@@ -238,7 +238,7 @@ spec:
     - name: core-serve.database.rules
       interval: 30s
       rules:
-      # Database Connection Pool Alert - NEW metric
+      # Database Connection Pool Alert 
       - alert: DatabaseConnectionPoolHigh
         expr: core_serve_db_connections_active / core_serve_db_connections_max > 0.8
         for: 5m
@@ -251,7 +251,7 @@ spec:
           summary: "Database connection pool usage high"
           description: "Database connection pool usage is {{ $value | humanizePercentage }}"
 
-      # Database Query Latency - NEW metric
+      # Database Query Latency 
       - alert: DatabaseQuerySlow
         expr: histogram_quantile(0.95, rate(core_serve_db_query_duration_seconds_bucket[5m])) > 1
         for: 5m
@@ -264,7 +264,7 @@ spec:
           summary: "Slow database queries detected"
           description: "95th percentile database query latency is {{ $value | humanizeDuration }}"
 
-      # Application Health Check - NEW metric
+      # Application Health Check 
       - alert: HealthCheckFailing
         expr: core_serve_health_check_status != 1
         for: 2m
