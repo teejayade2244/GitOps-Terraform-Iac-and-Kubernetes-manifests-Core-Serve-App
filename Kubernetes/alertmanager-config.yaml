@@ -146,7 +146,7 @@ spec:
     # - apiURL: 
     #     name: slack-webhook
     #     key: url
-    #   channel: '#critical-alerts'
+    #   channel: '#devops_sre'
     #   sendResolved: true
     #   title: '{{ template "slack.title" . }}'
     #   text: '{{ template "slack.text" . }}'
