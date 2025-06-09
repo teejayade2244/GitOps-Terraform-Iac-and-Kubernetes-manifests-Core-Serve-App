@@ -1,62 +1,48 @@
+# No changes to this file from previous steps, just re-applying to ensure it's picked up.
 apiVersion: monitoring.coreos.com/v1alpha1
 kind: AlertmanagerConfig
 metadata:
   name: main-rules-alert-config
   namespace: monitoring
   labels:
-    # This label MUST match the 'alertmanagerConfigSelector'
-    # in your main Alertmanager CRD (e.g., kube-prometheus-stack-alertmanager).
-    release: kube-prometheus-stack 
-spec: 
-  # The 'route' section here focuses only on routing rules to named receivers.
-  # Global grouping parameters like `groupBy`, `groupWait`, etc. are defined in the main Alertmanager Secret (Part 1).
+    release: kube-prometheus-stack
+spec:
   route:
-    receiver: 'default-receiver' # Must be a receiver defined in this CRD.
-
+    receiver: 'default-receiver'
     routes:
     - matchers:
       - name: severity
         value: critical
       receiver: 'critical-alerts'
-      continue: true 
-
+      continue: true
     - matchers:
       - name: severity
         value: warning
       receiver: 'warning-alerts'
       continue: true
-
     - matchers:
       - name: team
         value: security
-      receiver: 'security-alerts' 
+      receiver: 'security-alerts'
       continue: true
-
     - matchers:
       - name: service
         value: core-serve
       - name: severity
         value: critical
-      receiver: 'core-serve-critical' 
-      # Per-route grouping overrides may or may not be fully supported in v1alpha1.
-      # If this causes errors, remove these `groupBy`, `groupWait`, `repeatInterval` lines.
-      groupBy: ['alertname', 'pod', 'instance'] 
-      groupWait: 10s 
-      repeatInterval: 1h 
-      
-  # The 'receivers' section defines the actual notification destinations.
-  # Email configs here rely on the GLOBAL SMTP settings from the main Alertmanager Secret.
-  # They now correctly reference the custom template functions.
+      receiver: 'core-serve-critical'
+      groupBy: ['alertname', 'pod', 'instance']
+      groupWait: 10s
+      repeatInterval: 1h
+
   receivers:
   - name: 'default-receiver'
     emailConfigs:
-      - to: 'adebunmi33@gmail.com' 
-        sendResolved: true 
-        html: true # This enables HTML emails
-        # --- REFERENCING CUSTOM TEMPLATE FUNCTIONS ---
-        subject: '{{ template "email.default.subject" . }}' # Subject from email.tmpl
-        html_body: '{{ template "email.default.html" . }}' # HTML body from email.tmpl
-        # --- END REFERENCING ---
+      - to: 'adebunmi33@gmail.com'
+        sendResolved: true
+        html: true
+        subject: '{{ template "email.default.subject" . }}'
+        html_body: '{{ template "email.default.html" . }}'
 
   - name: 'critical-alerts'
     emailConfigs:
@@ -65,7 +51,7 @@ spec:
         html: true
         subject: '{{ template "email.default.subject" . }}'
         html_body: '{{ template "email.default.html" . }}'
- 
+
   - name: 'warning-alerts'
     emailConfigs:
       - to: 'adebunmi33@gmail.com'
