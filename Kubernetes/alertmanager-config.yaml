@@ -8,7 +8,7 @@ metadata:
 spec:
   route:
     receiver: 'default-receiver'
-    groupBy: ['alertname', 'cluster', 'service', 'severity']
+    groupBy: ['alertname', 'service', 'severity']
     groupWait: 30s
     groupInterval: 5m
     repeatInterval: 4h
@@ -16,7 +16,7 @@ spec:
     - matchers:
       - name: namespace
         value: monitoring 
-      receiver: 'monitoring/main-rules-alert-config/default-receiver' 
+      receiver: 'default-receiver'  # Fixed receiver name
       continue: true
       routes: 
       - matchers:
@@ -24,36 +24,8 @@ spec:
           value: critical
         receiver: 'critical-alerts'
         continue: true
-      - matchers:
-        - name: severity
-          value: warning
-        receiver: 'warning-alerts'
-        continue: true
-      - matchers:
-        - name: team
-          value: security
-        receiver: 'security-alerts'
-        continue: true
-      - matchers:
-        - name: service
-          value: core-serve 
-        - name: severity
-          value: critical
-        receiver: 'core-serve-critical'
-        groupBy: ['alertname', 'pod', 'instance']
-        groupWait: 10s
-        repeatInterval: 1h
-    - matchers:
-      - name: namespace
-        value: 'staging|production'          
-      receiver: 'monitoring/main-rules-alert-config/default-receiver' 
-      continue: true
-      routes:
-      - matchers:
-        - name: severity
-          value: critical
-        receiver: 'critical-alerts'
-        continue: true
+        groupWait: 10s  # Shorter wait for critical alerts
+        repeatInterval: 1h  # More frequent for critical
       - matchers:
         - name: severity
           value: warning
@@ -72,12 +44,55 @@ spec:
         receiver: 'core-serve-critical'
         groupBy: ['alertname', 'pod', 'instance']
         groupWait: 10s
+        repeatInterval: 30m  # More frequent for core-serve critical
+    - matchers:
+      - name: namespace
+        value: 'staging|production'          
+      receiver: 'default-receiver'  # Fixed receiver name
+      continue: true
+      routes:
+      - matchers:
+        - name: severity
+          value: critical
+        receiver: 'critical-alerts'
+        continue: true
+        groupWait: 10s
         repeatInterval: 1h
+      - matchers:
+        - name: severity
+          value: warning
+        receiver: 'warning-alerts'
+        continue: true
+      - matchers:
+        - name: team
+          value: security
+        receiver: 'security-alerts'
+        continue: true
+      - matchers:
+        - name: service
+          value: core-serve
+        - name: severity
+          value: critical
+        receiver: 'core-serve-critical'
+        groupBy: ['alertname', 'pod', 'instance']
+        groupWait: 10s
+        repeatInterval: 30m
     - matchers:
       - name: alertname
         value: "Watchdog"
       receiver: 'null' 
       continue: false
+  
+  # Inhibition rules to prevent duplicate alerts
+  inhibitRules:
+  - sourceMatch:
+    - name: severity
+      value: 'critical'
+    targetMatch:
+    - name: severity
+      value: 'warning'
+    equal: ['alertname', 'cluster', 'service']
+  
   receivers:
   - name: 'default-receiver'
     emailConfigs:
@@ -126,6 +141,15 @@ spec:
         <p><strong>Started:</strong> {{ .StartsAt }}</p>
         <hr>
         {{ end }}
+    # Added Slack integration for critical alerts
+    # slackConfigs:
+    # - apiURL: 
+    #     name: slack-webhook
+    #     key: url
+    #   channel: '#critical-alerts'
+    #   sendResolved: true
+    #   title: '{{ template "slack.title" . }}'
+    #   text: '{{ template "slack.text" . }}'
 
   - name: 'warning-alerts'
     emailConfigs:
@@ -153,7 +177,7 @@ spec:
 
   - name: 'security-alerts'
     emailConfigs:
-    - to: 'adebunmi33@gmail.com'
+    - to: 'security-team@example.com'  # Changed to security team email
       from: 'adebunmi33@gmail.com'
       sendResolved: true
       smarthost: 'smtp.gmail.com:587'
@@ -174,10 +198,15 @@ spec:
         <p><strong>Started:</strong> {{ .StartsAt }}</p>
         <hr>
         {{ end }}
+    pagerdutyConfigs:
+    - routingKey:
+        name: pagerduty-key
+        key: routingKey
+      severity: 'critical'
 
   - name: 'core-serve-critical'
     emailConfigs:
-    - to: 'adebunmi33@gmail.com'
+    - to: 'core-serve-team@example.com'  # Specific team email
       from: 'adebunmi33@gmail.com'
       sendResolved: true
       smarthost: 'smtp.gmail.com:587'
@@ -198,3 +227,9 @@ spec:
         <p><strong>Started:</strong> {{ .StartsAt }}</p>
         <hr>
         {{ end }}
+    opsgenieConfigs:
+    - apiKey:
+        name: opsgenie-key
+        key: apiKey
+      message: 'Core Serve Critical Alert'
+      priority: 'P1'
