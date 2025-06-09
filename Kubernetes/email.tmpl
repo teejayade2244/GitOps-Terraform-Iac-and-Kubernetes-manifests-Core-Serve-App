@@ -4,77 +4,80 @@
 
 {{ define "email.default.html" -}}
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Alert Notification</title>
-  <style>
-    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f4f4f4; margin: 0; padding: 20px; }
-    .container { max-width: 600px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-    .header { background: #333; color: #fff; padding: 10px 20px; text-align: center; border-radius: 8px 8px 0 0; }
-    .status-firing { background-color: #dc3545; color: white; padding: 5px 10px; border-radius: 4px; display: inline-block; font-weight: bold; }
-    .status-resolved { background-color: #28a745; color: white; padding: 5px 10px; border-radius: 4px; display: inline-block; font-weight: bold; }
-    h2 { color: #333; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-top: 20px; }
-    ul { list-style: none; padding: 0; margin: 0; }
-    li { margin-bottom: 5px; }
-    .label-key { font-weight: bold; margin-right: 5px; }
-    .footer { text-align: center; margin-top: 30px; font-size: 0.9em; color: #777; }
-    .alert-details { border: 1px solid #ddd; padding: 15px; margin-top: 15px; border-radius: 5px; background-color: #f9f9f9; }
-    .alert-details pre { background-color: #eee; padding: 10px; border-radius: 4px; overflow-x: auto; }
-  </style>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f5f5f5; }
+        .container { max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 8px 8px 0 0; text-align: center; }
+        .header h1 { margin: 0; font-size: 24px; }
+        .content { padding: 20px; }
+        .alert-box { background-color: #fff3cd; border: 1px solid #ffeaa7; border-radius: 6px; padding: 15px; margin-bottom: 15px; }
+        .alert-box.resolved { background-color: #d4edda; border-color: #c3e6cb; }
+        .alert-info { display: grid; grid-template-columns: 120px 1fr; gap: 10px; margin-bottom: 10px; }
+        .label { font-weight: bold; color: #495057; }
+        .value { color: #212529; }
+        .severity { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; text-transform: uppercase; }
+        .severity.critical { background-color: #dc3545; color: white; }
+        .severity.warning { background-color: #ffc107; color: #212529; }
+        .severity.info { background-color: #17a2b8; color: white; }
+        .footer { background-color: #f8f9fa; padding: 15px 20px; border-radius: 0 0 8px 8px; font-size: 12px; color: #6c757d; text-align: center; }
+        .timestamp { color: #6c757d; font-size: 14px; }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <h1>Alert Notification</h1>
-    </div>
-
-    <p>Status: <span class="status-{{ .Status }}">{{ .Status | toUpper }}</span></p>
-    <p>Alerts:</p>
-    <ul>
-      {{ range .Alerts }}
-      <li>
-        <strong>{{ .Labels.alertname }}</strong> (Severity: {{ .Labels.severity | toUpper }})
-        <div class="alert-details">
-          {{ if .Annotations.summary }}<p><span class="label-key">Summary:</span> {{ .Annotations.summary }}</p>{{ end }}
-          {{ if .Annotations.description }}<p><span class="label-key">Description:</span> {{ .Annotations.description }}</p>{{ end }}
-          <p><span class="label-key">Instance:</span> {{ .Labels.instance }}</p>
-          <p><span class="label-key">Pod:</span> {{ .Labels.pod }}</p>
-          <p><span class="label-key">Namespace:</span> {{ .Labels.namespace }}</p>
-          <p><span class="label-key">Service:</span> {{ .Labels.service }}</p>
-          <p><span class="label-key">Started:</span> {{ .StartsAt.Format "2006-01-02 15:04:05 MST" }}</p>
-          {{ if .EndsAt.After .StartsAt }}
-          <p><span class="label-key">Ended:</span> {{ .EndsAt.Format "2006-01-02 15:04:05 MST" }}</p>
-          {{ end }}
-          
-          {{ if .Labels }}
-          <h3>Labels:</h3>
-          <ul>
-            {{ range .Labels.SortedPairs }}
-            <li><span class="label-key">{{ .Name }}:</span> {{ .Value }}</li>
-            {{ end }}
-          </ul>
-          {{ end }}
-
-          {{ if .Annotations }}
-          <h3>Annotations:</h3>
-          <ul>
-            {{ range .Annotations.SortedPairs }}
-            <li><span class="label-key">{{ .Name }}:</span> {{ .Value }}</li>
-            {{ end }}
-          </ul>
-          {{ end }}
+    <div class="container">
+        <div class="header">
+            <h1>🚨 Alert Notification</h1>
+            <p style="margin: 5px 0 0 0;">{{ .GroupLabels.alertname }}</p>
         </div>
-      </li>
-      {{ end }}
-    </ul>
-
-    <div class="footer">
-      <p>Sent by Alertmanager</p>
-      <p>Prometheus URL: <a href="http://{{ .ExternalURL }}/#/alerts?receiver={{ .Receiver }}" target="_blank">{{ .ExternalURL }}</a></p>
+        <div class="content">
+            {{ range .Alerts }}
+            <div class="alert-box{{ if eq .Status "resolved" }} resolved{{ end }}">
+                <div class="alert-info">
+                    <div class="label">Status:</div>
+                    <div class="value">{{ if eq .Status "resolved" }}✅ RESOLVED{{ else }}🔥 FIRING{{ end }}</div>
+                    
+                    <div class="label">Summary:</div>
+                    <div class="value">{{ .Annotations.summary }}</div>
+                    
+                    <div class="label">Description:</div>
+                    <div class="value">{{ .Annotations.description }}</div>
+                    
+                    <div class="label">Severity:</div>
+                    <div class="value"><span class="severity {{ .Labels.severity }}">{{ .Labels.severity }}</span></div>
+                    
+                    {{ if .Labels.instance }}
+                    <div class="label">Instance:</div>
+                    <div class="value">{{ .Labels.instance }}</div>
+                    {{ end }}
+                    
+                    {{ if .Labels.pod }}
+                    <div class="label">Pod:</div>
+                    <div class="value">{{ .Labels.pod }}</div>
+                    {{ end }}
+                    
+                    {{ if .Labels.service }}
+                    <div class="label">Service:</div>
+                    <div class="value">{{ .Labels.service }}</div>
+                    {{ end }}
+                    
+                    <div class="label">Started:</div>
+                    <div class="value timestamp">{{ .StartsAt.Format "2006-01-02 15:04:05 MST" }}</div>
+                    
+                    {{ if .EndsAt }}
+                    <div class="label">Ended:</div>
+                    <div class="value timestamp">{{ .EndsAt.Format "2006-01-02 15:04:05 MST" }}</div>
+                    {{ end }}
+                </div>
+            </div>
+            {{ end }}
+        </div>
+        <div class="footer">
+            <p>🔍 Prometheus Alertmanager | Cluster: {{ .GroupLabels.cluster | default "N/A" }} | Namespace: {{ .GroupLabels.namespace | default "N/A" }}</p>
+        </div>
     </div>
-  </div>
 </body>
 </html>
 {{- end }}
