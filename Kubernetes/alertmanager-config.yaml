@@ -17,14 +17,12 @@ spec:
     - matchers:
       - name: namespace
         value: monitoring
-        matchType: "="
       receiver: 'default-receiver'
       continue: true
       routes:
       - matchers:
         - name: severity
           value: critical
-          matchType: "="
         receiver: 'critical-alerts'
         continue: true
         groupWait: 10s
@@ -32,22 +30,18 @@ spec:
       - matchers:
         - name: severity
           value: warning
-          matchType: "="
         receiver: 'warning-alerts'
         continue: true
       - matchers:
         - name: team
           value: security
-          matchType: "="
         receiver: 'security-alerts'
         continue: true
       - matchers:
         - name: service
           value: core-serve
-          matchType: "="
         - name: severity
           value: critical
-          matchType: "="
         receiver: 'core-serve-critical'
         groupBy: ['alertname', 'pod', 'instance']
         groupWait: 10s
@@ -57,14 +51,13 @@ spec:
     - matchers:
       - name: namespace
         value: '(staging|production)'
-        matchType: "=~"
+        matchType: Regexp
       receiver: 'default-receiver'
       continue: true
       routes:
       - matchers:
         - name: severity
           value: critical
-          matchType: "="
         receiver: 'critical-alerts'
         continue: true
         groupWait: 10s
@@ -72,22 +65,18 @@ spec:
       - matchers:
         - name: severity
           value: warning
-          matchType: "="
         receiver: 'warning-alerts'
         continue: true
       - matchers:
         - name: team
           value: security
-          matchType: "="
         receiver: 'security-alerts'
         continue: true
       - matchers:
         - name: service
           value: core-serve
-          matchType: "="
         - name: severity
           value: critical
-          matchType: "="
         receiver: 'core-serve-critical'
         groupBy: ['alertname', 'pod', 'instance']
         groupWait: 10s
@@ -97,20 +86,17 @@ spec:
     - matchers:
       - name: alertname
         value: "Watchdog"
-        matchType: "="
       receiver: 'null'
       continue: false
 
   # Inhibition rules
   inhibitRules:
-  - sourceMatch:
+  - sourceMatchers:
     - name: severity
       value: 'critical'
-      matchType: "="
-    targetMatch:
+    targetMatchers:
     - name: severity
       value: 'warning'
-      matchType: "="
     equal: ['alertname', 'cluster', 'service']
 
   receivers:
@@ -233,3 +219,6 @@ spec:
         <p><strong>Started:</strong> {{ .StartsAt }}</p>
         <hr>
         {{ end }}
+
+  - name: 'null'
+    # This is the null receiver for watchdog alerts
