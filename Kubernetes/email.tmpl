@@ -1,0 +1,80 @@
+{{ define "email.default.subject" -}}
+{{ .Status | toUpper }}: {{ .CommonLabels.alertname }} for {{ .CommonLabels.service }} ({{ .CommonLabels.severity | toUpper }})
+{{- end }}
+
+{{ define "email.default.html" -}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alert Notification</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f4f4f4; margin: 0; padding: 20px; }
+    .container { max-width: 600px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    .header { background: #333; color: #fff; padding: 10px 20px; text-align: center; border-radius: 8px 8px 0 0; }
+    .status-firing { background-color: #dc3545; color: white; padding: 5px 10px; border-radius: 4px; display: inline-block; font-weight: bold; }
+    .status-resolved { background-color: #28a745; color: white; padding: 5px 10px; border-radius: 4px; display: inline-block; font-weight: bold; }
+    h2 { color: #333; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-top: 20px; }
+    ul { list-style: none; padding: 0; margin: 0; }
+    li { margin-bottom: 5px; }
+    .label-key { font-weight: bold; margin-right: 5px; }
+    .footer { text-align: center; margin-top: 30px; font-size: 0.9em; color: #777; }
+    .alert-details { border: 1px solid #ddd; padding: 15px; margin-top: 15px; border-radius: 5px; background-color: #f9f9f9; }
+    .alert-details pre { background-color: #eee; padding: 10px; border-radius: 4px; overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Alert Notification</h1>
+    </div>
+
+    <p>Status: <span class="status-{{ .Status }}">{{ .Status | toUpper }}</span></p>
+    <p>Alerts:</p>
+    <ul>
+      {{ range .Alerts }}
+      <li>
+        <strong>{{ .Labels.alertname }}</strong> (Severity: {{ .Labels.severity | toUpper }})
+        <div class="alert-details">
+          {{ if .Annotations.summary }}<p><span class="label-key">Summary:</span> {{ .Annotations.summary }}</p>{{ end }}
+          {{ if .Annotations.description }}<p><span class="label-key">Description:</span> {{ .Annotations.description }}</p>{{ end }}
+          <p><span class="label-key">Instance:</span> {{ .Labels.instance }}</p>
+          <p><span class="label-key">Pod:</span> {{ .Labels.pod }}</p>
+          <p><span class="label-key">Namespace:</span> {{ .Labels.namespace }}</p>
+          <p><span class="label-key">Service:</span> {{ .Labels.service }}</p>
+          <p><span class="label-key">Started:</span> {{ .StartsAt.Format "2006-01-02 15:04:05 MST" }}</p>
+          {{ if .EndsAt.After .StartsAt }}
+          <p><span class="label-key">Ended:</span> {{ .EndsAt.Format "2006-01-02 15:04:05 MST" }}</p>
+          {{ end }}
+          
+          {{ if .Labels }}
+          <h3>Labels:</h3>
+          <ul>
+            {{ range .Labels.SortedPairs }}
+            <li><span class="label-key">{{ .Name }}:</span> {{ .Value }}</li>
+            {{ end }}
+          </ul>
+          {{ end }}
+
+          {{ if .Annotations }}
+          <h3>Annotations:</h3>
+          <ul>
+            {{ range .Annotations.SortedPairs }}
+            <li><span class="label-key">{{ .Name }}:</span> {{ .Value }}</li>
+            {{ end }}
+          </ul>
+          {{ end }}
+        </div>
+      </li>
+      {{ end }}
+    </ul>
+
+    <div class="footer">
+      <p>Sent by Alertmanager</p>
+      <p>Prometheus URL: <a href="http://{{ .ExternalURL }}/#/alerts?receiver={{ .Receiver }}" target="_blank">{{ .ExternalURL }}</a></p>
+    </div>
+  </div>
+</body>
+</html>
+{{- end }}
