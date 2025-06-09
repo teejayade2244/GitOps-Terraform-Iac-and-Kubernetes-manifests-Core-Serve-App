@@ -14,9 +14,9 @@ spec:
       for: 5s
       labels:
         severity: critical
-        service: test-email-service
-        cluster: my-eks-cluster
-        namespace: monitoring # <--- Add this line!
+        team: test-team
+        service: core-serve
+        alert_type: availability
       annotations:
         summary: "This is a test alert to your Gmail from Alertmanager!"
         description: "If you see this, Gmail integration is working."

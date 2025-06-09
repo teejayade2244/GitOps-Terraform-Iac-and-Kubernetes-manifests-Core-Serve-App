@@ -8,7 +8,7 @@ metadata:
 spec:
   route:
     receiver: 'default-receiver'
-    groupBy: ['alertname', 'cluster', 'service', 'severity']
+    groupBy: ['alertname', 'service', 'severity']
     groupWait: 30s
     groupInterval: 5m
     repeatInterval: 4h
