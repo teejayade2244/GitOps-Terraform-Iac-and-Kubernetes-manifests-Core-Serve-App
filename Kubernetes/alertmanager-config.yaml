@@ -49,8 +49,11 @@ spec:
       authPassword:
         name: smtp-secret
         key: password
-      # Corrected: Use 'subject' directly under emailConfigs
-      subject: '[ALERT] {{ .GroupLabels.alertname }}'
+      requireTLS: true
+      tlsConfig:
+        insecureSkipVerify: false
+      headers:
+        Subject: '[ALERT] {{ .GroupLabels.alertname }}'
       html: |
         {{ range .Alerts }}
         Alert: {{ .Annotations.summary }}
@@ -70,8 +73,11 @@ spec:
       authPassword:
         name: smtp-secret
         key: password
-      # Corrected: Use 'subject' directly under emailConfigs
-      subject: '🚨 [CRITICAL] {{ .GroupLabels.alertname }}'
+      requireTLS: true
+      tlsConfig:
+        insecureSkipVerify: false
+      headers:
+        Subject: '🚨 [CRITICAL] {{ .GroupLabels.alertname }}'
 
   - name: 'warning-alerts'
     emailConfigs:
@@ -83,8 +89,11 @@ spec:
       authPassword:
         name: smtp-secret
         key: password
-      # Corrected: Use 'subject' directly under emailConfigs
-      subject: '⚠️ [WARNING] {{ .GroupLabels.alertname }}'
+      requireTLS: true
+      tlsConfig:
+        insecureSkipVerify: false
+      headers:
+        Subject: '⚠️ [WARNING] {{ .GroupLabels.alertname }}'
 
   - name: 'security-alerts'
     emailConfigs:
@@ -96,8 +105,11 @@ spec:
       authPassword:
         name: smtp-secret
         key: password
-      # Corrected: Use 'subject' directly under emailConfigs
-      subject: '🔒 [SECURITY] {{ .GroupLabels.alertname }}'
+      requireTLS: true
+      tlsConfig:
+        insecureSkipVerify: false
+      headers:
+        Subject: '🔒 [SECURITY] {{ .GroupLabels.alertname }}'
 
   - name: 'core-serve-critical'
     emailConfigs:
@@ -109,5 +121,8 @@ spec:
       authPassword:
         name: smtp-secret
         key: password
-      # Corrected: Use 'subject' directly under emailConfigs
-      subject: '🚨 [CORE-SERVE CRITICAL] {{ .GroupLabels.alertname }}'
+      requireTLS: true
+      tlsConfig:
+        insecureSkipVerify: false
+      headers:
+        Subject: '🚨 [CORE-SERVE CRITICAL] {{ .GroupLabels.alertname }}'
