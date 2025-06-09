@@ -51,7 +51,7 @@ spec:
     - matchers:
       - name: namespace
         value: '(staging|production)'
-        matchType: Regexp
+        regex: true
       receiver: 'default-receiver'
       continue: true
       routes:
@@ -92,11 +92,9 @@ spec:
   # Inhibition rules
   inhibitRules:
   - sourceMatch:
-    - name: severity
-      value: 'critical'
+      severity: 'critical'
     targetMatch:
-    - name: severity
-      value: 'warning'
+      severity: 'warning'
     equal: ['alertname', 'cluster', 'service']
 
   receivers:
