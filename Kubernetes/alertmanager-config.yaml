@@ -91,10 +91,10 @@ spec:
 
   # Inhibition rules
   inhibitRules:
-  - sourceMatchers:
+  - sourceMatch:
     - name: severity
       value: 'critical'
-    targetMatchers:
+    targetMatch:
     - name: severity
       value: 'warning'
     equal: ['alertname', 'cluster', 'service']
