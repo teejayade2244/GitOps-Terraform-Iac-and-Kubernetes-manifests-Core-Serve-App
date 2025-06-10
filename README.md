@@ -2,7 +2,7 @@
 
 Enterprise-grade infrastructure and deployment platform that leverages GitOps, Terraform, Kubernetes, ArgoCD, and a modern observability stack. This repository is your single source of Infrastructure as Code (IaC) and GitOps configurations powering the entire Core Serve application ecosystem.
 
-> **Note:** This README reflects only a portion of the project structure. To see the full contents, browse the repo here: [GitHub Repo Contents](https://github.com/teejayade2244/GitOps-Terraform-Iac-and-Kubernetes-manifests-Core-Serve-App/contents/).
+> **Note:** This README reflects only a portion of the project structure. To see the full contents, browse the repo here: [GitHub Repo Contents](https://github.com/teejayade2244/GitOps-Terraform-Iac-and-Kubernetes-manifests-Core-Serve-App).
 
 ---
 
