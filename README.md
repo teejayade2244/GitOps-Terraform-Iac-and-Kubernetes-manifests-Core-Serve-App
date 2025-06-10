@@ -95,6 +95,7 @@ Prometheus Configuration
 # Deploy Prometheus stack
 
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+
 helm install prometheus prometheus-community/kube-prometheus-stack \
   --namespace monitoring \
   --create-namespace \
@@ -111,6 +112,7 @@ Elasticsearch Deployment
 Deploy Elasticsearch
 
 helm repo add elastic https://helm.elastic.co
+
 helm install elasticsearch elastic/elasticsearch \
   --namespace logging \
   --create-namespace \
