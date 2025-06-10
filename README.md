@@ -1,6 +1,5 @@
 **Core Serve Infrastructure - GitOps & DevOps Platform**
 🚀 Enterprise-grade infrastructure and deployment platform built with Terraform, Kubernetes, ArgoCD, and comprehensive observability stack. This repository contains the complete Infrastructure as Code (IaC) and GitOps configuration for the Core Serve application ecosystem.
-
 📌 **Table of Contents**
 🏗️ Architecture Overview
 🛠️ Technologies
