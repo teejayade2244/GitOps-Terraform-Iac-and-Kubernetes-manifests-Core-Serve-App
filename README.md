@@ -134,6 +134,7 @@ aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
   kubectl create -f core-serve-backend.yaml
   kubectl create -f core-serve-frontend.yaml
   ```
+![Screenshot 2025-06-08 174255](https://github.com/user-attachments/assets/94e1b555-344c-4864-a355-fea71554e927)
 
 ---
 
